@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Info</title>
+    <script>
+        async function getCustomerInfo() {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                alert('Please login first.');
+                return;
+            }
+
+            const response = await fetch('customers', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('customerInfo').innerText = JSON.stringify(data, null, 2);
+            } else {
+                alert('Failed to get customer info: ' + data.message);
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>Customer Info</h1>
+<button onclick="getCustomerInfo()">Get Customer Info</button>
+<pre id="customerInfo"></pre>
+</body>
+</html>

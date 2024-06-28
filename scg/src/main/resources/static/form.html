@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Request Form</title>
+    <script>
+        async function login() {
+            const username = 'user';
+            const password = 'password';
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('token', data.token);
+                return data.token;
+            } else {
+                alert('Login failed: ' + data.message);
+                throw new Error('Login failed');
+            }
+        }
+
+        async function makeRequest(retry = true) {
+            const method = document.getElementById('method').value;
+            const uri = document.getElementById('uri').value;
+            const body = document.getElementById('body').value;
+            const authChecked = document.getElementById('auth').checked;
+
+            const headers = {};
+            if (authChecked) {
+                const token = localStorage.getItem('token');
+                if (token) {
+                    headers['Authorization'] = 'Bearer ' + token;
+                } else {
+                    const newToken = await login();
+                    if (newToken) {
+                        return makeRequest(false);
+                    }
+                }
+            }
+
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...headers
+                }
+            };
+
+            if (method !== 'GET' && method !== 'HEAD') {
+                options.body = body;
+            }
+
+            try {
+                const response = await fetch(uri, options);
+
+                if (response.status === 401 && retry) {
+                    const newToken = await login();
+                    if (newToken) {
+                        headers['Authorization'] = 'Bearer ' + newToken;
+                        return makeRequest(false);
+                    }
+                }
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('response').innerText = JSON.stringify(data, null, 2);
+                } else {
+                    document.getElementById('response').innerText = 'Error: ' + data.message;
+                }
+            } catch (error) {
+                document.getElementById('response').innerText = 'Failed to fetch: ' + error.message;
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>API Request Form</h1>
+<label for="method">HTTP Method:</label>
+<select id="method">
+    <option value="GET">GET</option>
+    <option value="POST">POST</option>
+    <option value="PUT">PUT</option>
+    <option value="DELETE">DELETE</option>
+    <!-- Add more options as needed -->
+</select>
+<br><br>
+<label for="uri">Endpoint URI:</label>
+<input type="text" id="uri" placeholder="Enter endpoint URI">
+<br><br>
+<label for="body">Request Body (JSON):</label><br>
+<textarea id="body" rows="5" cols="50" placeholder="Enter JSON body"></textarea>
+<br><br>
+<input type="checkbox" id="auth">
+<label for="auth">Include Authorization Header</label>
+<br><br>
+<button onclick="makeRequest()">Send Request</button>
+<br><br>
+<h2>Response:</h2>
+<pre id="response"></pre>
+</body>
+</html>
