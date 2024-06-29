@@ -40,6 +40,8 @@ public class GatewayConfig {
                 .route("kyc-service", r -> r.path("/kyc/**")
                         .filters(f -> f.filter(rewritePathFilter.apply(kycConfig)))
                         .uri("http://localhost:9006"))
+                .route("bff-service", r -> r.path("/bff/**")
+                        .uri("http://localhost:9007"))
                 .build();
     }
 }
