@@ -9,8 +9,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import reactor.core.publisher.Mono;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.ValidationMessage;
 
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 public class BffController {
@@ -21,11 +27,12 @@ public class BffController {
     private WebClient.Builder webClientBuilder;
 
     @Autowired
-    private Map<String, String> serviceUrlMap;
+    private Map<String, ServiceConfigDetails> serviceConfigMap;
 
     @GetMapping("/bff/**")
     public Mono<String> getGeneric(@RequestHeader HttpHeaders headers, ServerHttpRequest request) {
         String path = extractPathFromRequest(request);
+        String service = getServiceFromPath(path);
         String url = getServiceUrlFromPath(path);
 
         String queryParams = request.getURI().getQuery();
@@ -40,12 +47,14 @@ public class BffController {
                 .uri(url)
                 .headers(h -> h.addAll(headers))
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .doOnNext(response -> validateResponseSchema(service, response));
     }
 
     @PostMapping("/bff/**")
     public Mono<String> postGeneric(@RequestHeader HttpHeaders headers, @RequestBody String body, ServerHttpRequest request) {
         String path = extractPathFromRequest(request);
+        String service = getServiceFromPath(path);
         String url = getServiceUrlFromPath(path);
 
         String queryParams = request.getURI().getQuery();
@@ -62,7 +71,8 @@ public class BffController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(body)
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(String.class)
+                .doOnNext(response -> validateResponseSchema(service, response));
     }
 
     private String extractPathFromRequest(ServerHttpRequest request) {
@@ -70,12 +80,47 @@ public class BffController {
         return requestPath.substring("/bff/".length());
     }
 
-    private String getServiceUrlFromPath(String path) {
-        for (Map.Entry<String, String> entry : serviceUrlMap.entrySet()) {
-            if (path.startsWith(entry.getKey())) {
-                return entry.getValue() + path.substring(entry.getKey().length());
+    private String getServiceFromPath(String path) {
+        for (String key : serviceConfigMap.keySet()) {
+            if (path.startsWith(key)) {
+                return key;
             }
         }
-        throw new IllegalArgumentException("No matching service URL found for path: " + path);
+        throw new IllegalArgumentException("No matching service found for path: " + path);
+    }
+
+    private String getServiceUrlFromPath(String path) {
+        String service = getServiceFromPath(path);
+        return serviceConfigMap.get(service).getServiceUrl() + path.substring(service.length());
+    }
+
+    private void validateResponseSchema(String service, String response) {
+        String schemaJson = serviceConfigMap.get(service).getSchema();
+        if (schemaJson == null) {
+            throw new IllegalArgumentException("No schema found for service: " + service);
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode schemaNode = mapper.readTree(schemaJson);
+            JsonSchemaFactory factory = JsonSchemaFactory.getInstance();
+            JsonSchema schema = factory.getSchema(schemaNode);
+
+            JsonNode responseNode = mapper.readTree(response);
+            Set<ValidationMessage> validationMessages = schema.validate(responseNode);
+
+            if (!validationMessages.isEmpty()) {
+                StringBuilder errorMessages = new StringBuilder("Response validation failed:");
+                for (ValidationMessage message : validationMessages) {
+                    errorMessages.append("\n").append(message.getMessage());
+                }
+                throw new IllegalArgumentException(errorMessages.toString());
+            }
+
+            logger.info("Response is valid according to the schema.");
+        } catch (Exception e) {
+            logger.error("Response validation failed: " + e.getMessage());
+            throw new IllegalArgumentException("Response validation failed.", e);
+        }
     }
 }
