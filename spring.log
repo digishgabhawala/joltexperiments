@@ -1,0 +1,406 @@
+2024-09-01T16:30:42.502+05:30  INFO 567264 --- [token-service] [main] c.d.j.Token.TokenApplication             : Starting TokenApplication using Java 17.0.10 with PID 567264 (/home/digish/workspace/jolt/joltexperiments/token/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-09-01T16:30:42.507+05:30  INFO 567264 --- [token-service] [main] c.d.j.Token.TokenApplication             : No active profile set, falling back to 1 default profile: "default"
+2024-09-01T16:30:43.832+05:30  INFO 567264 --- [token-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-09-01T16:30:43.871+05:30  INFO 567264 --- [token-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 24 ms. Found 0 JPA repository interfaces.
+2024-09-01T16:30:44.937+05:30  INFO 567264 --- [token-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9001 (http)
+2024-09-01T16:30:44.958+05:30  INFO 567264 --- [token-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-09-01T16:30:44.959+05:30  INFO 567264 --- [token-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2024-09-01T16:30:45.103+05:30  INFO 567264 --- [token-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-09-01T16:30:45.105+05:30  INFO 567264 --- [token-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2472 ms
+2024-09-01T16:30:45.364+05:30  INFO 567264 --- [token-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-09-01T16:30:45.687+05:30  INFO 567264 --- [token-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-09-01T16:30:45.689+05:30  INFO 567264 --- [token-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-09-01T16:30:45.766+05:30  INFO 567264 --- [token-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-09-01T16:30:45.867+05:30  INFO 567264 --- [token-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.9.Final
+2024-09-01T16:30:45.939+05:30  INFO 567264 --- [token-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-09-01T16:30:46.321+05:30  INFO 567264 --- [token-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-09-01T16:30:46.399+05:30  WARN 567264 --- [token-service] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-09-01T16:30:46.992+05:30  INFO 567264 --- [token-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-09-01T16:30:46.999+05:30  INFO 567264 --- [token-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-09-01T16:30:47.123+05:30  WARN 567264 --- [token-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-09-01T16:30:47.854+05:30  INFO 567264 --- [token-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9001 (http) with context path ''
+2024-09-01T16:30:47.871+05:30  INFO 567264 --- [token-service] [main] c.d.j.Token.TokenApplication             : Started TokenApplication in 6.21 seconds (process running for 6.752)
+2024-09-01T16:32:08.116+05:30  INFO 567511 --- [authentication-service] [main] c.d.j.a.AuthenticationApplication        : Starting AuthenticationApplication using Java 17.0.10 with PID 567511 (/home/digish/workspace/jolt/joltexperiments/auth/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-09-01T16:32:08.124+05:30 DEBUG 567511 --- [authentication-service] [main] c.d.j.a.AuthenticationApplication        : Running with Spring Boot v3.2.7, Spring v6.1.10
+2024-09-01T16:32:08.128+05:30  INFO 567511 --- [authentication-service] [main] c.d.j.a.AuthenticationApplication        : No active profile set, falling back to 1 default profile: "default"
+2024-09-01T16:32:09.432+05:30  INFO 567511 --- [authentication-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-09-01T16:32:09.510+05:30  INFO 567511 --- [authentication-service] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 67 ms. Found 1 JPA repository interface.
+2024-09-01T16:32:10.251+05:30  INFO 567511 --- [authentication-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9002 (http)
+2024-09-01T16:32:10.282+05:30  INFO 567511 --- [authentication-service] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-09-01T16:32:10.283+05:30  INFO 567511 --- [authentication-service] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2024-09-01T16:32:10.364+05:30  INFO 567511 --- [authentication-service] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-09-01T16:32:10.365+05:30  INFO 567511 --- [authentication-service] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2128 ms
+2024-09-01T16:32:10.550+05:30  INFO 567511 --- [authentication-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-09-01T16:32:10.777+05:30  INFO 567511 --- [authentication-service] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-09-01T16:32:10.780+05:30  INFO 567511 --- [authentication-service] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-09-01T16:32:10.837+05:30  INFO 567511 --- [authentication-service] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-09-01T16:32:10.895+05:30  INFO 567511 --- [authentication-service] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.9.Final
+2024-09-01T16:32:10.942+05:30  INFO 567511 --- [authentication-service] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-09-01T16:32:11.291+05:30  INFO 567511 --- [authentication-service] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-09-01T16:32:11.344+05:30  WARN 567511 --- [authentication-service] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-09-01T16:32:12.443+05:30  INFO 567511 --- [authentication-service] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-09-01T16:32:12.488+05:30  INFO 567511 --- [authentication-service] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-09-01T16:32:13.014+05:30  WARN 567511 --- [authentication-service] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-09-01T16:32:13.519+05:30  INFO 567511 --- [authentication-service] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9002 (http) with context path ''
+2024-09-01T16:32:13.538+05:30  INFO 567511 --- [authentication-service] [main] c.d.j.a.AuthenticationApplication        : Started AuthenticationApplication in 6.11 seconds (process running for 6.617)
+2024-09-01T16:34:46.127+05:30  INFO 567770 --- [customer] [main] c.d.j.customer.CustomerApplication       : Starting CustomerApplication using Java 17.0.10 with PID 567770 (/home/digish/workspace/jolt/joltexperiments/customer/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-09-01T16:34:46.135+05:30  INFO 567770 --- [customer] [main] c.d.j.customer.CustomerApplication       : No active profile set, falling back to 1 default profile: "default"
+2024-09-01T16:34:48.195+05:30  INFO 567770 --- [customer] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-09-01T16:34:48.357+05:30  INFO 567770 --- [customer] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 137 ms. Found 1 JPA repository interface.
+2024-09-01T16:34:49.519+05:30  INFO 567770 --- [customer] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9003 (http)
+2024-09-01T16:34:49.536+05:30  INFO 567770 --- [customer] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-09-01T16:34:49.536+05:30  INFO 567770 --- [customer] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2024-09-01T16:34:49.639+05:30  INFO 567770 --- [customer] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-09-01T16:34:49.640+05:30  INFO 567770 --- [customer] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3323 ms
+2024-09-01T16:34:49.839+05:30  INFO 567770 --- [customer] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-09-01T16:34:50.051+05:30  INFO 567770 --- [customer] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-09-01T16:34:50.054+05:30  INFO 567770 --- [customer] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-09-01T16:34:50.128+05:30  INFO 567770 --- [customer] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-09-01T16:34:50.226+05:30  INFO 567770 --- [customer] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.9.Final
+2024-09-01T16:34:50.295+05:30  INFO 567770 --- [customer] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-09-01T16:34:50.620+05:30  INFO 567770 --- [customer] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-09-01T16:34:50.683+05:30  WARN 567770 --- [customer] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-09-01T16:34:52.144+05:30  INFO 567770 --- [customer] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-09-01T16:34:52.184+05:30  INFO 567770 --- [customer] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-09-01T16:34:52.833+05:30  WARN 567770 --- [customer] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-09-01T16:34:53.826+05:30  INFO 567770 --- [customer] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9003 (http) with context path ''
+2024-09-01T16:34:53.844+05:30  INFO 567770 --- [customer] [main] c.d.j.customer.CustomerApplication       : Started CustomerApplication in 8.997 seconds (process running for 9.771)
+2024-09-01T16:36:44.355+05:30  INFO 568062 --- [Card] [main] c.d.j.Card.CardApplication               : Starting CardApplication using Java 17.0.10 with PID 568062 (/home/digish/workspace/jolt/joltexperiments/Card/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-09-01T16:36:44.364+05:30  INFO 568062 --- [Card] [main] c.d.j.Card.CardApplication               : No active profile set, falling back to 1 default profile: "default"
+2024-09-01T16:36:46.070+05:30  INFO 568062 --- [Card] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-09-01T16:36:46.217+05:30  INFO 568062 --- [Card] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 122 ms. Found 1 JPA repository interface.
+2024-09-01T16:36:47.230+05:30  INFO 568062 --- [Card] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9004 (http)
+2024-09-01T16:36:47.251+05:30  INFO 568062 --- [Card] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-09-01T16:36:47.252+05:30  INFO 568062 --- [Card] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2024-09-01T16:36:47.398+05:30  INFO 568062 --- [Card] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-09-01T16:36:47.399+05:30  INFO 568062 --- [Card] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2879 ms
+2024-09-01T16:36:47.707+05:30  INFO 568062 --- [Card] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-09-01T16:36:47.929+05:30  INFO 568062 --- [Card] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-09-01T16:36:47.931+05:30  INFO 568062 --- [Card] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-09-01T16:36:47.989+05:30  INFO 568062 --- [Card] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-09-01T16:36:48.059+05:30  INFO 568062 --- [Card] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.9.Final
+2024-09-01T16:36:48.120+05:30  INFO 568062 --- [Card] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-09-01T16:36:48.537+05:30  INFO 568062 --- [Card] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-09-01T16:36:48.612+05:30  WARN 568062 --- [Card] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-09-01T16:36:49.808+05:30  INFO 568062 --- [Card] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-09-01T16:36:49.848+05:30  INFO 568062 --- [Card] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-09-01T16:36:50.261+05:30  WARN 568062 --- [Card] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-09-01T16:36:50.996+05:30  INFO 568062 --- [Card] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9004 (http) with context path ''
+2024-09-01T16:36:51.018+05:30  INFO 568062 --- [Card] [main] c.d.j.Card.CardApplication               : Started CardApplication in 7.809 seconds (process running for 8.594)
+2024-09-01T16:37:40.165+05:30  INFO 568343 --- [Account] [main] c.d.j.Account.AccountApplication         : Starting AccountApplication using Java 17.0.10 with PID 568343 (/home/digish/workspace/jolt/joltexperiments/Account/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-09-01T16:37:40.173+05:30  INFO 568343 --- [Account] [main] c.d.j.Account.AccountApplication         : No active profile set, falling back to 1 default profile: "default"
+2024-09-01T16:37:41.618+05:30  INFO 568343 --- [Account] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-09-01T16:37:41.755+05:30  INFO 568343 --- [Account] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 110 ms. Found 1 JPA repository interface.
+2024-09-01T16:37:42.534+05:30  INFO 568343 --- [Account] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9005 (http)
+2024-09-01T16:37:42.556+05:30  INFO 568343 --- [Account] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-09-01T16:37:42.557+05:30  INFO 568343 --- [Account] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2024-09-01T16:37:42.662+05:30  INFO 568343 --- [Account] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-09-01T16:37:42.663+05:30  INFO 568343 --- [Account] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2335 ms
+2024-09-01T16:37:42.889+05:30  INFO 568343 --- [Account] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-09-01T16:37:43.124+05:30  INFO 568343 --- [Account] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-09-01T16:37:43.126+05:30  INFO 568343 --- [Account] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-09-01T16:37:43.194+05:30  INFO 568343 --- [Account] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-09-01T16:37:43.256+05:30  INFO 568343 --- [Account] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.9.Final
+2024-09-01T16:37:43.296+05:30  INFO 568343 --- [Account] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-09-01T16:37:43.645+05:30  INFO 568343 --- [Account] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-09-01T16:37:43.714+05:30  WARN 568343 --- [Account] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-09-01T16:37:44.793+05:30  INFO 568343 --- [Account] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-09-01T16:37:44.846+05:30  INFO 568343 --- [Account] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-09-01T16:37:45.258+05:30  WARN 568343 --- [Account] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-09-01T16:37:45.899+05:30  INFO 568343 --- [Account] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9005 (http) with context path ''
+2024-09-01T16:37:45.929+05:30  INFO 568343 --- [Account] [main] c.d.j.Account.AccountApplication         : Started AccountApplication in 7.055 seconds (process running for 8.061)
+2024-09-01T16:38:04.408+05:30  INFO 568518 --- [KYC] [main] c.d.joltexperiments.KYC.KycApplication   : Starting KycApplication using Java 17.0.10 with PID 568518 (/home/digish/workspace/jolt/joltexperiments/KYC/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-09-01T16:38:04.416+05:30  INFO 568518 --- [KYC] [main] c.d.joltexperiments.KYC.KycApplication   : No active profile set, falling back to 1 default profile: "default"
+2024-09-01T16:38:05.990+05:30  INFO 568518 --- [KYC] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-09-01T16:38:06.114+05:30  INFO 568518 --- [KYC] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 107 ms. Found 1 JPA repository interface.
+2024-09-01T16:38:07.358+05:30  INFO 568518 --- [KYC] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9006 (http)
+2024-09-01T16:38:07.382+05:30  INFO 568518 --- [KYC] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-09-01T16:38:07.383+05:30  INFO 568518 --- [KYC] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2024-09-01T16:38:07.507+05:30  INFO 568518 --- [KYC] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-09-01T16:38:07.508+05:30  INFO 568518 --- [KYC] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2932 ms
+2024-09-01T16:38:07.817+05:30  INFO 568518 --- [KYC] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-09-01T16:38:08.102+05:30  INFO 568518 --- [KYC] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-09-01T16:38:08.105+05:30  INFO 568518 --- [KYC] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-09-01T16:38:08.188+05:30  INFO 568518 --- [KYC] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-09-01T16:38:08.257+05:30  INFO 568518 --- [KYC] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.9.Final
+2024-09-01T16:38:08.305+05:30  INFO 568518 --- [KYC] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-09-01T16:38:08.688+05:30  INFO 568518 --- [KYC] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-09-01T16:38:08.783+05:30  WARN 568518 --- [KYC] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-09-01T16:38:10.373+05:30  INFO 568518 --- [KYC] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-09-01T16:38:10.443+05:30  INFO 568518 --- [KYC] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-09-01T16:38:11.051+05:30  WARN 568518 --- [KYC] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-09-01T16:38:11.837+05:30  INFO 568518 --- [KYC] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9006 (http) with context path ''
+2024-09-01T16:38:11.877+05:30  INFO 568518 --- [KYC] [main] c.d.joltexperiments.KYC.KycApplication   : Started KycApplication in 8.946 seconds (process running for 10.116)
+2024-09-01T16:39:10.304+05:30  INFO 568781 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Starting BffApplication using Java 17.0.10 with PID 568781 (/home/digish/workspace/jolt/joltexperiments/bff/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-09-01T16:39:10.318+05:30 DEBUG 568781 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Running with Spring Boot v3.3.1, Spring v6.1.10
+2024-09-01T16:39:10.323+05:30  INFO 568781 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : No active profile set, falling back to 1 default profile: "default"
+2024-09-01T16:39:13.232+05:30  INFO 568781 --- [bff] [main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 9007 (http)
+2024-09-01T16:39:13.258+05:30  INFO 568781 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Started BffApplication in 4.219 seconds (process running for 5.466)
+2024-09-01T16:43:54.071+05:30  INFO 567770 --- [customer] [http-nio-9003-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-09-01T16:43:54.072+05:30  INFO 567770 --- [customer] [http-nio-9003-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-09-01T16:43:54.077+05:30  INFO 567770 --- [customer] [http-nio-9003-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2024-09-01T16:44:10.078+05:30  INFO 567264 --- [token-service] [http-nio-9001-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-09-01T16:44:10.079+05:30  INFO 567264 --- [token-service] [http-nio-9001-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-09-01T16:44:10.082+05:30  INFO 567264 --- [token-service] [http-nio-9001-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2024-09-01T16:46:47.757+05:30  INFO 567511 --- [authentication-service] [http-nio-9002-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-09-01T16:46:47.759+05:30  INFO 567511 --- [authentication-service] [http-nio-9002-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-09-01T16:46:47.764+05:30  INFO 567511 --- [authentication-service] [http-nio-9002-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2024-09-01T16:46:48.245+05:30 DEBUG 567511 --- [authentication-service] [http-nio-9002-exec-1] c.d.j.authentication.AuthController      : User{id=null, username='user', password='password', email='null'}
+2024-09-01T16:46:49.460+05:30 DEBUG 567511 --- [authentication-service] [http-nio-9002-exec-2] c.d.j.authentication.AuthController      : User{id=null, username='user', password='password', email='null'}
+2024-09-01T18:09:23.021+05:30 DEBUG 567511 --- [authentication-service] [http-nio-9002-exec-4] c.d.j.authentication.AuthController      : User{id=null, username='user', password='password', email='null'}
+2024-09-01T19:16:00.351+05:30 DEBUG 567511 --- [authentication-service] [http-nio-9002-exec-6] c.d.j.authentication.AuthController      : User{id=null, username='user', password='password', email='null'}
+2024-09-01T19:16:09.800+05:30 DEBUG 567511 --- [authentication-service] [http-nio-9002-exec-7] c.d.j.authentication.AuthController      : User{id=null, username='user', password='password', email='null'}
+2024-09-01T19:16:15.556+05:30 DEBUG 567511 --- [authentication-service] [http-nio-9002-exec-8] c.d.j.authentication.AuthController      : User{id=null, username='user', password='password', email='null'}
+2024-09-01T19:22:52.941+05:30 DEBUG 567511 --- [authentication-service] [http-nio-9002-exec-10] c.d.j.authentication.AuthController      : User{id=null, username='user', password='password', email='null'}
+2024-09-01T19:37:44.294+05:30  INFO 567770 --- [customer] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-09-01T19:37:44.300+05:30  INFO 567770 --- [customer] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-09-01T19:37:44.304+05:30  INFO 567770 --- [customer] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-09-01T19:38:01.969+05:30  INFO 574517 --- [customer] [main] c.d.j.customer.CustomerApplication       : Starting CustomerApplication using Java 17.0.10 with PID 574517 (/home/digish/workspace/jolt/joltexperiments/customer/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-09-01T19:38:01.981+05:30 DEBUG 574517 --- [customer] [main] c.d.j.customer.CustomerApplication       : Running with Spring Boot v3.2.7, Spring v6.1.10
+2024-09-01T19:38:01.987+05:30  INFO 574517 --- [customer] [main] c.d.j.customer.CustomerApplication       : No active profile set, falling back to 1 default profile: "default"
+2024-09-01T19:38:07.841+05:30  INFO 574517 --- [customer] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-09-01T19:38:08.154+05:30  INFO 574517 --- [customer] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 254 ms. Found 1 JPA repository interface.
+2024-09-01T19:38:12.445+05:30  INFO 574517 --- [customer] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 9003 (http)
+2024-09-01T19:38:12.532+05:30  INFO 574517 --- [customer] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-09-01T19:38:12.535+05:30  INFO 574517 --- [customer] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.25]
+2024-09-01T19:38:12.939+05:30  INFO 574517 --- [customer] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-09-01T19:38:12.943+05:30  INFO 574517 --- [customer] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 10525 ms
+2024-09-01T19:38:13.946+05:30  INFO 574517 --- [customer] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-09-01T19:38:15.425+05:30  INFO 574517 --- [customer] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=SA
+2024-09-01T19:38:15.435+05:30  INFO 574517 --- [customer] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-09-01T19:38:15.796+05:30  INFO 574517 --- [customer] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-09-01T19:38:16.375+05:30  INFO 574517 --- [customer] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.9.Final
+2024-09-01T19:38:16.674+05:30  INFO 574517 --- [customer] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-09-01T19:38:18.244+05:30  INFO 574517 --- [customer] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-09-01T19:38:18.578+05:30  WARN 574517 --- [customer] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-09-01T19:38:22.717+05:30  INFO 574517 --- [customer] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-09-01T19:38:22.844+05:30  INFO 574517 --- [customer] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-09-01T19:38:24.209+05:30  WARN 574517 --- [customer] [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-09-01T19:38:26.398+05:30  INFO 574517 --- [customer] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 9003 (http) with context path ''
+2024-09-01T19:38:26.480+05:30  INFO 574517 --- [customer] [main] c.d.j.customer.CustomerApplication       : Started CustomerApplication in 28.198 seconds (process running for 30.598)
+2024-09-01T19:40:21.085+05:30  INFO 574517 --- [customer] [http-nio-9003-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-09-01T19:40:21.087+05:30  INFO 574517 --- [customer] [http-nio-9003-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-09-01T19:40:21.092+05:30  INFO 574517 --- [customer] [http-nio-9003-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2024-09-01T19:40:21.382+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-1] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='John', lastName='Doe', email='john.doe@example.com'}
+2024-09-01T19:40:34.867+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-2] c.d.j.customer.CustomerController        : Get customer with id 1
+2024-09-01T19:40:34.981+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-2] c.d.j.customer.CustomerController        : Found customer: Customer{id=1, firstName='John', lastName='Doe', email='john.doe@example.com'}
+2024-09-01T19:41:12.215+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-3] c.d.j.customer.CustomerController        : Found 1 customers
+2024-09-01T19:41:12.216+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-3] c.d.j.customer.CustomerController        : Customer: Customer{id=1, firstName='John', lastName='Doe', email='john.doe@example.com'}
+2024-09-01T19:41:27.432+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-4] c.d.j.customer.CustomerController        : Found 1 customers
+2024-09-01T19:41:27.433+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-4] c.d.j.customer.CustomerController        : Customer: Customer{id=1, firstName='John', lastName='Doe', email='john.doe@example.com'}
+2024-09-01T19:52:53.762+05:30 ERROR 568781 --- [bff] [reactor-http-epoll-3] a.w.r.e.AbstractErrorWebExceptionHandler : [2acd2ee3-3]  500 Server Error for HTTP GET "/bff/customer"
+
+java.lang.IllegalArgumentException: No matching service found for path: customer
+	at com.drg.joltexperiments.bff.BffController.getServiceFromPath(BffController.java:89) ~[classes/:na]
+	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
+Error has been observed at the following site(s):
+	*__checkpoint ⇢ HTTP GET "/bff/customer" [ExceptionHandlingWebHandler]
+Original Stack Trace:
+		at com.drg.joltexperiments.bff.BffController.getServiceFromPath(BffController.java:89) ~[classes/:na]
+		at com.drg.joltexperiments.bff.BffController.getGeneric(BffController.java:35) ~[classes/:na]
+		at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:na]
+		at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[na:na]
+		at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+		at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+		at org.springframework.web.reactive.result.method.InvocableHandlerMethod.lambda$invoke$0(InvocableHandlerMethod.java:198) ~[spring-webflux-6.1.10.jar:6.1.10]
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.onNext(MonoFlatMap.java:132) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip$ZipCoordinator.signal(MonoZip.java:297) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip$ZipInner.onNext(MonoZip.java:478) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoPeekTerminal$MonoTerminalPeekSubscriber.onNext(MonoPeekTerminal.java:180) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators$ScalarSubscription.request(Operators.java:2571) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoPeekTerminal$MonoTerminalPeekSubscriber.request(MonoPeekTerminal.java:139) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip$ZipInner.onSubscribe(MonoZip.java:470) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoPeekTerminal$MonoTerminalPeekSubscriber.onSubscribe(MonoPeekTerminal.java:152) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoJust.subscribe(MonoJust.java:55) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:76) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip$ZipCoordinator.request(MonoZip.java:220) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.request(MonoFlatMap.java:194) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onSubscribe(MonoIgnoreThen.java:135) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.onSubscribe(MonoFlatMap.java:117) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip.subscribe(MonoZip.java:129) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:76) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:53) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:241) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.onComplete(MonoIgnoreThen.java:204) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.onComplete(MonoFlatMap.java:189) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators.complete(Operators.java:137) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip.subscribe(MonoZip.java:121) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Mono.subscribe(Mono.java:4568) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:265) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:76) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.onNext(MonoFlatMap.java:165) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxSwitchIfEmpty$SwitchIfEmptySubscriber.onNext(FluxSwitchIfEmpty.java:74) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoNext$NextSubscriber.onNext(MonoNext.java:82) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.innerNext(FluxConcatMapNoPrefetch.java:259) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxConcatMap$ConcatMapInner.onNext(FluxConcatMap.java:865) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onNext(FluxMapFuseable.java:129) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoPeekTerminal$MonoTerminalPeekSubscriber.onNext(MonoPeekTerminal.java:180) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators$ScalarSubscription.request(Operators.java:2571) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoPeekTerminal$MonoTerminalPeekSubscriber.request(MonoPeekTerminal.java:139) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.request(FluxMapFuseable.java:171) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators$MultiSubscriptionSubscriber.request(Operators.java:2331) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.request(FluxConcatMapNoPrefetch.java:339) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoNext$NextSubscriber.request(MonoNext.java:108) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators$MultiSubscriptionSubscriber.set(Operators.java:2367) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators$MultiSubscriptionSubscriber.onSubscribe(Operators.java:2241) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoNext$NextSubscriber.onSubscribe(MonoNext.java:70) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber.onSubscribe(FluxConcatMapNoPrefetch.java:164) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:201) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxIterable.subscribe(FluxIterable.java:83) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:76) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoDefer.subscribe(MonoDefer.java:53) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Mono.subscribe(Mono.java:4568) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoIgnoreThen$ThenIgnoreMain.subscribeNext(MonoIgnoreThen.java:265) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoIgnoreThen.subscribe(MonoIgnoreThen.java:51) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.InternalMonoOperator.subscribe(InternalMonoOperator.java:76) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoDeferContextual.subscribe(MonoDeferContextual.java:55) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.netty.http.server.HttpServer$HttpServerHandle.onStateChange(HttpServer.java:1176) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+		at reactor.netty.ReactorNetty$CompositeConnectionObserver.onStateChange(ReactorNetty.java:715) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.transport.ServerTransport$ChildObserver.onStateChange(ServerTransport.java:481) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.http.server.HttpServerOperations.onInboundNext(HttpServerOperations.java:781) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+		at reactor.netty.channel.ChannelOperationsHandler.channelRead(ChannelOperationsHandler.java:114) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at reactor.netty.http.server.HttpTrafficHandler.channelRead(HttpTrafficHandler.java:259) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:436) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:251) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at java.base/java.lang.Thread.run(Thread.java:840) ~[na:na]
+
+2024-09-01T19:54:21.849+05:30  INFO 568781 --- [bff] [reactor-http-epoll-3] c.drg.joltexperiments.bff.BffController  : GET request URL: http://localhost:9003/api/customers
+2024-09-01T19:54:22.119+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-6] c.d.j.customer.CustomerController        : Found 1 customers
+2024-09-01T19:54:22.120+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-6] c.d.j.customer.CustomerController        : Customer: Customer{id=1, firstName='John', lastName='Doe', email='john.doe@example.com'}
+2024-09-01T19:54:22.283+05:30  WARN 568781 --- [bff] [reactor-http-epoll-3] com.networknt.schema.JsonMetaSchema      : Unknown keyword components - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword
+2024-09-01T19:54:22.290+05:30  INFO 568781 --- [bff] [reactor-http-epoll-3] c.drg.joltexperiments.bff.BffController  : Response is valid according to the schema.
+2024-09-01T19:54:56.660+05:30  INFO 568781 --- [bff] [reactor-http-epoll-3] c.drg.joltexperiments.bff.BffController  : GET request URL: http://localhost:9003/api/customers/1
+2024-09-01T19:54:56.672+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-7] c.d.j.customer.CustomerController        : Get customer with id 1
+2024-09-01T19:54:56.677+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-7] c.d.j.customer.CustomerController        : Found customer: Customer{id=1, firstName='John', lastName='Doe', email='john.doe@example.com'}
+2024-09-01T19:54:56.688+05:30 ERROR 568781 --- [bff] [reactor-http-epoll-3] c.drg.joltexperiments.bff.BffController  : Response validation failed: Response validation failed:
+$: object found, array expected
+2024-09-01T19:54:56.701+05:30 ERROR 568781 --- [bff] [reactor-http-epoll-3] a.w.r.e.AbstractErrorWebExceptionHandler : [2acd2ee3-6]  500 Server Error for HTTP GET "/bff/customers/1"
+
+java.lang.IllegalArgumentException: Response validation failed.
+	at com.drg.joltexperiments.bff.BffController.validateResponseSchema(BffController.java:123) ~[classes/:na]
+	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
+Error has been observed at the following site(s):
+	*__checkpoint ⇢ Handler com.drg.joltexperiments.bff.BffController#getGeneric(HttpHeaders, ServerHttpRequest) [DispatcherHandler]
+	*__checkpoint ⇢ HTTP GET "/bff/customers/1" [ExceptionHandlingWebHandler]
+Original Stack Trace:
+		at com.drg.joltexperiments.bff.BffController.validateResponseSchema(BffController.java:123) ~[classes/:na]
+		at com.drg.joltexperiments.bff.BffController.lambda$getGeneric$1(BffController.java:51) ~[classes/:na]
+		at reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber.onNext(FluxPeekFuseable.java:196) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.secondComplete(MonoFlatMap.java:245) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoFlatMap$FlatMapInner.onNext(MonoFlatMap.java:305) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onNext(FluxMapFuseable.java:129) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableConditionalSubscriber.onNext(FluxMapFuseable.java:299) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxFilterFuseable$FilterFuseableConditionalSubscriber.onNext(FluxFilterFuseable.java:337) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators$BaseFluxToMonoOperator.completePossiblyEmpty(Operators.java:2097) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoCollect$CollectSubscriber.onComplete(MonoCollect.java:145) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.netty.channel.FluxReceive.onInboundComplete(FluxReceive.java:415) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.channel.ChannelOperations.onInboundComplete(ChannelOperations.java:446) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.channel.ChannelOperations.terminate(ChannelOperations.java:500) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.http.client.HttpClientOperations.onInboundNext(HttpClientOperations.java:793) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+		at reactor.netty.channel.ChannelOperationsHandler.channelRead(ChannelOperationsHandler.java:114) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:103) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:436) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:251) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at java.base/java.lang.Thread.run(Thread.java:840) ~[na:na]
+Caused by: java.lang.IllegalArgumentException: Response validation failed:
+$: object found, array expected
+	at com.drg.joltexperiments.bff.BffController.validateResponseSchema(BffController.java:117) ~[classes/:na]
+	at com.drg.joltexperiments.bff.BffController.lambda$getGeneric$1(BffController.java:51) ~[classes/:na]
+	at reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber.onNext(FluxPeekFuseable.java:196) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.MonoFlatMap$FlatMapMain.secondComplete(MonoFlatMap.java:245) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.MonoFlatMap$FlatMapInner.onNext(MonoFlatMap.java:305) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxOnAssembly$OnAssemblySubscriber.onNext(FluxOnAssembly.java:539) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onNext(FluxMapFuseable.java:129) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxMapFuseable$MapFuseableConditionalSubscriber.onNext(FluxMapFuseable.java:299) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxFilterFuseable$FilterFuseableConditionalSubscriber.onNext(FluxFilterFuseable.java:337) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.Operators$BaseFluxToMonoOperator.completePossiblyEmpty(Operators.java:2097) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.MonoCollect$CollectSubscriber.onComplete(MonoCollect.java:145) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.7.jar:3.6.7]
+	at reactor.netty.channel.FluxReceive.onInboundComplete(FluxReceive.java:415) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+	at reactor.netty.channel.ChannelOperations.onInboundComplete(ChannelOperations.java:446) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+	at reactor.netty.channel.ChannelOperations.terminate(ChannelOperations.java:500) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+	at reactor.netty.http.client.HttpClientOperations.onInboundNext(HttpClientOperations.java:793) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+	at reactor.netty.channel.ChannelOperationsHandler.channelRead(ChannelOperationsHandler.java:114) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:103) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:436) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:251) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+	at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+	at java.base/java.lang.Thread.run(Thread.java:840) ~[na:na]
+
+2024-09-01T19:54:59.740+05:30  INFO 568781 --- [bff] [reactor-http-epoll-3] c.drg.joltexperiments.bff.BffController  : GET request URL: http://localhost:9003/api/customers
+2024-09-01T19:54:59.754+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-8] c.d.j.customer.CustomerController        : Found 1 customers
+2024-09-01T19:54:59.754+05:30 DEBUG 574517 --- [customer] [http-nio-9003-exec-8] c.d.j.customer.CustomerController        : Customer: Customer{id=1, firstName='John', lastName='Doe', email='john.doe@example.com'}
+2024-09-01T19:54:59.762+05:30  INFO 568781 --- [bff] [reactor-http-epoll-3] c.drg.joltexperiments.bff.BffController  : Response is valid according to the schema.
