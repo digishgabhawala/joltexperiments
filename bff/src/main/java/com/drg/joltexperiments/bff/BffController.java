@@ -15,8 +15,8 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
 
-import java.util.Map;
 import java.util.Set;
+import java.util.Optional;
 
 @RestController
 public class BffController {
@@ -27,13 +27,14 @@ public class BffController {
     private WebClient.Builder webClientBuilder;
 
     @Autowired
-    private Map<String, ServiceConfigDetails> serviceConfigMap;
+    private ServiceConfigRepository serviceConfigRepository;
 
     @GetMapping("/bff/**")
     public Mono<String> getGeneric(@RequestHeader HttpHeaders headers, ServerHttpRequest request) {
         String path = extractPathFromRequest(request);
-        String service = getServiceFromPath(path);
-        String url = getServiceUrlFromPath(path);
+
+        ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path);
+        String url = getServiceUrlFromPath(path, serviceConfigEntity);
 
         String queryParams = request.getURI().getQuery();
         if (queryParams != null && !queryParams.isEmpty()) {
@@ -48,14 +49,15 @@ public class BffController {
                 .headers(h -> h.addAll(headers))
                 .retrieve()
                 .bodyToMono(String.class)
-                .doOnNext(response -> validateResponseSchema(service, response));
+                .doOnNext(response -> validateResponseSchema(serviceConfigEntity, response));
     }
 
     @PostMapping("/bff/**")
     public Mono<String> postGeneric(@RequestHeader HttpHeaders headers, @RequestBody String body, ServerHttpRequest request) {
         String path = extractPathFromRequest(request);
-        String service = getServiceFromPath(path);
-        String url = getServiceUrlFromPath(path);
+
+        ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path);
+        String url = getServiceUrlFromPath(path, serviceConfigEntity);
 
         String queryParams = request.getURI().getQuery();
         if (queryParams != null && !queryParams.isEmpty()) {
@@ -72,7 +74,7 @@ public class BffController {
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(String.class)
-                .doOnNext(response -> validateResponseSchema(service, response));
+                .doOnNext(response -> validateResponseSchema(serviceConfigEntity, response));
     }
 
     private String extractPathFromRequest(ServerHttpRequest request) {
@@ -80,28 +82,28 @@ public class BffController {
         return requestPath.substring("/bff/".length());
     }
 
-    private String getServiceFromPath(String path) {
-        for (String key : serviceConfigMap.keySet()) {
-            if (key.contains("{")) { // Handle dynamic paths
-                String regex = key.replace("{id}", "\\d+"); // Replace placeholders with regex patterns
-                if (path.matches(regex)) {
-                    return key;
-                }
-            } else if (path.startsWith(key)) { // Handle static paths
-                return key;
-            }
-        }
-        throw new IllegalArgumentException("No matching service found for path: " + path);
+    private ServiceConfigEntity getServiceConfigFromPath(String path) {
+        // Fetch all service configurations and find the matching one for the given path
+        return serviceConfigRepository.findAll().stream()
+                .filter(config -> isMatchingPath(config.getPath(), path))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No matching service found for path: " + path));
     }
 
+    private boolean isMatchingPath(String configPath, String requestPath) {
+        // Convert all placeholders like {userId}, {orderId}, etc., to regex patterns (e.g., \w+ for word characters)
+        String regexPath = configPath.replaceAll("\\{[^/]+\\}", "[^/]+"); // Matches any sequence of characters except '/'
 
-    private String getServiceUrlFromPath(String path) {
-        String service = getServiceFromPath(path);
-        String serviceUrl = serviceConfigMap.get(service).getServiceUrl();
+        // Check if the requestPath matches the regex pattern
+        return requestPath.matches(regexPath);
+    }
 
-        // Check for dynamic placeholders in the service URL
+    private String getServiceUrlFromPath(String path, ServiceConfigEntity serviceConfigEntity) {
+        String serviceUrl = serviceConfigEntity.getServiceUrl();
+
+        // Handle dynamic placeholders in the service URL
         String[] pathParts = path.split("/");
-        String[] serviceParts = service.split("/");
+        String[] serviceParts = serviceConfigEntity.getPath().split("/");
 
         for (int i = 0; i < serviceParts.length; i++) {
             if (serviceParts[i].startsWith("{") && serviceParts[i].endsWith("}")) {
@@ -118,15 +120,13 @@ public class BffController {
             }
         }
 
-        // Return the final service URL
         return serviceUrl;
     }
 
-
-    private void validateResponseSchema(String service, String response) {
-        String schemaJson = serviceConfigMap.get(service).getSchema();
+    private void validateResponseSchema(ServiceConfigEntity serviceConfigEntity, String response) {
+        String schemaJson = serviceConfigEntity.getSchema();
         if (schemaJson == null) {
-            throw new IllegalArgumentException("No schema found for service: " + service);
+            throw new IllegalArgumentException("No schema found for service: " + serviceConfigEntity.getPath());
         }
 
         try {

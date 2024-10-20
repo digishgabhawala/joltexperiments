@@ -59,12 +59,12 @@ public class ServiceConfig {
 
 class ServiceConfigDetails {
     private String serviceUrl;
-    private String schemaUrl;
     private String schema;
+    private String apiDocsUrl;
 
-    public ServiceConfigDetails(String serviceUrl, String schemaUrl, String schema) {
+    public ServiceConfigDetails(String serviceUrl, String apiDocsUrl, String schema) {
         this.serviceUrl = serviceUrl;
-        this.schemaUrl = schemaUrl;
+        this.apiDocsUrl = apiDocsUrl;
         this.schema = schema;
     }
 
@@ -72,11 +72,16 @@ class ServiceConfigDetails {
         return serviceUrl;
     }
 
-    public String getSchemaUrl() {
-        return schemaUrl;
-    }
 
     public String getSchema() {
         return schema;
+    }
+
+    public String getApiDocsUrl() {
+        return apiDocsUrl;
+    }
+
+    public void setApiDocsUrl(String apiDocsUrl) {
+        this.apiDocsUrl = apiDocsUrl;
     }
 }
