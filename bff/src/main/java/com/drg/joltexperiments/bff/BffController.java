@@ -82,17 +82,46 @@ public class BffController {
 
     private String getServiceFromPath(String path) {
         for (String key : serviceConfigMap.keySet()) {
-            if (path.startsWith(key)) {
+            if (key.contains("{")) { // Handle dynamic paths
+                String regex = key.replace("{id}", "\\d+"); // Replace placeholders with regex patterns
+                if (path.matches(regex)) {
+                    return key;
+                }
+            } else if (path.startsWith(key)) { // Handle static paths
                 return key;
             }
         }
         throw new IllegalArgumentException("No matching service found for path: " + path);
     }
 
+
     private String getServiceUrlFromPath(String path) {
         String service = getServiceFromPath(path);
-        return serviceConfigMap.get(service).getServiceUrl() + path.substring(service.length());
+        String serviceUrl = serviceConfigMap.get(service).getServiceUrl();
+
+        // Check for dynamic placeholders in the service URL
+        String[] pathParts = path.split("/");
+        String[] serviceParts = service.split("/");
+
+        for (int i = 0; i < serviceParts.length; i++) {
+            if (serviceParts[i].startsWith("{") && serviceParts[i].endsWith("}")) {
+                // Extract the dynamic part name (e.g., "id" from "{id}")
+                String placeholder = serviceParts[i].substring(1, serviceParts[i].length() - 1);
+
+                // Check if there is a corresponding part in the path
+                if (i < pathParts.length) {
+                    String dynamicValue = pathParts[i];
+
+                    // Replace the placeholder in the service URL
+                    serviceUrl = serviceUrl.replace("{" + placeholder + "}", dynamicValue);
+                }
+            }
+        }
+
+        // Return the final service URL
+        return serviceUrl;
     }
+
 
     private void validateResponseSchema(String service, String response) {
         String schemaJson = serviceConfigMap.get(service).getSchema();
