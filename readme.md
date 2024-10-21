@@ -30,32 +30,36 @@
     * endpoint url: /bff/api/service-configs
     * body:{
       "path": "customers/{id}",
+      "method": "GET",
       "serviceUrl": "http://localhost:9003/api/customers/{id}",
       "apiDocsUrl": "http://localhost:9003/v3/api-docs",
-      "schema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\",\n      \"format\": \"int64\"\n    },\n    \"firstName\": {\n      \"type\": \"string\"\n    },\n    \"lastName\": {\n      \"type\": \"string\"\n    },\n    \"email\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"id\", \"firstName\", \"lastName\", \"email\"]\n}"
+      "responseSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\",\n      \"format\": \"int64\"\n    },\n    \"firstName\": {\n      \"type\": \"string\"\n    },\n    \"lastName\": {\n      \"type\": \"string\"\n    },\n    \"email\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"id\", \"firstName\", \"lastName\", \"email\"]\n}"
       }
     * also once more with:
       {
       "path": "customers",
+      "method": "GET",
       "serviceUrl": "http://localhost:9003/api/customers",
       "apiDocsUrl": "http://localhost:9003/v3/api-docs",
-      "schema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"id\": {\n        \"type\": \"integer\",\n        \"format\": \"int64\"\n      },\n      \"firstName\": {\n        \"type\": \"string\"\n      },\n      \"lastName\": {\n        \"type\": \"string\"\n      },\n      \"email\": {\n        \"type\": \"string\"\n      }\n    },\n    \"required\": [\"id\", \"firstName\", \"lastName\", \"email\"]\n  }\n}"
+      "responseSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"id\": {\n        \"type\": \"integer\",\n        \"format\": \"int64\"\n      },\n      \"firstName\": {\n        \"type\": \"string\"\n      },\n      \"lastName\": {\n        \"type\": \"string\"\n      },\n      \"email\": {\n        \"type\": \"string\"\n      }\n    },\n    \"required\": [\"id\", \"firstName\", \"lastName\", \"email\"]\n  }\n}"
       }
     * and then call get to make sure that both above requests are saved.
   * hit /bff/customers/1 and /bff/customers to see that it is giving data as expected
     * Similarly create accounts config with:
       * {
         "path": "accounts",
+        "method": "GET",
         "serviceUrl": "http://localhost:9005/api/accounts",
         "apiDocsUrl": "http://localhost:9005/v3/api-docs",
         "schemaUrl": "http://localhost:9005/v3/api-docs",
-        "schema": "{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}}}}"
+        "responseSchema": "{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}}}}"
         }
       * {
         "path": "accounts/{id}",
+        "method": "GET",
         "serviceUrl": "http://localhost:9005/api/accounts/{id}",
         "apiDocsUrl": "http://localhost:9005/v3/api-docs",
-        "schema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
+        "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
         }
     * Try to create an account by hitting:
       * post with /accounts endpoint
@@ -68,6 +72,36 @@
         }
     * see that same account data is available on all of the endpoints 
       * /accounts, /accounts/1, /bff/accounts,/bff/accounts/1
+    * Now to create a post request, add below service config:
+      * {
+        "path": "customers",
+        "method": "POST",
+        "serviceUrl": "http://localhost:9003/api/customers",
+        "apiDocsUrl": "http://localhost:9003/v3/api-docs",
+        "requestSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"firstName\": {\n      \"type\": \"string\"\n    },\n    \"lastName\": {\n      \"type\": \"string\"\n    },\n    \"email\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"firstName\", \"lastName\", \"email\"]\n}",
+        "responseSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\",\n      \"format\": \"int64\"\n    },\n    \"firstName\": {\n      \"type\": \"string\"\n    },\n    \"lastName\": {\n      \"type\": \"string\"\n    },\n    \"email\": {\n      \"type\": \"string\"\n    }\n  },\n  \"required\": [\"id\", \"firstName\", \"lastName\", \"email\"]\n}"
+        }
+      * {
+        "path": "accounts",
+        "method": "POST",
+        "serviceUrl": "http://localhost:9005/api/accounts",
+        "apiDocsUrl": "http://localhost:9005/v3/api-docs",
+        "requestSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"accountNumber\": {\n      \"type\": \"string\"\n    },\n    \"accountType\": {\n      \"type\": \"string\"\n    },\n    \"balance\": {\n      \"type\": \"number\",\n      \"format\": \"double\"\n    },\n    \"customerId\": {\n      \"type\": \"integer\",\n      \"format\": \"int64\"\n    }\n  },\n  \"required\": [\"accountNumber\", \"accountType\", \"balance\", \"customerId\"]\n}",
+        "responseSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"id\": {\n      \"type\": \"integer\",\n      \"format\": \"int64\"\n    },\n    \"accountNumber\": {\n      \"type\": \"string\"\n    },\n    \"accountType\": {\n      \"type\": \"string\"\n    },\n    \"balance\": {\n      \"type\": \"number\",\n      \"format\": \"double\"\n    },\n    \"customerId\": {\n      \"type\": \"integer\",\n      \"format\": \"int64\"\n    }\n  },\n  \"required\": [\"id\", \"accountNumber\", \"accountType\", \"balance\", \"customerId\"]\n}"
+        }
+      * Then try to create customer and account using below sample requests:
+      * {
+        "firstName": "Joh22n3",
+        "lastName": "Doe",
+        "email": "john.doe@example.com"
+        }
+      * {
+        "accountNumber": "0001",
+        "accountType": "savings",
+        "balance": 0.6,
+        "customerId":2
+        }
+
 
 * BFF : WIP
   * Try hitting http://localhost:9007/bff/customers directly and see that it internally gets customers

@@ -16,9 +16,9 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
 
 import java.util.Set;
-import java.util.Optional;
 
 @RestController
+@RequestMapping("/bff")
 public class BffController {
 
     private static final Logger logger = LoggerFactory.getLogger(BffController.class);
@@ -29,127 +29,145 @@ public class BffController {
     @Autowired
     private ServiceConfigRepository serviceConfigRepository;
 
-    @GetMapping("/bff/**")
-    public Mono<String> getGeneric(@RequestHeader HttpHeaders headers, ServerHttpRequest request) {
-        String path = extractPathFromRequest(request);
-
-        ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path);
-        String url = getServiceUrlFromPath(path, serviceConfigEntity);
-
-        String queryParams = request.getURI().getQuery();
-        if (queryParams != null && !queryParams.isEmpty()) {
-            url += "?" + queryParams;
-        }
-
-        logger.info("GET request URL: {}", url);
-
-        return webClientBuilder.build()
-                .get()
-                .uri(url)
-                .headers(h -> h.addAll(headers))
-                .retrieve()
-                .bodyToMono(String.class)
-                .doOnNext(response -> validateResponseSchema(serviceConfigEntity, response));
+    @GetMapping("/**")
+    public Mono<String> handleGetRequest(@RequestHeader HttpHeaders headers, ServerHttpRequest request) {
+        return processRequest(headers, null, request, "GET");
     }
 
-    @PostMapping("/bff/**")
-    public Mono<String> postGeneric(@RequestHeader HttpHeaders headers, @RequestBody String body, ServerHttpRequest request) {
-        String path = extractPathFromRequest(request);
-
-        ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path);
-        String url = getServiceUrlFromPath(path, serviceConfigEntity);
-
-        String queryParams = request.getURI().getQuery();
-        if (queryParams != null && !queryParams.isEmpty()) {
-            url += "?" + queryParams;
-        }
-
-        logger.info("POST request URL: {}", url);
-
-        return webClientBuilder.build()
-                .post()
-                .uri(url)
-                .headers(h -> h.addAll(headers))
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(String.class)
-                .doOnNext(response -> validateResponseSchema(serviceConfigEntity, response));
+    @PostMapping("/**")
+    public Mono<String> handlePostRequest(@RequestHeader HttpHeaders headers, @RequestBody String body, ServerHttpRequest request) {
+        return processRequest(headers, body, request, "POST");
     }
 
-    private String extractPathFromRequest(ServerHttpRequest request) {
-        String requestPath = request.getPath().pathWithinApplication().value();
-        return requestPath.substring("/bff/".length());
-    }
+    private Mono<String> processRequest(HttpHeaders headers, String body, ServerHttpRequest request, String method) {
+        try {
+            String path = extractPathFromRequest(request);
+            ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path, method);
+            String url = buildUrlWithQueryParams(path, serviceConfigEntity, request);
 
-    private ServiceConfigEntity getServiceConfigFromPath(String path) {
-        // Fetch all service configurations and find the matching one for the given path
-        return serviceConfigRepository.findAll().stream()
-                .filter(config -> isMatchingPath(config.getPath(), path))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("No matching service found for path: " + path));
-    }
+            logger.info("{} request URL: {}", method, url);
 
-    private boolean isMatchingPath(String configPath, String requestPath) {
-        // Convert all placeholders like {userId}, {orderId}, etc., to regex patterns (e.g., \w+ for word characters)
-        String regexPath = configPath.replaceAll("\\{[^/]+\\}", "[^/]+"); // Matches any sequence of characters except '/'
-
-        // Check if the requestPath matches the regex pattern
-        return requestPath.matches(regexPath);
-    }
-
-    private String getServiceUrlFromPath(String path, ServiceConfigEntity serviceConfigEntity) {
-        String serviceUrl = serviceConfigEntity.getServiceUrl();
-
-        // Handle dynamic placeholders in the service URL
-        String[] pathParts = path.split("/");
-        String[] serviceParts = serviceConfigEntity.getPath().split("/");
-
-        for (int i = 0; i < serviceParts.length; i++) {
-            if (serviceParts[i].startsWith("{") && serviceParts[i].endsWith("}")) {
-                // Extract the dynamic part name (e.g., "id" from "{id}")
-                String placeholder = serviceParts[i].substring(1, serviceParts[i].length() - 1);
-
-                // Check if there is a corresponding part in the path
-                if (i < pathParts.length) {
-                    String dynamicValue = pathParts[i];
-
-                    // Replace the placeholder in the service URL
-                    serviceUrl = serviceUrl.replace("{" + placeholder + "}", dynamicValue);
-                }
+            if ("POST".equalsIgnoreCase(method)) {
+                validateSchema(serviceConfigEntity.getRequestSchema(), body, "Request");
             }
-        }
 
-        return serviceUrl;
+            return executeWebClientRequest(headers, body, url, method, serviceConfigEntity.getResponseSchema());
+        } catch (Exception e) {
+            logger.error("Error processing {} request: {}", method, e.getMessage());
+            return Mono.error(new IllegalArgumentException("Request failed: " + e.getMessage()));
+        }
     }
 
-    private void validateResponseSchema(ServiceConfigEntity serviceConfigEntity, String response) {
-        String schemaJson = serviceConfigEntity.getSchema();
-        if (schemaJson == null) {
-            throw new IllegalArgumentException("No schema found for service: " + serviceConfigEntity.getPath());
+    private Mono<String> executeWebClientRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
+        WebClient.RequestHeadersSpec<?> requestSpec;
+
+        // Build the request spec
+        if ("POST".equalsIgnoreCase(method)) {
+            requestSpec = webClientBuilder.build()
+                    .post()
+                    .uri(url)
+                    .headers(h -> h.addAll(headers))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(body);
+        } else {
+            requestSpec = webClientBuilder.build()
+                    .get()
+                    .uri(url)
+                    .headers(h -> h.addAll(headers));
+        }
+
+        return requestSpec.retrieve()
+                .bodyToMono(String.class)
+                .doOnNext(response -> validateSchema(responseSchema, response, "Response"))
+                .doOnError(e -> logger.error("Error occurred during WebClient request: {}", e.getMessage()));
+    }
+
+    private void validateSchema(String schemaJson, String data, String validationType) {
+        if (schemaJson == null || schemaJson.isEmpty()) {
+            logger.warn("{} schema not found, skipping validation.", validationType);
+            return;
         }
 
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode schemaNode = mapper.readTree(schemaJson);
-            JsonSchemaFactory factory = JsonSchemaFactory.getInstance();
-            JsonSchema schema = factory.getSchema(schemaNode);
+            JsonSchema schema = JsonSchemaFactory.getInstance().getSchema(schemaNode);
+            JsonNode dataNode = mapper.readTree(data);
 
-            JsonNode responseNode = mapper.readTree(response);
-            Set<ValidationMessage> validationMessages = schema.validate(responseNode);
-
+            Set<ValidationMessage> validationMessages = schema.validate(dataNode);
             if (!validationMessages.isEmpty()) {
-                StringBuilder errorMessages = new StringBuilder("Response validation failed:");
-                for (ValidationMessage message : validationMessages) {
-                    errorMessages.append("\n").append(message.getMessage());
-                }
+                StringBuilder errorMessages = new StringBuilder(validationType + " validation failed:");
+                validationMessages.forEach(message -> errorMessages.append("\n").append(message.getMessage()));
                 throw new IllegalArgumentException(errorMessages.toString());
             }
-
-            logger.info("Response is valid according to the schema.");
+            logger.info("{} is valid according to the schema.", validationType);
         } catch (Exception e) {
-            logger.error("Response validation failed: " + e.getMessage());
-            throw new IllegalArgumentException("Response validation failed.", e);
+            logger.error("{} validation error: {}", validationType, e.getMessage());
+            throw new IllegalArgumentException(validationType + " validation error: " + e.getMessage(), e);
         }
     }
+
+    private String extractPathFromRequest(ServerHttpRequest request) {
+        return request.getPath().pathWithinApplication().value().substring("/bff/".length());
+    }
+
+    private String buildUrlWithQueryParams(String path, ServiceConfigEntity serviceConfigEntity, ServerHttpRequest request) {
+        String url = serviceConfigEntity.getServiceUrl();
+        String queryParams = request.getURI().getQuery();
+
+        if (queryParams != null && !queryParams.isEmpty()) {
+            url += "?" + queryParams;
+        }
+
+        return handleDynamicPlaceholdersInUrl(path, url, serviceConfigEntity.getPath());
+    }
+
+    private String handleDynamicPlaceholdersInUrl(String path, String url, String serviceConfigPath) {
+        String[] pathParts = path.split("/");
+        String[] servicePathParts = serviceConfigPath.split("/");
+
+        for (int i = 0; i < servicePathParts.length; i++) {
+            if (servicePathParts[i].startsWith("{") && servicePathParts[i].endsWith("}")) {
+                String placeholder = servicePathParts[i].substring(1, servicePathParts[i].length() - 1);
+                if (i < pathParts.length) {
+                    url = url.replace("{" + placeholder + "}", pathParts[i]);
+                }
+            }
+        }
+        return url;
+    }
+
+    private ServiceConfigEntity getServiceConfigFromPath(String path, String method) {
+        return serviceConfigRepository.findAll().stream()
+                .filter(config -> isMatchingPath(config.getPath(), path) && method.equalsIgnoreCase(config.getMethod()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No matching service found for path: " + path + " and method: " + method));
+    }
+
+    private boolean isMatchingPath(String configPath, String requestPath) {
+        // Split both paths into their components
+        String[] configParts = configPath.split("/");
+        String[] requestParts = requestPath.split("/");
+
+        // If the lengths don't match, the paths cannot be equivalent
+        if (configParts.length != requestParts.length) {
+            return false;
+        }
+
+        // Compare each part of the path
+        for (int i = 0; i < configParts.length; i++) {
+            // If the part from the config is a placeholder (e.g., {id}), it matches anything
+            if (configParts[i].startsWith("{") && configParts[i].endsWith("}")) {
+                continue;
+            }
+            // Otherwise, the parts must match exactly
+            if (!configParts[i].equals(requestParts[i])) {
+                return false;
+            }
+        }
+
+        // If all parts match or placeholders are used, return true
+        return true;
+    }
+
 }
