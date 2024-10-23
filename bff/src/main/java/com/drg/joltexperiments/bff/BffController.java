@@ -15,6 +15,9 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -43,19 +46,53 @@ public class BffController {
         try {
             String path = extractPathFromRequest(request);
             ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path, method);
-            String url = buildUrlWithQueryParams(path, serviceConfigEntity, request);
 
-            logger.info("{} request URL: {}", method, url);
+            // Initialize a map to store intermediate results for steps
+            Map<String, Object> stepResults = new HashMap<>();
 
-            if ("POST".equalsIgnoreCase(method)) {
-                validateSchema(serviceConfigEntity.getRequestSchema(), body, "Request");
-            }
-
-            return executeWebClientRequest(headers, body, url, method, serviceConfigEntity.getResponseSchema());
+            // Execute all the steps in sequence and return the final result
+            return executeSteps(headers, body, request, method, serviceConfigEntity, stepResults);
         } catch (Exception e) {
             logger.error("Error processing {} request: {}", method, e.getMessage());
             return Mono.error(new IllegalArgumentException("Request failed: " + e.getMessage()));
         }
+    }
+
+    private Mono<String> executeSteps(HttpHeaders headers, String body, ServerHttpRequest request, String method, ServiceConfigEntity serviceConfigEntity, Map<String, Object> stepResults) {
+        List<Step> steps = serviceConfigEntity.getSteps();
+
+        // Sequentially execute each step
+        Mono<String> result = Mono.just(""); // Starting with an empty result
+
+        for (Step step : steps) {
+            if ("apiCall".equalsIgnoreCase(step.getType())) {
+                result = result.flatMap(prevResult -> {
+                    // Perform the API call for this step and store the result
+                    return executeApiCallStep(headers, body, request, method, step, stepResults);
+                });
+            }
+            // Add other types like joltTransform in future
+        }
+
+        // Return the result of the last step
+        return result;
+    }
+
+    private Mono<String> executeApiCallStep(HttpHeaders headers, String body, ServerHttpRequest request, String method, Step step, Map<String, Object> stepResults) {
+        String requestPath = extractPathFromRequest(request);
+        String url = buildUrlWithQueryParams(requestPath, step, request);
+
+        logger.info("{} request URL: {}", method, url);
+
+        if ("POST".equalsIgnoreCase(method)) {
+            validateSchema(step.getRequestSchema(), body, "Request");
+        }
+
+        return executeWebClientRequest(headers, body, url, method, step.getResponseSchema())
+                .doOnNext(response -> {
+                    // Store the result in the stepResults map
+                    stepResults.put(step.getName(), response);
+                });
     }
 
     private Mono<String> executeWebClientRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
@@ -111,30 +148,37 @@ public class BffController {
         return request.getPath().pathWithinApplication().value().substring("/bff/".length());
     }
 
-    private String buildUrlWithQueryParams(String path, ServiceConfigEntity serviceConfigEntity, ServerHttpRequest request) {
-        String url = serviceConfigEntity.getServiceUrl();
-        String queryParams = request.getURI().getQuery();
+    private String buildUrlWithQueryParams(String requestPath, Step step, ServerHttpRequest request) {
+        String serviceUrl = step.getServiceUrl(); // Base URL from Step
+        String stepPath = step.getPath(); // Dynamic path template from Step
 
+        // Replace dynamic placeholders in the stepPath
+        String resolvedUrl = resolveDynamicPlaceholders(requestPath, serviceUrl, stepPath);
+
+        // Append query parameters, if present
+        String queryParams = request.getURI().getQuery();
         if (queryParams != null && !queryParams.isEmpty()) {
-            url += "?" + queryParams;
+            resolvedUrl += "?" + queryParams;
         }
 
-        return handleDynamicPlaceholdersInUrl(path, url, serviceConfigEntity.getPath());
+        return resolvedUrl;
     }
 
-    private String handleDynamicPlaceholdersInUrl(String path, String url, String serviceConfigPath) {
-        String[] pathParts = path.split("/");
-        String[] servicePathParts = serviceConfigPath.split("/");
+    private String resolveDynamicPlaceholders(String requestPath, String serviceUrl, String stepPath) {
+        String[] requestPathParts = requestPath.split("/");
+        String[] stepPathParts = stepPath.split("/");
 
-        for (int i = 0; i < servicePathParts.length; i++) {
-            if (servicePathParts[i].startsWith("{") && servicePathParts[i].endsWith("}")) {
-                String placeholder = servicePathParts[i].substring(1, servicePathParts[i].length() - 1);
-                if (i < pathParts.length) {
-                    url = url.replace("{" + placeholder + "}", pathParts[i]);
+        // Replace each placeholder in the stepPath with the corresponding value from requestPath
+        for (int i = 0; i < stepPathParts.length; i++) {
+            if (stepPathParts[i].startsWith("{") && stepPathParts[i].endsWith("}")) {
+                String placeholder = stepPathParts[i].substring(1, stepPathParts[i].length() - 1); // Extract placeholder name
+                if (i < requestPathParts.length) {
+                    serviceUrl = serviceUrl.replace("{" + placeholder + "}", requestPathParts[i]);
                 }
             }
         }
-        return url;
+
+        return serviceUrl;
     }
 
     private ServiceConfigEntity getServiceConfigFromPath(String path, String method) {
@@ -145,29 +189,21 @@ public class BffController {
     }
 
     private boolean isMatchingPath(String configPath, String requestPath) {
-        // Split both paths into their components
         String[] configParts = configPath.split("/");
         String[] requestParts = requestPath.split("/");
 
-        // If the lengths don't match, the paths cannot be equivalent
         if (configParts.length != requestParts.length) {
             return false;
         }
 
-        // Compare each part of the path
         for (int i = 0; i < configParts.length; i++) {
-            // If the part from the config is a placeholder (e.g., {id}), it matches anything
             if (configParts[i].startsWith("{") && configParts[i].endsWith("}")) {
-                continue;
+                continue; // Dynamic part of path, skip comparison
             }
-            // Otherwise, the parts must match exactly
             if (!configParts[i].equals(requestParts[i])) {
                 return false;
             }
         }
-
-        // If all parts match or placeholders are used, return true
         return true;
     }
-
 }

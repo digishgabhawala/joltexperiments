@@ -1,6 +1,7 @@
 package com.drg.joltexperiments.bff;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "service_config", uniqueConstraints = {
@@ -14,21 +15,29 @@ public class ServiceConfigEntity {
 
     private String path;   // Path of the API
     private String method; // HTTP method (GET, POST, etc.)
-    private String serviceUrl;
-    private String apiDocsUrl;
-    @Lob // This annotation tells JPA to use a larger data type for this field
-    @Column(length = 10000) // Optionally specify a larger length
-    private String requestSchema;  // New field for request schema
-    @Lob // This annotation tells JPA to use a larger data type for this field
-    @Column(length = 10000) // Optionally specify a larger length
-    private String responseSchema; // Existing field or renamed for clarity
 
+    private String serviceUrl;  // URL of the primary API, if applicable
+    private String apiDocsUrl;  // Link to API documentation
+
+    @Lob
+    @Column(length = 10000)
+    private String requestSchema;  // New field for request schema
+
+    @Lob
+    @Column(length = 10000)
+    private String responseSchema; // Field for response schema
+
+    private String finalResponseKey;  // To store which step’s output to return as the final response
+
+    // Embed the steps directly into the table
+    @ElementCollection(fetch=FetchType.EAGER)
+    @CollectionTable(name = "service_config_steps", joinColumns = @JoinColumn(name = "service_config_id"))
+    private List<Step> steps;  // List of steps
 
     // Constructors, Getters, and Setters
 
     public ServiceConfigEntity() {
     }
-
 
     public Long getId() {
         return id;
@@ -53,6 +62,7 @@ public class ServiceConfigEntity {
     public void setMethod(String method) {
         this.method = method;
     }
+
     public String getServiceUrl() {
         return serviceUrl;
     }
@@ -77,12 +87,27 @@ public class ServiceConfigEntity {
         this.requestSchema = requestSchema;
     }
 
-
     public String getResponseSchema() {
         return responseSchema;
     }
 
     public void setResponseSchema(String responseSchema) {
         this.responseSchema = responseSchema;
+    }
+
+    public String getFinalResponseKey() {
+        return finalResponseKey;
+    }
+
+    public void setFinalResponseKey(String finalResponseKey) {
+        this.finalResponseKey = finalResponseKey;
+    }
+
+    public List<Step> getSteps() {
+        return steps;
+    }
+
+    public void setSteps(List<Step> steps) {
+        this.steps = steps;
     }
 }

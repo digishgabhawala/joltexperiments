@@ -59,6 +59,12 @@ public class ServiceConfigController {
             entity.setApiDocsUrl(serviceConfigEntity.getApiDocsUrl());
             entity.setRequestSchema(serviceConfigEntity.getRequestSchema());
             entity.setResponseSchema(serviceConfigEntity.getResponseSchema());
+
+            // Update the steps if included in the request
+            if (serviceConfigEntity.getSteps() != null) {
+                entity.setSteps(serviceConfigEntity.getSteps());
+            }
+
             serviceConfigRepository.save(entity);
             return getResponse("updated", path, method);
         } else {
