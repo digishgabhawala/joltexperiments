@@ -12,3 +12,46 @@
 2024-10-23T08:14:45.380+05:30 DEBUG 5340 --- [customer] [http-nio-9003-exec-9] c.d.j.customer.CustomerController        : Get customer with id 2
 2024-10-23T08:14:45.383+05:30 DEBUG 5340 --- [customer] [http-nio-9003-exec-9] c.d.j.customer.CustomerController        : Found customer: Customer{id=2, firstName='Joh22n', lastName='Doe', email='john.doe@example.com'}
 2024-10-23T08:19:08.913+05:30 DEBUG 5340 --- [customer] [http-nio-9003-exec-8] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='Joh22naaqq3', lastName='Doe', email='john.doe@example.com'}
+2024-10-23T21:56:57.612+05:30  INFO 58566 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Starting BffApplication using Java 17.0.10 with PID 58566 (/home/digish/workspace/jolt/joltexperiments/bff/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-10-23T21:56:57.620+05:30 DEBUG 58566 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Running with Spring Boot v3.3.1, Spring v6.1.10
+2024-10-23T21:56:57.624+05:30  INFO 58566 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : No active profile set, falling back to 1 default profile: "default"
+2024-10-23T21:56:59.158+05:30  INFO 58566 --- [bff] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-23T21:56:59.488+05:30  INFO 58566 --- [bff] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 308 ms. Found 1 JPA repository interface.
+2024-10-23T21:57:00.905+05:30  INFO 58566 --- [bff] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-23T21:57:01.030+05:30  INFO 58566 --- [bff] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-10-23T21:57:01.111+05:30  INFO 58566 --- [bff] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-23T21:57:01.724+05:30  INFO 58566 --- [bff] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-23T21:57:01.773+05:30  INFO 58566 --- [bff] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-23T21:57:02.440+05:30  INFO 58566 --- [bff] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/joltdb user=SA
+2024-10-23T21:57:02.445+05:30  INFO 58566 --- [bff] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-23T21:57:02.521+05:30  WARN 58566 --- [bff] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-10-23T21:57:04.212+05:30  INFO 58566 --- [bff] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-23T21:57:04.324+05:30  INFO 58566 --- [bff] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-23T21:57:06.095+05:30  INFO 58566 --- [bff] [main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 9007 (http)
+2024-10-23T21:57:06.135+05:30  INFO 58566 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Started BffApplication in 9.849 seconds (process running for 10.788)
+2024-10-23T22:31:34.964+05:30  INFO 58566 --- [bff] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-10-23T22:31:34.970+05:30  INFO 58566 --- [bff] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-10-23T22:31:34.975+05:30  INFO 58566 --- [bff] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2024-10-23T22:31:39.292+05:30  INFO 59378 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Starting BffApplication using Java 17.0.10 with PID 59378 (/home/digish/workspace/jolt/joltexperiments/bff/target/classes started by digish in /home/digish/workspace/jolt/joltexperiments)
+2024-10-23T22:31:39.297+05:30 DEBUG 59378 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Running with Spring Boot v3.3.1, Spring v6.1.10
+2024-10-23T22:31:39.300+05:30  INFO 59378 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : No active profile set, falling back to 1 default profile: "default"
+2024-10-23T22:31:40.606+05:30  INFO 59378 --- [bff] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-10-23T22:31:40.912+05:30  INFO 59378 --- [bff] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 290 ms. Found 1 JPA repository interface.
+2024-10-23T22:31:42.306+05:30  INFO 59378 --- [bff] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-10-23T22:31:42.389+05:30  INFO 59378 --- [bff] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2024-10-23T22:31:42.444+05:30  INFO 59378 --- [bff] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-10-23T22:31:42.950+05:30  INFO 59378 --- [bff] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-10-23T22:31:42.999+05:30  INFO 59378 --- [bff] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-10-23T22:31:43.571+05:30  INFO 59378 --- [bff] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection conn1: url=jdbc:h2:file:./data/joltdb user=SA
+2024-10-23T22:31:43.575+05:30  INFO 59378 --- [bff] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-10-23T22:31:43.612+05:30  WARN 59378 --- [bff] [main] org.hibernate.orm.deprecation            : HHH90000025: H2Dialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2024-10-23T22:31:45.398+05:30  INFO 59378 --- [bff] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-10-23T22:31:45.473+05:30  INFO 59378 --- [bff] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-10-23T22:31:47.359+05:30  INFO 59378 --- [bff] [main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 9007 (http)
+2024-10-23T22:31:47.454+05:30  INFO 59378 --- [bff] [main] c.d.joltexperiments.bff.BffApplication   : Started BffApplication in 9.396 seconds (process running for 10.197)
+2024-10-23T22:33:25.163+05:30  INFO 59378 --- [bff] [reactor-http-epoll-2] c.drg.joltexperiments.bff.BffController  : Making API call to: http://localhost:9003/api/customers/1
+2024-10-23T22:33:25.388+05:30 DEBUG 5340 --- [customer] [http-nio-9003-exec-2] c.d.j.customer.CustomerController        : Get customer with id 1
+2024-10-23T22:33:25.394+05:30 DEBUG 5340 --- [customer] [http-nio-9003-exec-2] c.d.j.customer.CustomerController        : Found customer: Customer{id=1, firstName='John', lastName='Doe', email='john.doe@example.com'}
+2024-10-23T22:33:25.483+05:30  INFO 59378 --- [bff] [reactor-http-epoll-2] c.drg.joltexperiments.bff.BffController  : Response is valid according to the schema.
+2024-10-23T22:33:25.483+05:30  INFO 59378 --- [bff] [reactor-http-epoll-2] c.drg.joltexperiments.bff.BffController  : Making API call to: http://localhost:9005/api/accounts/1
+2024-10-23T22:33:25.503+05:30  INFO 59378 --- [bff] [reactor-http-epoll-2] c.drg.joltexperiments.bff.BffController  : Response is valid according to the schema.

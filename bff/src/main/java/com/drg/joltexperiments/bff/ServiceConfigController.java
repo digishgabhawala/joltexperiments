@@ -102,4 +102,8 @@ public class ServiceConfigController {
             ));
         }
     }
+    @GetMapping("/reset/{path}/{method}")
+    public ResponseEntity<Map<String, Object>> resetServiceConfigDataForPath(@PathVariable String path, @PathVariable String method) {
+        return deleteServiceConfig(path,method);
+    }
 }

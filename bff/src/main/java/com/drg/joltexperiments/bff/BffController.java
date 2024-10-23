@@ -47,10 +47,10 @@ public class BffController {
             String path = extractPathFromRequest(request);
             ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path, method);
 
-            // Initialize a map to store intermediate results for steps
+            // Map to store intermediate results, including extracted variables
             Map<String, Object> stepResults = new HashMap<>();
 
-            // Execute all the steps in sequence and return the final result
+            // Execute steps sequentially
             return executeSteps(headers, body, request, method, serviceConfigEntity, stepResults);
         } catch (Exception e) {
             logger.error("Error processing {} request: {}", method, e.getMessage());
@@ -61,44 +61,104 @@ public class BffController {
     private Mono<String> executeSteps(HttpHeaders headers, String body, ServerHttpRequest request, String method, ServiceConfigEntity serviceConfigEntity, Map<String, Object> stepResults) {
         List<Step> steps = serviceConfigEntity.getSteps();
 
-        // Sequentially execute each step
-        Mono<String> result = Mono.just(""); // Starting with an empty result
+        // Start with an empty result
+        Mono<String> result = Mono.just("");
 
         for (Step step : steps) {
-            if ("apiCall".equalsIgnoreCase(step.getType())) {
-                result = result.flatMap(prevResult -> {
-                    // Perform the API call for this step and store the result
-                    return executeApiCallStep(headers, body, request, method, step, stepResults);
-                });
+            switch (step.getType().toLowerCase()) {
+                case "extractvariables":
+                    // Extract path variables and store them in stepResults
+                    result = result.flatMap(prevResult -> extractPathAndQueryVariables(step, request, stepResults));
+                    break;
+
+                case "renamevariables":
+                    // Rename variables and update stepResults
+                    result = result.flatMap(prevResult -> renameVariables(step, stepResults));
+                    break;
+
+                case "apicall":
+                    // Perform the API call for this step, using the extracted variables
+                    result = result.flatMap(prevResult -> executeApiCallStep(headers, body, step, stepResults));
+                    break;
+                case "combineresponses":
+                    result = result.flatMap(prevResult -> combineResponses(stepResults));
+                    break;
+                default:
+                    logger.warn("Unknown step type: {}", step.getType());
             }
-            // Add other types like joltTransform in future
         }
 
-        // Return the result of the last step
+        // Return the final result (last API call or combined response)
         return result;
     }
 
-    private Mono<String> executeApiCallStep(HttpHeaders headers, String body, ServerHttpRequest request, String method, Step step, Map<String, Object> stepResults) {
-        String requestPath = extractPathFromRequest(request);
-        String url = buildUrlWithQueryParams(requestPath, step, request);
+    private Mono<String> renameVariables(Step step, Map<String, Object> stepResults) {
+        Map<String, String> renameMappings = step.getRenameMappings(); // Assume the rename mappings are provided in the step
 
-        logger.info("{} request URL: {}", method, url);
+        // Iterate through each rename mapping and update the stepResults
+        for (Map.Entry<String, String> entry : renameMappings.entrySet()) {
+            String originalName = entry.getKey();
+            String newName = entry.getValue();
 
-        if ("POST".equalsIgnoreCase(method)) {
-            validateSchema(step.getRequestSchema(), body, "Request");
+            if (stepResults.containsKey(originalName)) {
+                stepResults.put(newName, stepResults.remove(originalName));
+            } else {
+                logger.warn("Variable '{}' not found for renaming.", originalName);
+            }
         }
 
-        return executeWebClientRequest(headers, body, url, method, step.getResponseSchema())
+        return Mono.just(""); // No immediate output, just store renamed variables
+    }
+
+    private Mono<String> extractPathAndQueryVariables(Step step, ServerHttpRequest request, Map<String, Object> stepResults) {
+        String requestPath = extractPathFromRequest(request);
+        String[] requestPathParts = requestPath.split("/");
+
+        // Extract path variables
+        String[] stepPathParts = step.getPath().split("/");
+        for (int i = 0; i < stepPathParts.length; i++) {
+            if (stepPathParts[i].startsWith("{") && stepPathParts[i].endsWith("}")) {
+                String variableName = stepPathParts[i].substring(1, stepPathParts[i].length() - 1);
+                if (i < requestPathParts.length) {
+                    stepResults.put(variableName, requestPathParts[i]); // Store extracted variable in stepResults
+                }
+            }
+        }
+
+        // Extract query parameters and add them to stepResults
+        request.getQueryParams().forEach((key, values) -> {
+            if (!values.isEmpty()) {
+                stepResults.put(key, values.get(0)); // Assuming single-valued query parameters
+            }
+        });
+
+        return Mono.just(""); // No immediate output, just store variables
+    }
+
+    private Mono<String> executeApiCallStep(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
+        // Build the API call URL by replacing placeholders with extracted variables
+        String url = buildUrlWithVariables(step.getServiceUrl(), stepResults);
+
+        logger.info("Making API call to: {}", url);
+
+        return executeWebClientRequest(headers, body, url, step.getMethod(), step.getResponseSchema())
                 .doOnNext(response -> {
-                    // Store the result in the stepResults map
+                    // Store the API call result in stepResults
                     stepResults.put(step.getName(), response);
                 });
+    }
+
+    private String buildUrlWithVariables(String urlTemplate, Map<String, Object> stepResults) {
+        for (Map.Entry<String, Object> entry : stepResults.entrySet()) {
+            urlTemplate = urlTemplate.replace("{" + entry.getKey() + "}", entry.getValue().toString());
+        }
+        return urlTemplate;
     }
 
     private Mono<String> executeWebClientRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
         WebClient.RequestHeadersSpec<?> requestSpec;
 
-        // Build the request spec
+        // Build WebClient request
         if ("POST".equalsIgnoreCase(method)) {
             requestSpec = webClientBuilder.build()
                     .post()
@@ -148,39 +208,6 @@ public class BffController {
         return request.getPath().pathWithinApplication().value().substring("/bff/".length());
     }
 
-    private String buildUrlWithQueryParams(String requestPath, Step step, ServerHttpRequest request) {
-        String serviceUrl = step.getServiceUrl(); // Base URL from Step
-        String stepPath = step.getPath(); // Dynamic path template from Step
-
-        // Replace dynamic placeholders in the stepPath
-        String resolvedUrl = resolveDynamicPlaceholders(requestPath, serviceUrl, stepPath);
-
-        // Append query parameters, if present
-        String queryParams = request.getURI().getQuery();
-        if (queryParams != null && !queryParams.isEmpty()) {
-            resolvedUrl += "?" + queryParams;
-        }
-
-        return resolvedUrl;
-    }
-
-    private String resolveDynamicPlaceholders(String requestPath, String serviceUrl, String stepPath) {
-        String[] requestPathParts = requestPath.split("/");
-        String[] stepPathParts = stepPath.split("/");
-
-        // Replace each placeholder in the stepPath with the corresponding value from requestPath
-        for (int i = 0; i < stepPathParts.length; i++) {
-            if (stepPathParts[i].startsWith("{") && stepPathParts[i].endsWith("}")) {
-                String placeholder = stepPathParts[i].substring(1, stepPathParts[i].length() - 1); // Extract placeholder name
-                if (i < requestPathParts.length) {
-                    serviceUrl = serviceUrl.replace("{" + placeholder + "}", requestPathParts[i]);
-                }
-            }
-        }
-
-        return serviceUrl;
-    }
-
     private ServiceConfigEntity getServiceConfigFromPath(String path, String method) {
         return serviceConfigRepository.findAll().stream()
                 .filter(config -> isMatchingPath(config.getPath(), path) && method.equalsIgnoreCase(config.getMethod()))
@@ -205,5 +232,30 @@ public class BffController {
             }
         }
         return true;
+    }
+
+    private Mono<String> combineResponses(Map<String, Object> stepResults) {
+        String customerResponse = (String) stepResults.get("callCustomerApi");
+        String accountResponse = (String) stepResults.get("callAccountApi");
+
+        // Combine the customer and account responses
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> combinedResult = new HashMap<>();
+
+        try {
+            // Convert responses to JSON objects
+            JsonNode customerJson = mapper.readTree(customerResponse);
+            JsonNode accountJson = mapper.readTree(accountResponse);
+
+            // Merge the customer and account objects
+            combinedResult.put("customer", customerJson);
+            combinedResult.put("account", accountJson);
+
+            // Return the combined result as a JSON string
+            return Mono.just(mapper.writeValueAsString(combinedResult));
+        } catch (Exception e) {
+            logger.error("Error combining responses: {}", e.getMessage());
+            return Mono.error(new IllegalArgumentException("Error combining responses: " + e.getMessage()));
+        }
     }
 }

@@ -7,22 +7,22 @@
   * Start KYC Service - default Port 9006
   * Start BFF Service - default Port 9007
   * Start gateway Service - default port 8081
-* Login 
+* Login
   * Hit http://localhost:8081/login.html with user/password as values
 * Test
   * Hit http://localhost:8081/form.html and select get method and enter /customers in endpoint.
-  Include Authorization Header
-  Expect empty response to see we are able to hit customers service
+    Include Authorization Header
+    Expect empty response to see we are able to hit customers service
 
   * In same, http://localhost:8081/form.html, select post method and enter /customers in endpoint
-  Include Authorization Header
-  enter below structure to create a customer
-  {
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@example.com"
-  }
-  and expect Id in respnse to verify customer is created successfully.
+    Include Authorization Header
+    enter below structure to create a customer
+    {
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com"
+    }
+    and expect Id in respnse to verify customer is created successfully.
 
   * Try something like /customers/1 as a get request.
   * Try below sample payload to create a service config
@@ -90,18 +90,22 @@
         }
 
       * {
-        "path": "accounts/{id}",
+        "path": "customers/{id}",
         "method": "GET",
-        "serviceUrl": "http://localhost:9005/api/accounts/{id}",
-        "apiDocsUrl": "http://localhost:9005/v3/api-docs",
-        "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}",
+        "serviceUrl": "http://localhost:9003/api/customers/{id}",
+        "apiDocsUrl": "http://localhost:9003/v3/api-docs",
+        "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}",
         "steps": [
         {
-        "name": "fetchAccountById",
+        "name": "retrievePathVariables",
+        "type": "extractVariables",
+        "path": "customers/{id}"
+        },
+        {
+        "name": "getCustomerById",
         "type": "apiCall",
-        "serviceUrl": "http://localhost:9005/api/accounts/{id}",
-        "path": "accounts/{id}",
-        "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
+        "serviceUrl": "http://localhost:9003/api/customers/{id}",
+        "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
         }
         ]
         }
@@ -115,7 +119,7 @@
         "balance": 0.5,
         "customerId":1
         }
-    * see that same account data is available on all of the endpoints 
+    * see that same account data is available on all of the endpoints
       * /accounts, /accounts/1, /bff/accounts,/bff/accounts/1
     * Now to create a post request, add below service config:
       * {
@@ -128,6 +132,7 @@
         "steps": [
         {
         "name": "createCustomer",
+        "method": "POST",
         "type": "apiCall",
         "serviceUrl": "http://localhost:9003/api/customers",
         "path": "customers",
@@ -168,15 +173,60 @@
         "balance": 0.6,
         "customerId":2
         }
-
-
+  * in case want to delete any configuration created, use Get call like below:
+    * /bff/api/service-configs/reset/customers%2F{id}/GET
+  * This is how we create a new get service:
+  * {
+    "path": "customersAndAccounts/{customerId}/{accountId}",
+    "method": "GET",
+    "steps": [
+    {
+    "name": "extractVariables",
+    "type": "extractVariables",
+    "path": "customersAndAccounts/{customerId}/{accountId}"
+    },
+    {
+    "name": "renameCustomerId",
+    "type": "renameVariables",
+    "renameMappings": {
+    "customerId": "id"
+    }
+    },
+    {
+    "name": "callCustomerApi",
+    "type": "apiCall",
+    "serviceUrl": "http://localhost:9003/api/customers/{id}",
+    "method": "GET",
+    "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
+    },
+    {
+    "name": "renameAccountId",
+    "type": "renameVariables",
+    "renameMappings": {
+    "accountId": "id"
+    }
+    },
+    {
+    "name": "callAccountApi",
+    "type": "apiCall",
+    "serviceUrl": "http://localhost:9005/api/accounts/{id}",
+    "method": "GET",
+    "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
+    },
+    {
+    "name": "combineResponses",
+    "type": "combineResponses",
+    "combineStrategy": "merge"
+    }
+    ]
+    }
 * BFF : WIP
   * Try hitting http://localhost:9007/bff/customers directly and see that it internally gets customers
   * TODO:
     * Get all endpoints of customers working by defining service config
     * Add other services like Cards and get all endpoints working
     * Create Jolt expressions for transformation of request / response
-    * Create configurations for orchestrations 
+    * Create configurations for orchestrations
     * Create configuration for compositions
     * Create UI for defining above
     * Create basci formulaes for data manipuations and their UI

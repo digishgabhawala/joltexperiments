@@ -1,9 +1,14 @@
 package com.drg.joltexperiments.bff;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Lob;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Embeddable
@@ -37,14 +42,17 @@ public class Step {
     @Column(length = 10000)
     private String responseSchema; // Field for response schema
 
+    @Lob
+    @Column(length = 10000)
+    private String renameMappingsJson;  // Store JSON representation of the map
+    private String combineStrategy;  // For combineResponses step
 
     // Constructors, Getters, Setters, and hashCode/equals for Embeddable class
 
     public Step() {
     }
 
-    public Step(String name, String type, String method, String serviceUrl, String apiDocsUrl,
-                String inputKey, String outputKey, String transformSpec, String responseKey, String requestSchema, String responseSchema, String path) {
+    public Step(String name, String type, String method, String serviceUrl, String apiDocsUrl, String inputKey, String outputKey, String path, String transformSpec, String responseKey, String requestSchema, String responseSchema, Map<String, String> renameMappings, String combineStrategy) {
         this.name = name;
         this.type = type;
         this.method = method;
@@ -52,10 +60,13 @@ public class Step {
         this.apiDocsUrl = apiDocsUrl;
         this.inputKey = inputKey;
         this.outputKey = outputKey;
+        this.path = path;
         this.transformSpec = transformSpec;
         this.responseKey = responseKey;
         this.requestSchema = requestSchema;
         this.responseSchema = responseSchema;
+        this.setRenameMappings(renameMappings);
+        this.combineStrategy = combineStrategy;
     }
 
     // Getters and Setters
@@ -147,24 +158,52 @@ public class Step {
         this.responseSchema = responseSchema;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Step step = (Step) o;
-        return Objects.equals(name, step.name) && Objects.equals(type, step.type) && Objects.equals(method, step.method) && Objects.equals(serviceUrl, step.serviceUrl) && Objects.equals(apiDocsUrl, step.apiDocsUrl) && Objects.equals(inputKey, step.inputKey) && Objects.equals(outputKey, step.outputKey) && Objects.equals(path, step.path) && Objects.equals(transformSpec, step.transformSpec) && Objects.equals(responseKey, step.responseKey) && Objects.equals(requestSchema, step.requestSchema) && Objects.equals(responseSchema, step.responseSchema);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, type, method, serviceUrl, apiDocsUrl, inputKey, outputKey, path, transformSpec, responseKey, requestSchema, responseSchema);
-    }
-
     public String getPath() {
         return path;
     }
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Step step = (Step) o;
+        return Objects.equals(name, step.name) && Objects.equals(type, step.type) && Objects.equals(method, step.method) && Objects.equals(serviceUrl, step.serviceUrl) && Objects.equals(apiDocsUrl, step.apiDocsUrl) && Objects.equals(inputKey, step.inputKey) && Objects.equals(outputKey, step.outputKey) && Objects.equals(path, step.path) && Objects.equals(transformSpec, step.transformSpec) && Objects.equals(responseKey, step.responseKey) && Objects.equals(requestSchema, step.requestSchema) && Objects.equals(responseSchema, step.responseSchema) && Objects.equals(renameMappingsJson, step.renameMappingsJson) && Objects.equals(combineStrategy, step.combineStrategy);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type, method, serviceUrl, apiDocsUrl, inputKey, outputKey, path, transformSpec, responseKey, requestSchema, responseSchema, renameMappingsJson, combineStrategy);
+    }
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    public Map<String, String> getRenameMappings() {
+        if (renameMappingsJson == null) {
+            return new HashMap<>();
+        }
+        try {
+            return objectMapper.readValue(renameMappingsJson, Map.class);
+        } catch (JsonProcessingException e) {
+            return new HashMap<>();
+        }
+    }
+
+    public void setRenameMappings(Map<String, String> renameMappings) {
+        try {
+            this.renameMappingsJson = objectMapper.writeValueAsString(renameMappings);
+        } catch (JsonProcessingException e) {
+            this.renameMappingsJson = null;
+        }
+    }
+
+    public String getCombineStrategy() {
+        return combineStrategy;
+    }
+
+    public void setCombineStrategy(String combineStrategy) {
+        this.combineStrategy = combineStrategy;
     }
 }
