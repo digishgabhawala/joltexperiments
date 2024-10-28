@@ -3,9 +3,9 @@ package com.drg.joltexperiments.bff;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import reactor.core.publisher.Mono;
@@ -15,10 +15,7 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("/bff")
@@ -49,6 +46,7 @@ public class BffController {
 
             // Map to store intermediate results, including extracted variables
             Map<String, Object> stepResults = new HashMap<>();
+            extractPathAndQueryVariablesImplicit(serviceConfigEntity,request, body, stepResults);
 
             // Execute steps sequentially
             return executeSteps(headers, body, request, method, serviceConfigEntity, stepResults);
@@ -68,7 +66,7 @@ public class BffController {
             switch (step.getType().toLowerCase()) {
                 case "extractvariables":
                     // Extract path variables and store them in stepResults
-                    result = result.flatMap(prevResult -> extractPathAndQueryVariables(step, request, stepResults));
+//                    result = result.flatMap(prevResult -> extractPathAndQueryVariables(step, request, body,stepResults));
                     break;
 
                 case "renamevariables":
@@ -110,20 +108,23 @@ public class BffController {
         return Mono.just(""); // No immediate output, just store renamed variables
     }
 
-    private Mono<String> extractPathAndQueryVariables(Step step, ServerHttpRequest request, Map<String, Object> stepResults) {
-        String requestPath = extractPathFromRequest(request);
-        String[] requestPathParts = requestPath.split("/");
+    private Mono<String> extractPathAndQueryVariablesImplicit(ServiceConfigEntity serviceConfigEntity, ServerHttpRequest request, String body, Map<String, Object> stepResults) {
+        String stepPath = serviceConfigEntity.getPath();
+        if (stepPath != null && !stepPath.isEmpty()) {
+            String requestPath = extractPathFromRequest(request);
+            String[] requestPathParts = requestPath.split("/");
+            String[] stepPathParts = stepPath.split("/");
 
-        // Extract path variables
-        String[] stepPathParts = step.getPath().split("/");
-        for (int i = 0; i < stepPathParts.length; i++) {
-            if (stepPathParts[i].startsWith("{") && stepPathParts[i].endsWith("}")) {
-                String variableName = stepPathParts[i].substring(1, stepPathParts[i].length() - 1);
-                if (i < requestPathParts.length) {
-                    stepResults.put(variableName, requestPathParts[i]); // Store extracted variable in stepResults
+            for (int i = 0; i < stepPathParts.length; i++) {
+                if (stepPathParts[i].startsWith("{") && stepPathParts[i].endsWith("}")) {
+                    String variableName = stepPathParts[i].substring(1, stepPathParts[i].length() - 1);
+                    if (i < requestPathParts.length) {
+                        stepResults.put(variableName, requestPathParts[i]);
+                    }
                 }
             }
         }
+
 
         // Extract query parameters and add them to stepResults
         request.getQueryParams().forEach((key, values) -> {
@@ -132,21 +133,145 @@ public class BffController {
             }
         });
 
+
+        // Extract all key-value pairs from the JSON body with correct types
+        if (body != null && !body.isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode bodyJson = mapper.readTree(body);
+
+                Iterator<Map.Entry<String, JsonNode>> fields = bodyJson.fields();
+                while (fields.hasNext()) {
+                    Map.Entry<String, JsonNode> field = fields.next();
+                    JsonNode valueNode = field.getValue();
+
+                    Object value;
+                    if (valueNode.isTextual()) {
+                        value = valueNode.asText();
+                    } else if (valueNode.isInt()) {
+                        value = valueNode.asInt();
+                    } else if (valueNode.isLong()) {
+                        value = valueNode.asLong();
+                    } else if (valueNode.isDouble()) {
+                        value = valueNode.asDouble();
+                    } else if (valueNode.isBoolean()) {
+                        value = valueNode.asBoolean();
+                    } else {
+                        value = valueNode.toString();  // For objects or arrays, store as JSON string
+                    }
+                    stepResults.put(field.getKey(), value);
+                }
+            } catch (Exception e) {
+                logger.error("Error parsing request body: {}", e.getMessage());
+                return Mono.error(new IllegalArgumentException("Invalid JSON body"));
+            }
+        }
         return Mono.just(""); // No immediate output, just store variables
+
+    }
+
+        private Mono<String> extractPathAndQueryVariables(Step step, ServerHttpRequest request, String body, Map<String, Object> stepResults) {
+
+        String stepPath = step.getPath();
+        if (stepPath != null && !stepPath.isEmpty()) {
+            String requestPath = extractPathFromRequest(request);
+            String[] requestPathParts = requestPath.split("/");
+            String[] stepPathParts = stepPath.split("/");
+
+            for (int i = 0; i < stepPathParts.length; i++) {
+                if (stepPathParts[i].startsWith("{") && stepPathParts[i].endsWith("}")) {
+                    String variableName = stepPathParts[i].substring(1, stepPathParts[i].length() - 1);
+                    if (i < requestPathParts.length) {
+                        stepResults.put(variableName, requestPathParts[i]);
+                    }
+                }
+            }
+        }
+
+
+        // Extract query parameters and add them to stepResults
+        request.getQueryParams().forEach((key, values) -> {
+            if (!values.isEmpty()) {
+                stepResults.put(key, values.get(0)); // Assuming single-valued query parameters
+            }
+        });
+
+
+        // Extract all key-value pairs from the JSON body with correct types
+        if (body != null && !body.isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode bodyJson = mapper.readTree(body);
+
+                Iterator<Map.Entry<String, JsonNode>> fields = bodyJson.fields();
+                while (fields.hasNext()) {
+                    Map.Entry<String, JsonNode> field = fields.next();
+                    JsonNode valueNode = field.getValue();
+
+                    Object value;
+                    if (valueNode.isTextual()) {
+                        value = valueNode.asText();
+                    } else if (valueNode.isInt()) {
+                        value = valueNode.asInt();
+                    } else if (valueNode.isLong()) {
+                        value = valueNode.asLong();
+                    } else if (valueNode.isDouble()) {
+                        value = valueNode.asDouble();
+                    } else if (valueNode.isBoolean()) {
+                        value = valueNode.asBoolean();
+                    } else {
+                        value = valueNode.toString();  // For objects or arrays, store as JSON string
+                    }
+                    stepResults.put(field.getKey(), value);
+                }
+            } catch (Exception e) {
+                logger.error("Error parsing request body: {}", e.getMessage());
+                return Mono.error(new IllegalArgumentException("Invalid JSON body"));
+            }
+        }
+        return Mono.just(""); // No immediate output, just store variables
+    }
+    public String sanitize(String input) {
+        return input.replaceAll("[^\\x20-\\x7E]", ""); // Keep only printable ASCII characters
     }
 
     private Mono<String> executeApiCallStep(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
         // Build the API call URL by replacing placeholders with extracted variables
         String url = buildUrlWithVariables(step.getServiceUrl(), stepResults);
 
+        url = sanitize(url);
         logger.info("Making API call to: {}", url);
 
-        return executeWebClientRequest(headers, body, url, step.getMethod(), step.getResponseSchema())
+//        return executeWebClientRequest(headers, body, url, step.getMethod(), step.getResponseSchema())
+//                .doOnNext(response -> {
+//                    // Store the API call result in stepResults
+//                    stepResults.put(step.getName(), response);
+//                });
+        return executeRestTemplateRequest(headers, body, url, step.getMethod(), step.getResponseSchema())
                 .doOnNext(response -> {
                     // Store the API call result in stepResults
                     stepResults.put(step.getName(), response);
                 });
+
     }
+
+//    private String executeApiCallStepSync(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
+//        // Build the API call URL by replacing placeholders with extracted variables
+//        String url = buildUrlWithVariables(step.getServiceUrl(), stepResults);
+//
+//        // Sanitize URL if needed
+//        url = sanitize(url);
+//        logger.info("Making API call to: {}", url);
+//
+//        // Make the API call with RestTemplate
+//        String response = executeRestTemplateRequest(headers, body, url, step.getMethod(), step.getResponseSchema());
+//
+//        // Store the API call result in stepResults
+//        stepResults.put(step.getName(), response);
+//
+//        return response;
+//    }
+
 
     private String buildUrlWithVariables(String urlTemplate, Map<String, Object> stepResults) {
         for (Map.Entry<String, Object> entry : stepResults.entrySet()) {
@@ -155,8 +280,44 @@ public class BffController {
         return urlTemplate;
     }
 
+    public static void logUrlCharacters(String url) {
+        StringBuilder builder = new StringBuilder("URL Characters: ");
+        for (char c : url.toCharArray()) {
+            builder.append("\\u").append(String.format("%04x", (int) c)).append(" ");
+        }
+        System.out.println(builder.toString());
+    }
+
+    private Mono<String> executeRestTemplateRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
+
+        return Mono.fromCallable(() -> {
+            try {
+                ResponseEntity<String> response;
+                if ("POST".equalsIgnoreCase(method)) {
+                    response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+                } else {
+                    response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+                }
+
+                // Validate the response schema if needed
+                validateSchema(responseSchema, response.getBody(), "Response");
+
+                return response.getBody();
+            } catch (Exception e) {
+                logger.error("Error occurred during RestTemplate request: {}", e.getMessage());
+                throw e;
+            }
+        });
+    }
+
+
+
     private Mono<String> executeWebClientRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
         WebClient.RequestHeadersSpec<?> requestSpec;
+
+        logUrlCharacters(url);
 
         // Build WebClient request
         if ("POST".equalsIgnoreCase(method)) {
@@ -167,6 +328,8 @@ public class BffController {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(body);
         } else {
+            System.out.println("printing url : " + url);
+
             requestSpec = webClientBuilder.build()
                     .get()
                     .uri(url)

@@ -220,6 +220,57 @@
     }
     ]
     }
+  * Create a post method which will read body and convert it into multiple get requests:
+    * {
+      "path": "getCustomersAndAccounts",
+      "method": "POST",
+      "requestSchema": "{\"type\":\"object\",\"properties\":{\"accountNumber\":{\"type\":\"string\"},\"customerId\":{\"type\":\"string\"}},\"required\":[\"accountNumber\",\"customerId\"]}",
+      "steps": [
+      {
+      "name": "extractVariables",
+      "type": "extractVariables"
+      },
+      {
+      "name": "renameCustomerId",
+      "type": "renameVariables",
+      "renameMappings": {
+      "customerId": "id"
+      }
+      },
+      {
+      "name": "callCustomerApi",
+      "type": "apiCall",
+      "serviceUrl": "http://localhost:9003/api/customers/{id}",
+      "method": "GET",
+      "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
+      },
+      {
+      "name": "renameAccountId",
+      "type": "renameVariables",
+      "renameMappings": {
+      "accountNumber": "id"
+      }
+      },
+      {
+      "name": "callAccountApi",
+      "type": "apiCall",
+      "serviceUrl": "http://localhost:9005/api/accounts/{id}",
+      "method": "GET",
+      "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
+      },
+      {
+      "name": "combineResponses",
+      "type": "combineResponses",
+      "combineStrategy": "merge"
+      }
+      ]
+      }
+  * test with /bff/getCustomersAndAccounts
+    * {
+      "accountNumber": "1",
+      "customerId": "1"
+      }
+  * 
 * BFF : WIP
   * Try hitting http://localhost:9007/bff/customers directly and see that it internally gets customers
   * TODO:
