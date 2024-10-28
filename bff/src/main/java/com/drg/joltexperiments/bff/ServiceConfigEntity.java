@@ -1,5 +1,6 @@
 package com.drg.joltexperiments.bff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import java.util.List;
 @Table(name = "service_config", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"path", "method"})
 })
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ServiceConfigEntity {
 
     @Id

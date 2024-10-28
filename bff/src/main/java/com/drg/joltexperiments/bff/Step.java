@@ -1,5 +1,6 @@
 package com.drg.joltexperiments.bff;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.Column;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Embeddable
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Step {
 
     private String name;  // Step name, like "getCustomer" or "transformData"
