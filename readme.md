@@ -270,6 +270,52 @@
       "accountNumber": "1",
       "customerId": "1"
       }
+  * create a service config to make a post GET call and then in turn call get multiple get API call based on response of first api
+  * {
+    "path": "customersAndAccounts/{accountId}",
+    "method": "GET",
+    "steps": [
+    {
+    "name": "extractAccountId",
+    "type": "extractVariables",
+    "path": "customersAndAccounts/{accountId}"
+    },
+    {
+    "name": "renameAccountIdForApiCall",
+    "type": "renameVariables",
+    "renameMappings": {
+    "accountId": "id"
+    }
+    },
+    {
+    "name": "callAccountApi",
+    "type": "apiCall",
+    "serviceUrl": "http://localhost:9005/api/accounts/{id}",
+    "method": "GET",
+    "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
+    },
+    {
+    "name": "renameCustomerId",
+    "type": "renameVariables",
+    "renameMappings": {
+    "$.callAccountApi.customerId": "id"  
+    }
+    },
+    {
+    "name": "callCustomerApi",
+    "type": "apiCall",
+    "serviceUrl": "http://localhost:9003/api/customers/{id}",
+    "method": "GET",
+    "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
+    },
+    {
+    "name": "combineResponses",
+    "type": "combineResponses",
+    "combineStrategy": "merge"
+    }
+    ]
+    }
+  *test with something like /bff/customersAndAccounts/1
 * After adding all serviceConfig, it looks like below:
   *
   [
