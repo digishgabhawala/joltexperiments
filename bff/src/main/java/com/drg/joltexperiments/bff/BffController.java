@@ -1,20 +1,22 @@
+// Removed Mono imports and reactive types
 package com.drg.joltexperiments.bff;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.http.server.reactive.ServerHttpRequest;
-import reactor.core.publisher.Mono;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
-
+import reactor.core.publisher.Mono;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 
 @RestController
@@ -24,87 +26,110 @@ public class BffController {
     private static final Logger logger = LoggerFactory.getLogger(BffController.class);
 
     @Autowired
-    private WebClient.Builder webClientBuilder;
-
-    @Autowired
     private ServiceConfigRepository serviceConfigRepository;
 
     @GetMapping("/**")
-    public Mono<String> handleGetRequest(@RequestHeader HttpHeaders headers, ServerHttpRequest request) {
+    public String handleGetRequest(@RequestHeader HttpHeaders headers, ServerHttpRequest request) {
         return processRequest(headers, null, request, "GET");
     }
 
     @PostMapping("/**")
-    public Mono<String> handlePostRequest(@RequestHeader HttpHeaders headers, @RequestBody String body, ServerHttpRequest request) {
+    public String handlePostRequest(@RequestHeader HttpHeaders headers, @RequestBody String body, ServerHttpRequest request) {
         return processRequest(headers, body, request, "POST");
     }
 
-    private Mono<String> processRequest(HttpHeaders headers, String body, ServerHttpRequest request, String method) {
+    private String processRequest(HttpHeaders headers, String body, ServerHttpRequest request, String method) {
         try {
             String path = extractPathFromRequest(request);
             ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path, method);
 
-            // Map to store intermediate results, including extracted variables
             Map<String, Object> stepResults = new HashMap<>();
-            extractRequestData(serviceConfigEntity,request, body, stepResults);
+            extractRequestData(serviceConfigEntity, request, body, stepResults);
 
             // Execute steps sequentially
             return executeSteps(headers, body, request, method, serviceConfigEntity, stepResults);
         } catch (Exception e) {
             logger.error("Error processing {} request: {}", method, e.getMessage());
-            return Mono.error(new IllegalArgumentException("Request failed: " + e.getMessage()));
+            throw new IllegalArgumentException("Request failed: " + e.getMessage());
         }
     }
 
-    private Mono<String> executeSteps(HttpHeaders headers, String body, ServerHttpRequest request, String method, ServiceConfigEntity serviceConfigEntity, Map<String, Object> stepResults) {
+    private String executeSteps(HttpHeaders headers, String body, ServerHttpRequest request, String method, ServiceConfigEntity serviceConfigEntity, Map<String, Object> stepResults) {
         List<Step> steps = serviceConfigEntity.getSteps();
-
-        // Start with an empty result
-        Mono<String> result = Mono.just("");
+        String result = "";
 
         for (Step step : steps) {
             switch (step.getType().toLowerCase()) {
-
                 case "renamevariables":
-                    // Rename variables and update stepResults
-                    result = result.flatMap(prevResult -> renameVariables(step, stepResults));
+                    renameVariables(step, stepResults);
                     break;
 
                 case "apicall":
-                    // Perform the API call for this step, using the extracted variables
-                    result = result.flatMap(prevResult -> executeApiCallStep(headers, body, step, stepResults));
+                    result = executeApiCallStep(headers, body, step, stepResults);
                     break;
+
                 case "combineresponses":
-                    result = result.flatMap(prevResult -> combineResponses(stepResults));
+                    result = combineResponses(stepResults);
                     break;
+
                 default:
                     logger.warn("Unknown step type: {}", step.getType());
             }
         }
-
-        // Return the final result (last API call or combined response)
         return result;
     }
+    private void renameVariables(Step step, Map<String, Object> stepResults) {
+        Map<String, String> renameMappings = step.getRenameMappings();
+        ObjectMapper mapper = new ObjectMapper();
 
-    private Mono<String> renameVariables(Step step, Map<String, Object> stepResults) {
-        Map<String, String> renameMappings = step.getRenameMappings(); // Assume the rename mappings are provided in the step
-
-        // Iterate through each rename mapping and update the stepResults
         for (Map.Entry<String, String> entry : renameMappings.entrySet()) {
-            String originalName = entry.getKey();
-            String newName = entry.getValue();
+            String sourcePath = entry.getKey();
+            String targetKey = entry.getValue();
 
-            if (stepResults.containsKey(originalName)) {
-                stepResults.put(newName, stepResults.remove(originalName));
-            } else {
-                logger.warn("Variable '{}' not found for renaming.", originalName);
+            try {
+                // Check if sourcePath is a JSON-like path (e.g., "$.callAccountApi.customerId")
+                if (sourcePath.startsWith("$.") && sourcePath.contains(".")) {
+                    // Split the path by dots, ignoring the initial "$" character
+                    String[] pathParts = sourcePath.substring(2).split("\\.");
+
+                    // Get the top-level JSON object in stepResults
+                    Object rootObject = stepResults.get(pathParts[0]);
+
+                    // Initialize currentNode based on the type of rootObject
+                    JsonNode currentNode = null;
+                    if (rootObject instanceof String) {
+                        // Parse the JSON string to a JsonNode if rootObject is a String
+                        currentNode = mapper.readTree((String) rootObject);
+                    } else {
+                        // Convert to JsonNode if it's already a structured object
+                        currentNode = mapper.convertValue(rootObject, JsonNode.class);
+                    }
+
+                    // Traverse through each part of the path
+                    for (int i = 1; i < pathParts.length; i++) {
+                        if (currentNode != null) {
+                            currentNode = currentNode.get(pathParts[i]);
+                        }
+                    }
+
+                    // If we reach a valid node, add it to stepResults under the target key
+                    if (currentNode != null && !currentNode.isNull()) {
+                        stepResults.put(targetKey, mapper.convertValue(currentNode, Object.class));
+                    } else {
+                        logger.warn("Path '{}' not found in the JSON structure.", sourcePath);
+                    }
+                } else if (stepResults.containsKey(sourcePath)) {
+                    // For simple key renaming
+                    stepResults.put(targetKey, stepResults.remove(sourcePath));
+                } else {
+                    logger.warn("Variable '{}' not found for renaming.", sourcePath);
+                }
+            } catch (Exception e) {
+                logger.error("Error renaming variable from '{}' to '{}': {}", sourcePath, targetKey, e.getMessage());
             }
         }
-
-        return Mono.just(""); // No immediate output, just store renamed variables
     }
-
-    private Mono<String> extractRequestData(ServiceConfigEntity serviceConfigEntity, ServerHttpRequest request, String body, Map<String, Object> stepResults) {
+    private String extractRequestData(ServiceConfigEntity serviceConfigEntity, ServerHttpRequest request, String body, Map<String, Object> stepResults) {
         String stepPath = serviceConfigEntity.getPath();
         if (stepPath != null && !stepPath.isEmpty()) {
             String requestPath = extractPathFromRequest(request);
@@ -121,66 +146,43 @@ public class BffController {
             }
         }
 
-
-        // Extract query parameters and add them to stepResults
         request.getQueryParams().forEach((key, values) -> {
             if (!values.isEmpty()) {
-                stepResults.put(key, values.get(0)); // Assuming single-valued query parameters
+                stepResults.put(key, values.get(0));
             }
         });
 
-
-        // Extract all key-value pairs from the JSON body with correct types
         if (body != null && !body.isEmpty()) {
             try {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode bodyJson = mapper.readTree(body);
 
-                Iterator<Map.Entry<String, JsonNode>> fields = bodyJson.fields();
-                while (fields.hasNext()) {
-                    Map.Entry<String, JsonNode> field = fields.next();
+                bodyJson.fields().forEachRemaining(field -> {
                     JsonNode valueNode = field.getValue();
-
-                    Object value;
-                    if (valueNode.isTextual()) {
-                        value = valueNode.asText();
-                    } else if (valueNode.isInt()) {
-                        value = valueNode.asInt();
-                    } else if (valueNode.isLong()) {
-                        value = valueNode.asLong();
-                    } else if (valueNode.isDouble()) {
-                        value = valueNode.asDouble();
-                    } else if (valueNode.isBoolean()) {
-                        value = valueNode.asBoolean();
-                    } else {
-                        value = valueNode.toString();  // For objects or arrays, store as JSON string
-                    }
+                    Object value = valueNode.isTextual() ? valueNode.asText()
+                            : valueNode.isInt() ? valueNode.asInt()
+                            : valueNode.isLong() ? valueNode.asLong()
+                            : valueNode.isDouble() ? valueNode.asDouble()
+                            : valueNode.isBoolean() ? valueNode.asBoolean()
+                            : valueNode.toString();
                     stepResults.put(field.getKey(), value);
-                }
+                });
             } catch (Exception e) {
                 logger.error("Error parsing request body: {}", e.getMessage());
-                return Mono.error(new IllegalArgumentException("Invalid JSON body"));
+                throw new IllegalArgumentException("Invalid JSON body");
             }
         }
-        return Mono.just(""); // No immediate output, just store variables
-
+        return "";
     }
 
-    private Mono<String> executeApiCallStep(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
-        // Build the API call URL by replacing placeholders with extracted variables
+    private String executeApiCallStep(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
         String url = buildUrlWithVariables(step.getServiceUrl(), stepResults);
-
         logger.info("Making API call to: {}", url);
 
-        return executeRestTemplateRequest(headers, body, url, step.getMethod(), step.getResponseSchema())
-                .doOnNext(response -> {
-                    // Store the API call result in stepResults
-                    stepResults.put(step.getName(), response);
-                });
-
+        String response = executeRestTemplateRequest(headers, body, url, step.getMethod(), step.getResponseSchema());
+        stepResults.put(step.getName(), response);
+        return response;
     }
-
-
 
     private String buildUrlWithVariables(String urlTemplate, Map<String, Object> stepResults) {
         for (Map.Entry<String, Object> entry : stepResults.entrySet()) {
@@ -189,32 +191,22 @@ public class BffController {
         return urlTemplate;
     }
 
-
-    private Mono<String> executeRestTemplateRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
+    private String executeRestTemplateRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
-        return Mono.fromCallable(() -> {
-            try {
-                ResponseEntity<String> response;
-                if ("POST".equalsIgnoreCase(method)) {
-                    response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
-                } else {
-                    response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
-                }
+        try {
+            ResponseEntity<String> response = "POST".equalsIgnoreCase(method) ?
+                    restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class) :
+                    restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
 
-                // Validate the response schema if needed
-                validateSchema(responseSchema, response.getBody(), "Response");
-
-                return response.getBody();
-            } catch (Exception e) {
-                logger.error("Error occurred during RestTemplate request: {}", e.getMessage());
-                throw e;
-            }
-        });
+            validateSchema(responseSchema, response.getBody(), "Response");
+            return response.getBody();
+        } catch (Exception e) {
+            logger.error("Error occurred during RestTemplate request: {}", e.getMessage());
+            throw e;
+        }
     }
-
-
 
     private void validateSchema(String schemaJson, String data, String validationType) {
         if (schemaJson == null || schemaJson.isEmpty()) {
@@ -230,9 +222,10 @@ public class BffController {
 
             Set<ValidationMessage> validationMessages = schema.validate(dataNode);
             if (!validationMessages.isEmpty()) {
-                StringBuilder errorMessages = new StringBuilder(validationType + " validation failed:");
-                validationMessages.forEach(message -> errorMessages.append("\n").append(message.getMessage()));
-                throw new IllegalArgumentException(errorMessages.toString());
+                throw new IllegalArgumentException(validationType + " validation failed: " +
+                        String.join("\n", validationMessages.stream()
+                                .map(ValidationMessage::getMessage)
+                                .toList()));
             }
             logger.info("{} is valid according to the schema.", validationType);
         } catch (Exception e) {
@@ -262,7 +255,7 @@ public class BffController {
 
         for (int i = 0; i < configParts.length; i++) {
             if (configParts[i].startsWith("{") && configParts[i].endsWith("}")) {
-                continue; // Dynamic part of path, skip comparison
+                continue;
             }
             if (!configParts[i].equals(requestParts[i])) {
                 return false;
@@ -271,28 +264,24 @@ public class BffController {
         return true;
     }
 
-    private Mono<String> combineResponses(Map<String, Object> stepResults) {
-        String customerResponse = (String) stepResults.get("callCustomerApi");
-        String accountResponse = (String) stepResults.get("callAccountApi");
-
-        // Combine the customer and account responses
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> combinedResult = new HashMap<>();
-
+    private String combineResponses(Map<String, Object> stepResults) {
         try {
-            // Convert responses to JSON objects
+            String customerResponse = (String) stepResults.get("callCustomerApi");
+            String accountResponse = (String) stepResults.get("callAccountApi");
+            ObjectMapper mapper = new ObjectMapper();
             JsonNode customerJson = mapper.readTree(customerResponse);
             JsonNode accountJson = mapper.readTree(accountResponse);
-
-            // Merge the customer and account objects
+            Map<String, Object> combinedResult = new HashMap<>();
+// Merge the customer and account objects
             combinedResult.put("customer", customerJson);
             combinedResult.put("account", accountJson);
 
             // Return the combined result as a JSON string
-            return Mono.just(mapper.writeValueAsString(combinedResult));
+            String outputJson = mapper.writeValueAsString(combinedResult);
+            return outputJson;
         } catch (Exception e) {
             logger.error("Error combining responses: {}", e.getMessage());
-            return Mono.error(new IllegalArgumentException("Error combining responses: " + e.getMessage()));
+            throw new RuntimeException("Failed to combine responses", e);
         }
     }
 }
