@@ -64,12 +64,16 @@ public class BffController {
                     renameVariables(step, stepResults);
                     break;
 
+                case "buildbody": // Added buildBody step
+                    buildBody(step, stepResults);
+                    break;
+
                 case "apicall":
                     result = executeApiCallStep(headers, body, step, stepResults);
                     break;
 
                 case "combineresponses":
-                    result = combineResponses(stepResults);
+                    result = combineResponses(stepResults,step);
                     break;
 
                 default:
@@ -78,6 +82,75 @@ public class BffController {
         }
         return result;
     }
+
+    //todo: refactor buildbody and renamevariables for common code.
+
+
+    private void buildBody(Step step, Map<String, Object> stepResults) {
+        Map<String, String> renameMappings = step.getRenameMappings();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode bodyNode = mapper.createObjectNode();
+
+        if (renameMappings != null) {
+            for (Map.Entry<String, String> entry : renameMappings.entrySet()) {
+                String sourcePath = entry.getKey();
+                String targetKey = entry.getValue();
+
+                try {
+                    if (sourcePath.startsWith("$.") && sourcePath.contains(".")) {
+                        // JSON path scenario
+                        String[] pathParts = sourcePath.substring(2).split("\\.");
+                        Object rootObject = stepResults.get(pathParts[0]);
+
+                        JsonNode currentNode = null;
+
+                        // Check if the root object is itself a string or JSON tree
+                        if (rootObject instanceof String) {
+                            String rootString = (String) rootObject;
+                            // Try parsing the string as JSON
+                            if (rootString.trim().startsWith("{") || rootString.trim().startsWith("[")) {
+                                currentNode = mapper.readTree(rootString);
+                            } else {
+                                // Directly use the string if it's not JSON
+                                currentNode = mapper.convertValue(rootString, JsonNode.class);
+                            }
+                        } else {
+                            currentNode = mapper.convertValue(rootObject, JsonNode.class);
+                        }
+
+                        // Traverse through JSON path if currentNode is a JSON structure
+                        for (int i = 1; i < pathParts.length; i++) {
+                            if (currentNode != null) {
+                                currentNode = currentNode.get(pathParts[i]);
+                            }
+                        }
+
+                        // Add final node value to body if found
+                        if (currentNode != null && !currentNode.isNull()) {
+                            bodyNode.putPOJO(targetKey, mapper.convertValue(currentNode, Object.class));
+                        } else {
+                            logger.warn("Path '{}' not found in JSON structure.", sourcePath);
+                        }
+                    } else if (stepResults.containsKey(sourcePath)) {
+                        // Direct key value scenario
+                        bodyNode.putPOJO(targetKey, stepResults.get(sourcePath));
+                    } else {
+                        logger.warn("Source key '{}' not found in stepResults for body construction", sourcePath);
+                    }
+                } catch (Exception e) {
+                    logger.error("Error extracting value from '{}' for target '{}': {}", sourcePath, targetKey, e.getMessage());
+                }
+            }
+        }
+
+        // Store the final body in stepResults
+        stepResults.put(step.getName(), bodyNode.toString());
+    }
+
+
+
+
+
     private void renameVariables(Step step, Map<String, Object> stepResults) {
         Map<String, String> renameMappings = step.getRenameMappings();
         ObjectMapper mapper = new ObjectMapper();
@@ -179,7 +252,9 @@ public class BffController {
         String url = buildUrlWithVariables(step.getServiceUrl(), stepResults);
         logger.info("Making API call to: {}", url);
 
-        String response = executeRestTemplateRequest(headers, body, url, step.getMethod(), step.getResponseSchema());
+        String requestBody = (String) stepResults.getOrDefault(step.getBody(), body); // Use configured body if available
+
+        String response = executeRestTemplateRequest(headers, requestBody, url, step.getMethod(), step.getResponseSchema());
         stepResults.put(step.getName(), response);
         return response;
     }
@@ -191,15 +266,29 @@ public class BffController {
         return urlTemplate;
     }
 
-    private String executeRestTemplateRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
+    //todo: make headers configuraable
+    private String executeRestTemplateRequest(HttpHeaders originalHeaders, String body, String url, String method, String responseSchema) {
         RestTemplate restTemplate = new RestTemplate();
+
+        // Create a new HttpHeaders instance and selectively add necessary headers
+        HttpHeaders headers = new HttpHeaders();
+        originalHeaders.forEach((key, values) -> {
+            if (!key.equalsIgnoreCase("Content-Length") &&
+                    !key.equalsIgnoreCase("Host") &&
+                    !key.equalsIgnoreCase("Transfer-Encoding")) {
+                headers.put(key, values); // Copy only necessary headers
+            }
+        });
+
         HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 
         try {
+            // Execute the request with the selected HTTP method
             ResponseEntity<String> response = "POST".equalsIgnoreCase(method) ?
                     restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class) :
                     restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
 
+            // Validate response against the provided schema
             validateSchema(responseSchema, response.getBody(), "Response");
             return response.getBody();
         } catch (Exception e) {
@@ -207,6 +296,7 @@ public class BffController {
             throw e;
         }
     }
+
 
     private void validateSchema(String schemaJson, String data, String validationType) {
         if (schemaJson == null || schemaJson.isEmpty()) {
@@ -264,24 +354,32 @@ public class BffController {
         return true;
     }
 
-    private String combineResponses(Map<String, Object> stepResults) {
+    private String combineResponses(Map<String, Object> stepResults, Step step) {
         try {
-            String customerResponse = (String) stepResults.get("callCustomerApi");
-            String accountResponse = (String) stepResults.get("callAccountApi");
+            // Get the list of response keys to combine from the Step object
+            List<String> responseKeys = step.getCombineResponses();
+
+            // Initialize ObjectMapper for JSON handling
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode customerJson = mapper.readTree(customerResponse);
-            JsonNode accountJson = mapper.readTree(accountResponse);
             Map<String, Object> combinedResult = new HashMap<>();
-// Merge the customer and account objects
-            combinedResult.put("customer", customerJson);
-            combinedResult.put("account", accountJson);
+
+            // Iterate through the response keys and retrieve their corresponding values from stepResults
+            for (String key : responseKeys) {
+                if (stepResults.containsKey(key)) {
+                    String response = (String) stepResults.get(key);
+                    JsonNode responseJson = mapper.readTree(response);
+                    combinedResult.put(key, responseJson); // Use the key for the combined result
+                } else {
+                    logger.warn("Response key '{}' not found in stepResults", key);
+                }
+            }
 
             // Return the combined result as a JSON string
-            String outputJson = mapper.writeValueAsString(combinedResult);
-            return outputJson;
+            return mapper.writeValueAsString(combinedResult);
         } catch (Exception e) {
             logger.error("Error combining responses: {}", e.getMessage());
             throw new RuntimeException("Failed to combine responses", e);
         }
     }
+
 }
