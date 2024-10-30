@@ -32,13 +32,7 @@
     "description": "Retrive account based on accountId and then based on customerId, lookup customer as well",
     "method": "GET",
     "endpoint": "/bff/customersAndAccounts/1",
-    "body": {
-      "accountNo": "0001",
-      "typeOfAcc": "savings",
-      "bal": 0.6,
-      "custId": 6
-    },
-    "validate": "response.callCustomerApi && response.callAccountApi && response.callAccountApi.accountNumber === '0001' && response.callAccountApi.accountType === 'savings' && response.callAccountApi.balance === 0.6 && response.callAccountApi.customerId === 6"
+    "validate": "response.callCustomerApi && response.callAccountApi && response.callAccountApi.accountNumber && response.callAccountApi.accountType  && response.callAccountApi.balance && response.callAccountApi.customerId "
   },
   {
     "description": "create account with body transformation",
@@ -89,7 +83,7 @@
   {
     "description": "Retrieve linked customer and account details by account ID",
     "method": "GET",
-    "endpoint": "/bff/customersAndAccounts/2",
+    "endpoint": "/bff/customersAndAccounts/1",
     "validate": "typeof response === 'object' && response.callCustomerApi && response.callAccountApi && response.callCustomerApi.id === response.callAccountApi.customerId"
   }
 

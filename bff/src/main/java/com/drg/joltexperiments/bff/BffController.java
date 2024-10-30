@@ -85,6 +85,48 @@ public class BffController {
 
     //todo: refactor buildbody and renamevariables for common code.
 
+    private Optional<Object> extractJsonPathValue(String sourcePath, Map<String, Object> stepResults, ObjectMapper mapper) {
+        try {
+            // JSON path scenario with dot notation
+            if (sourcePath.startsWith("$.") && sourcePath.contains(".")) {
+                String[] pathParts = sourcePath.substring(2).split("\\.");
+                Object rootObject = stepResults.get(pathParts[0]);
+
+                // Initialize currentNode based on the type of rootObject
+                JsonNode currentNode = null;
+
+                // Check if the root object is itself a string or JSON tree
+                if (rootObject instanceof String) {
+                    String rootString = (String) rootObject;
+                    // Try parsing the string as JSON
+                    if (rootString.trim().startsWith("{") || rootString.trim().startsWith("[")) {
+                        currentNode = mapper.readTree(rootString);
+                    } else {
+                        // Directly use the string if it's not JSON
+                        currentNode = mapper.convertValue(rootString, JsonNode.class);
+                    }
+                } else if (rootObject != null) {
+                    // Convert non-string root objects to JsonNode
+                    currentNode = mapper.convertValue(rootObject, JsonNode.class);
+                }
+
+                // Traverse JSON path
+                for (int i = 1; i < pathParts.length && currentNode != null; i++) {
+                    currentNode = currentNode.get(pathParts[i]);
+                }
+
+                // Return the found node, or an empty Optional if not found
+                return Optional.ofNullable(currentNode);
+            } else if (stepResults.containsKey(sourcePath)) {
+                // Direct key scenario
+                return Optional.ofNullable(stepResults.get(sourcePath));
+            }
+        } catch (Exception e) {
+            logger.error("Error extracting value for '{}': {}", sourcePath, e.getMessage());
+        }
+        return Optional.empty();
+    }
+
 
     private void buildBody(Step step, Map<String, Object> stepResults) {
         Map<String, String> renameMappings = step.getRenameMappings();
@@ -92,116 +134,26 @@ public class BffController {
         ObjectNode bodyNode = mapper.createObjectNode();
 
         if (renameMappings != null) {
-            for (Map.Entry<String, String> entry : renameMappings.entrySet()) {
-                String sourcePath = entry.getKey();
-                String targetKey = entry.getValue();
-
-                try {
-                    if (sourcePath.startsWith("$.") && sourcePath.contains(".")) {
-                        // JSON path scenario
-                        String[] pathParts = sourcePath.substring(2).split("\\.");
-                        Object rootObject = stepResults.get(pathParts[0]);
-
-                        JsonNode currentNode = null;
-
-                        // Check if the root object is itself a string or JSON tree
-                        if (rootObject instanceof String) {
-                            String rootString = (String) rootObject;
-                            // Try parsing the string as JSON
-                            if (rootString.trim().startsWith("{") || rootString.trim().startsWith("[")) {
-                                currentNode = mapper.readTree(rootString);
-                            } else {
-                                // Directly use the string if it's not JSON
-                                currentNode = mapper.convertValue(rootString, JsonNode.class);
-                            }
-                        } else {
-                            currentNode = mapper.convertValue(rootObject, JsonNode.class);
-                        }
-
-                        // Traverse through JSON path if currentNode is a JSON structure
-                        for (int i = 1; i < pathParts.length; i++) {
-                            if (currentNode != null) {
-                                currentNode = currentNode.get(pathParts[i]);
-                            }
-                        }
-
-                        // Add final node value to body if found
-                        if (currentNode != null && !currentNode.isNull()) {
-                            bodyNode.putPOJO(targetKey, mapper.convertValue(currentNode, Object.class));
-                        } else {
-                            logger.warn("Path '{}' not found in JSON structure.", sourcePath);
-                        }
-                    } else if (stepResults.containsKey(sourcePath)) {
-                        // Direct key value scenario
-                        bodyNode.putPOJO(targetKey, stepResults.get(sourcePath));
-                    } else {
-                        logger.warn("Source key '{}' not found in stepResults for body construction", sourcePath);
-                    }
-                } catch (Exception e) {
-                    logger.error("Error extracting value from '{}' for target '{}': {}", sourcePath, targetKey, e.getMessage());
-                }
-            }
+            renameMappings.forEach((sourcePath, targetKey) -> {
+                extractJsonPathValue(sourcePath, stepResults, mapper)
+                        .ifPresent(value -> bodyNode.putPOJO(targetKey, value));
+            });
         }
-
-        // Store the final body in stepResults
         stepResults.put(step.getName(), bodyNode.toString());
     }
-
-
-
-
 
     private void renameVariables(Step step, Map<String, Object> stepResults) {
         Map<String, String> renameMappings = step.getRenameMappings();
         ObjectMapper mapper = new ObjectMapper();
 
-        for (Map.Entry<String, String> entry : renameMappings.entrySet()) {
-            String sourcePath = entry.getKey();
-            String targetKey = entry.getValue();
-
-            try {
-                // Check if sourcePath is a JSON-like path (e.g., "$.callAccountApi.customerId")
-                if (sourcePath.startsWith("$.") && sourcePath.contains(".")) {
-                    // Split the path by dots, ignoring the initial "$" character
-                    String[] pathParts = sourcePath.substring(2).split("\\.");
-
-                    // Get the top-level JSON object in stepResults
-                    Object rootObject = stepResults.get(pathParts[0]);
-
-                    // Initialize currentNode based on the type of rootObject
-                    JsonNode currentNode = null;
-                    if (rootObject instanceof String) {
-                        // Parse the JSON string to a JsonNode if rootObject is a String
-                        currentNode = mapper.readTree((String) rootObject);
-                    } else {
-                        // Convert to JsonNode if it's already a structured object
-                        currentNode = mapper.convertValue(rootObject, JsonNode.class);
-                    }
-
-                    // Traverse through each part of the path
-                    for (int i = 1; i < pathParts.length; i++) {
-                        if (currentNode != null) {
-                            currentNode = currentNode.get(pathParts[i]);
-                        }
-                    }
-
-                    // If we reach a valid node, add it to stepResults under the target key
-                    if (currentNode != null && !currentNode.isNull()) {
-                        stepResults.put(targetKey, mapper.convertValue(currentNode, Object.class));
-                    } else {
-                        logger.warn("Path '{}' not found in the JSON structure.", sourcePath);
-                    }
-                } else if (stepResults.containsKey(sourcePath)) {
-                    // For simple key renaming
-                    stepResults.put(targetKey, stepResults.remove(sourcePath));
-                } else {
-                    logger.warn("Variable '{}' not found for renaming.", sourcePath);
-                }
-            } catch (Exception e) {
-                logger.error("Error renaming variable from '{}' to '{}': {}", sourcePath, targetKey, e.getMessage());
-            }
+        if (renameMappings != null) {
+            renameMappings.forEach((sourcePath, targetKey) -> {
+                extractJsonPathValue(sourcePath, stepResults, mapper)
+                        .ifPresent(value -> stepResults.put(targetKey, value));
+            });
         }
     }
+
     private String extractRequestData(ServiceConfigEntity serviceConfigEntity, ServerHttpRequest request, String body, Map<String, Object> stepResults) {
         String stepPath = serviceConfigEntity.getPath();
         if (stepPath != null && !stepPath.isEmpty()) {
