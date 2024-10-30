@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test Runner</title>
+    <script>
+
+        async function runTestCases() {
+            const testCases = await fetch('/testCases.json').then(res => res.json());
+
+            for (const [index, testCase] of testCases.entries()) {
+                const { method, endpoint, body, validate , description } = testCase;
+
+                try {
+                    const headers = {};
+                    const token = localStorage.getItem('token');
+                    console.log(token)
+                    if (token) {
+                        headers['Authorization'] = 'Bearer ' + token;
+                    }
+
+                    const options = {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...headers
+                        }
+                    };
+
+                    if (method !== 'GET' && method !== 'HEAD') {
+                        options.body = JSON.stringify(body);
+                    }
+
+                    const response = await fetch(endpoint, options);
+                    const data = await response.json();
+
+                    let result;
+
+                    if (response.ok) {
+                        result = evaluateResponse(data, testCase.validate)
+                            ? `✅ Test Passed - ${testCase.description}`
+                            : `❌ Test Failed - ${testCase.description}`;
+                    } else {
+                        result = `❌ Test Failed - Error Response - ${testCase.description}`;
+                    }
+
+                    document.getElementById('results').innerHTML += `
+                        <div><strong>Test ${index + 1}:</strong> ${result}</div>
+                    `;
+
+                } catch (error) {
+                    document.getElementById('results').innerHTML += `
+                        <div><strong>Test ${index + 1}:</strong> ❌ Test Failed with error: ${error.message}</div>
+                    `;
+                }
+            }
+        }
+
+        function evaluateResponse(response, validate) {
+            try {
+                return eval(validate); // Dynamically evaluate the validation expression
+            } catch (error) {
+                console.error('Validation error:', error);
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>API Test Runner</h1>
+<button onclick="runTestCases()">Run Test Cases</button>
+<div id="results"></div>
+</body>
+</html>
