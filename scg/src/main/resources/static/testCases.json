@@ -134,5 +134,18 @@
       "customerId": "2"
     },
     "validate": "typeof response === 'object' && response.callCustomerApi && response.callAccountApi && response.callCustomerApi.id === 2  && response.callAccountApi.id === 1"
+  },
+  {
+    "description": "create a customer with hidden ID and additional attribute",
+    "method": "POST",
+    "endpoint": "/bff/customersWithHiddenId",
+    "body": {
+      "first_name": "abs",
+      "last_name": "xyz",
+      "email": {
+        "address":"abs.zyz@gmail.com"
+      }
+    },
+    "validate": "typeof response === 'object' && response.createCustomer && response.createCustomer.idHidden === 'true'  && response.id === undefined"
   }
 ]
