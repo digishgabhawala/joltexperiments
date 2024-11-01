@@ -377,5 +377,40 @@
 ]
 }
 ]
+},
+{
+"id": 72,
+"path": "searchCustomers",
+"method": "GET",
+"serviceUrl": "http://localhost:9003/api/searchCustomers?customerName={customerName}&email={email}",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"finalResponseKey": "searchCustomers",
+"steps": [
+{
+"name": "searchCustomersHeaders",
+"type": "addHeaders",
+"mappings": {
+"$.email": "email",
+"$.customerName": "customerName"
+}
+},
+{
+"name": "searchClientKey",
+"type": "addVariables",
+"mappings": {
+"$.searchCustomersHeaders.key": "customer-client"
+}
+},
+{
+"name": "searchCustomers",
+"type": "apiCall",
+"method": "GET",
+"headers": "searchCustomersHeaders",
+"serviceUrl": "http://localhost:9003/api/customers/search?name={customerName}",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"path": "customers/search",
+"responseSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"id\": {\n        \"type\": \"integer\",\n        \"format\": \"int64\"\n      },\n      \"firstName\": {\n        \"type\": \"string\"\n      },\n      \"lastName\": {\n        \"type\": \"string\"\n      },\n      \"email\": {\n        \"type\": \"string\",\n        \"format\": \"email\"\n      }\n    },\n    \"required\": [\"id\", \"firstName\", \"lastName\", \"email\"]\n  }\n}"
+}
+]
 }
 ]
