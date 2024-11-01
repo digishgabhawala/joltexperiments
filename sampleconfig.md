@@ -69,72 +69,9 @@
 {
 "name": "fetchAccounts",
 "type": "apiCall",
+"method": "GET",
 "serviceUrl": "http://localhost:9005/api/accounts",
 "responseSchema": "{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}}}}"
-}
-]
-},
-{
-"id": 36,
-"path": "accounts",
-"method": "POST",
-"serviceUrl": "http://localhost:9005/api/accounts",
-"apiDocsUrl": "http://localhost:9005/v3/api-docs",
-"requestSchema": "{\"type\":\"object\",\"properties\":{\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}",
-"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}",
-"steps": [
-{
-"name": "createAccount",
-"type": "apiCall",
-"serviceUrl": "http://localhost:9005/api/accounts",
-"path": "accounts",
-"requestSchema": "{\"type\":\"object\",\"properties\":{\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}",
-"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
-}
-]
-},
-{
-"id": 37,
-"path": "customersAndAccounts/{customerId}/{accountId}",
-"method": "GET",
-"steps": [
-{
-"name": "extractVariables",
-"type": "extractVariables",
-"path": "customersAndAccounts/{customerId}/{accountId}"
-},
-{
-"name": "renameCustomerId",
-"type": "renameVariables",
-"renameMappings": {
-"customerId": "id"
-}
-},
-{
-"name": "callCustomerApi",
-"type": "apiCall",
-"method": "GET",
-"serviceUrl": "http://localhost:9003/api/customers/{id}",
-"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
-},
-{
-"name": "renameAccountId",
-"type": "renameVariables",
-"renameMappings": {
-"accountId": "id"
-}
-},
-{
-"name": "callAccountApi",
-"type": "apiCall",
-"method": "GET",
-"serviceUrl": "http://localhost:9005/api/accounts/{id}",
-"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
-},
-{
-"name": "combineResponses",
-"type": "combineResponses",
-"combineStrategy": "merge"
 }
 ]
 },
@@ -145,13 +82,9 @@
 "requestSchema": "{\"type\":\"object\",\"properties\":{\"accountNumber\":{\"type\":\"string\"},\"customerId\":{\"type\":\"string\"}},\"required\":[\"accountNumber\",\"customerId\"]}",
 "steps": [
 {
-"name": "extractVariables",
-"type": "extractVariables"
-},
-{
 "name": "renameCustomerId",
 "type": "renameVariables",
-"renameMappings": {
+"mappings": {
 "customerId": "id"
 }
 },
@@ -165,7 +98,7 @@
 {
 "name": "renameAccountId",
 "type": "renameVariables",
-"renameMappings": {
+"mappings": {
 "accountNumber": "id"
 }
 },
@@ -179,24 +112,67 @@
 {
 "name": "combineResponses",
 "type": "combineResponses",
-"combineStrategy": "merge"
+"combineStrategy": "merge",
+"itemsList": [
+"callCustomerApi",
+"callAccountApi"
+]
 }
 ]
 },
 {
-"id": 43,
+"id": 56,
+"path": "customersAndAccounts/{customerId}/{accountId}",
+"method": "GET",
+"steps": [
+{
+"name": "renameCustomerId",
+"type": "renameVariables",
+"mappings": {
+"customerId": "id"
+}
+},
+{
+"name": "callCustomerApi",
+"type": "apiCall",
+"method": "GET",
+"serviceUrl": "http://localhost:9003/api/customers/{id}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
+},
+{
+"name": "renameAccountId",
+"type": "renameVariables",
+"mappings": {
+"accountId": "id"
+}
+},
+{
+"name": "callAccountApi",
+"type": "apiCall",
+"method": "GET",
+"serviceUrl": "http://localhost:9005/api/accounts/{id}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
+},
+{
+"name": "combineResponses",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"callCustomerApi",
+"callAccountApi"
+]
+}
+]
+},
+{
+"id": 57,
 "path": "customersAndAccounts/{accountId}",
 "method": "GET",
 "steps": [
 {
-"name": "extractAccountId",
-"type": "extractVariables",
-"path": "customersAndAccounts/{accountId}"
-},
-{
 "name": "renameAccountIdForApiCall",
 "type": "renameVariables",
-"renameMappings": {
+"mappings": {
 "accountId": "id"
 }
 },
@@ -210,7 +186,7 @@
 {
 "name": "renameCustomerId",
 "type": "renameVariables",
-"renameMappings": {
+"mappings": {
 "$.callAccountApi.customerId": "id"
 }
 },
@@ -224,7 +200,129 @@
 {
 "name": "combineResponses",
 "type": "combineResponses",
-"combineStrategy": "merge"
+"combineStrategy": "merge",
+"itemsList": [
+"callCustomerApi",
+"callAccountApi"
+]
+}
+]
+},
+{
+"id": 59,
+"path": "customers-and-accounts",
+"method": "POST",
+"serviceUrl": "http://localhost:9003/api/customers-and-accounts",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"customer\":{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\"},\"last_name\":{\"type\":\"string\"},\"email\":{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\"}}}}},\"account\":{\"type\":\"object\",\"properties\":{\"accountNo\":{\"type\":\"string\"},\"typeOfAcc\":{\"type\":\"string\"},\"bal\":{\"type\":\"number\",\"format\":\"double\"}}}},\"required\":[\"customer\",\"account\"]}",
+"steps": [
+{
+"name": "buildCustomerBody",
+"type": "buildBody",
+"mappings": {
+"$.customer.first_name": "firstName",
+"$.customer.last_name": "lastName",
+"$.customer.email.address": "email"
+}
+},
+{
+"name": "createCustomer",
+"type": "apiCall",
+"method": "POST",
+"body": "buildCustomerBody",
+"serviceUrl": "http://localhost:9003/api/customers",
+"path": "customers",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"firstName\",\"lastName\",\"email\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
+},
+{
+"name": "buildAccountBody",
+"type": "buildBody",
+"mappings": {
+"$.account.accountNo": "accountNumber",
+"$.account.typeOfAcc": "accountType",
+"$.account.bal": "balance",
+"$.createCustomer.id": "customerId"
+}
+},
+{
+"name": "createAccount",
+"type": "apiCall",
+"method": "POST",
+"body": "buildAccountBody",
+"serviceUrl": "http://localhost:9005/api/accounts",
+"path": "accounts",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
+},
+{
+"name": "combineResponses",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"createCustomer",
+"createAccount"
+]
+}
+]
+},
+{
+"id": 60,
+"path": "createAccount1",
+"method": "POST",
+"serviceUrl": "http://localhost:9005/api/accounts",
+"apiDocsUrl": "http://localhost:9005/v3/api-docs",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"accountNo\":{\"type\":\"string\"},\"typeOfAcc\":{\"type\":\"string\"},\"bal\":{\"type\":\"number\",\"format\":\"double\"},\"custId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"accountNo\",\"typeOfAcc\",\"bal\",\"custId\"]}",
+"steps": [
+{
+"name": "buildAccountBody",
+"type": "buildBody",
+"mappings": {
+"$.accountNo": "accountNumber",
+"$.typeOfAcc": "accountType",
+"$.bal": "balance",
+"$.custId": "customerId"
+}
+},
+{
+"name": "createAccount",
+"type": "apiCall",
+"method": "POST",
+"body": "buildAccountBody",
+"serviceUrl": "http://localhost:9005/api/accounts",
+"path": "accounts",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"id\",\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}"
+}
+]
+},
+{
+"id": 65,
+"path": "customers1",
+"method": "POST",
+"serviceUrl": "http://localhost:9003/api/customers1",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\"},\"last_name\":{\"type\":\"string\"},\"email\":{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\"}}}},\"required\":[\"first_name\",\"last_name\",\"email\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}",
+"steps": [
+{
+"name": "buildCustomerBody",
+"type": "buildBody",
+"mappings": {
+"$.first_name": "firstName",
+"$.last_name": "lastName",
+"$.email": "email"
+}
+},
+{
+"name": "createCustomer",
+"type": "apiCall",
+"method": "POST",
+"body": "buildCustomerBody",
+"serviceUrl": "http://localhost:9003/api/customers",
+"path": "customers",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"firstName\",\"lastName\",\"email\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
 }
 ]
 }

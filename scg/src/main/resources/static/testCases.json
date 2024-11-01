@@ -135,6 +135,4 @@
     },
     "validate": "typeof response === 'object' && response.callCustomerApi && response.callAccountApi && response.callCustomerApi.id === 2  && response.callAccountApi.id === 1"
   }
-
-
 ]

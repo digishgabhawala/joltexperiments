@@ -93,7 +93,7 @@ public class ServiceConfigController {
     @GetMapping("/reset")
     public ResponseEntity<Map<String, Object>> resetServiceConfigData() {
         try {
-            serviceConfigRepository.deleteAll();
+            serviceConfigRepository.truncate();
             return getResponse("reset", "all", "ALL");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
