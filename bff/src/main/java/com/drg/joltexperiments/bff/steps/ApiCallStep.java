@@ -3,6 +3,7 @@ package com.drg.joltexperiments.bff.steps;
 import com.drg.joltexperiments.bff.Step;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
@@ -20,6 +21,7 @@ public class ApiCallStep implements StepInteface {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiCallStep.class);
 //    //todo: make headers configuraable
+private final ObjectMapper mapper = new ObjectMapper();
 
     public ApiCallStep() {
     }
@@ -31,7 +33,11 @@ public class ApiCallStep implements StepInteface {
 
         String requestBody = (String) stepResults.getOrDefault(step.getBody(), body); // Use configured body if available
 
-        String response = executeRestTemplateRequest(headers, requestBody, url, step.getMethod(), step.getResponseSchema());
+        HttpHeaders finalHeaders = new HttpHeaders();
+
+        addCustomHeaders(finalHeaders, headers, stepResults, step.getHeaders());
+
+        String response = executeRestTemplateRequest(finalHeaders, requestBody, url, step.getMethod(), step.getResponseSchema());
         stepResults.put(step.getName(), response);
         return response;
     }
@@ -43,19 +49,52 @@ public class ApiCallStep implements StepInteface {
         return urlTemplate;
     }
 
-    //todo: make headers configuraable
-    private String executeRestTemplateRequest(HttpHeaders originalHeaders, String body, String url, String method, String responseSchema) {
-        RestTemplate restTemplate = new RestTemplate();
-
-        // Create a new HttpHeaders instance and selectively add necessary headers
-        HttpHeaders headers = new HttpHeaders();
+    private void addCustomHeaders(HttpHeaders finalHeaders, HttpHeaders originalHeaders, Map<String, Object> stepResults, String headersKey) {
+        // Copy default headers
         originalHeaders.forEach((key, values) -> {
             if (!key.equalsIgnoreCase("Content-Length") &&
                     !key.equalsIgnoreCase("Host") &&
                     !key.equalsIgnoreCase("Transfer-Encoding")) {
-                headers.put(key, values); // Copy only necessary headers
+                finalHeaders.put(key, values); // Copy only necessary headers
             }
         });
+
+        // Add custom headers from stepResults if headersKey is specified
+        if (headersKey != null && stepResults.containsKey(headersKey)) {
+
+            try {
+                JsonNode headersNode = parseToJsonNode(stepResults.get(headersKey));
+                headersNode.fields().forEachRemaining(header -> finalHeaders.add(header.getKey(), header.getValue().asText()));
+            } catch (Exception e) {
+                logger.error("Error parsing custom headers: {}", e.getMessage());
+            }
+
+        }
+    }
+
+    private ObjectNode parseToJsonNode(Object rootObject) {
+        ObjectNode currentNode = mapper.createObjectNode();
+
+        if (rootObject instanceof String) {
+            String rootString = (String) rootObject;
+            try {
+                if (rootString.trim().startsWith("{") || rootString.trim().startsWith("[")) {
+                    currentNode = (ObjectNode) mapper.readTree(rootString);
+                } else {
+                    currentNode.put("value", rootString);
+                }
+            } catch (Exception e) {
+                logger.error("Error parsing JSON string '{}': {}", rootString, e.getMessage());
+            }
+        } else if (rootObject != null) {
+            currentNode = mapper.convertValue(rootObject, ObjectNode.class);
+        }
+        return currentNode;
+    }
+
+    //todo: make headers configuraable
+    private String executeRestTemplateRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
+        RestTemplate restTemplate = new RestTemplate();
 
         HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
 

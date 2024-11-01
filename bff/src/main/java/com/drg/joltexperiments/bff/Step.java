@@ -17,6 +17,15 @@ public class Step {
     private String method;  // HTTP method (GET, POST, etc.) for API steps
 
     private String body;  // HTTP body for API steps
+    private String headers;  // HTTP body for API steps
+
+    public String getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(String headers) {
+        this.headers = headers;
+    }
 
     private String serviceUrl;  // URL of the API to call (for API steps)
     private String apiDocsUrl;  // Link to API documentation (optional)

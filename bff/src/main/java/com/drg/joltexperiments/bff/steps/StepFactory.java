@@ -3,8 +3,6 @@ package com.drg.joltexperiments.bff.steps;
 import com.drg.joltexperiments.bff.Step;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
-
 @Component
 public class StepFactory {
 
@@ -23,6 +21,8 @@ public class StepFactory {
                 return new AddVariablesStep();
             case "deletevariables":
                 return new DeleteVariablesStep();
+            case "addheaders":
+                return new AddHeaderStep();
             default:
                 throw new IllegalArgumentException("Unknown step type: " + step.getType());
         }

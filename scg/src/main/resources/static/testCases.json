@@ -147,5 +147,37 @@
       }
     },
     "validate": "typeof response === 'object' && response.createCustomer && response.createCustomer.idHidden === 'true'  && response.id === undefined"
+  },
+  {
+    "description": "Create a new customer with similar details and only email diff",
+    "method": "POST",
+    "endpoint": "/bff/customers",
+    "body": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "johndoe1@example.com"
+    },
+    "validate": "typeof response === 'object' && response.id && response.firstName === 'John' && response.lastName === 'Doe' && response.email === 'johndoe1@example.com'"
+  },
+  {
+    "description": "search customer with headers",
+    "method": "GET",
+    "endpoint": "/bff/searchCustomers?customerName=John",
+    "validate": "Array.isArray(response) && response.length === 3"
+  },
+  {
+    "description": "search customer with headers and email 1",
+    "method": "GET",
+    "endpoint": "/bff/searchCustomers?customerName=John&email=johndoe1@example.com",
+    "validate": "Array.isArray(response) && response.length === 1"
+  },
+  {
+    "description": "search customer with headers and email 2",
+    "method": "GET",
+    "endpoint": "/bff/searchCustomers?customerName=John&email=johndoe@example.com",
+    "validate": "Array.isArray(response) && response.length === 2"
   }
+
+
+
 ]

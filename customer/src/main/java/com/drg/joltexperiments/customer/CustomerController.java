@@ -4,15 +4,20 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpHeaders;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -72,4 +77,57 @@ public class CustomerController {
         customerRepository.truncate();
         return getAllCustomers();
     }
+
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Customer>> searchCustomersByName(
+            @RequestHeader(value = "key") String key,
+            @RequestParam String name,
+            @RequestHeader(value = "X-Page", defaultValue = "1") int page,
+            @RequestHeader(value = "X-Size", defaultValue = "10") int size,
+            @RequestHeader(value = "email", required = false) String email) {
+
+        // Validate the key header
+        if (!"customer-client".equals(key)) {
+            logger.error("Invalid key header: {}", key);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
+        logger.debug("Searching customers with name {} on page {} with size {}", name, page, size);
+
+        // Create a Pageable object
+        Pageable pageable = PageRequest.of(page - 1, size); // Page is zero-based
+
+        // Prepare a set to hold all matching customers
+        Set<Customer> allMatchingCustomers = new HashSet<>();
+
+        // Search by first name or last name
+        Page<Customer> customersByFirstName = customerRepository.findByFirstNameContainingIgnoreCase(name, pageable);
+        Page<Customer> customersByLastName = customerRepository.findByLastNameContainingIgnoreCase(name, pageable);
+
+        // Combine results to avoid duplicates
+        allMatchingCustomers.addAll(customersByFirstName.getContent());
+        allMatchingCustomers.addAll(customersByLastName.getContent());
+
+        // If email is provided, filter results further
+        if (email != null && !email.trim().isEmpty()) {
+            logger.debug("Filtering results by email {}", email);
+            allMatchingCustomers = allMatchingCustomers.stream()
+                    .filter(customer -> customer.getEmail().equalsIgnoreCase(email))
+                    .collect(Collectors.toSet());
+        }
+
+        // Create a paginated response based on combined results
+        List<Customer> paginatedCustomers = new ArrayList<>(allMatchingCustomers);
+
+        if (paginatedCustomers.isEmpty()) {
+            logger.warn("No customers found with name {} and email {}", name, email);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        }
+
+        logger.debug("Found {} customers matching the name {} and email {}", paginatedCustomers.size(), name, email);
+        return ResponseEntity.ok(paginatedCustomers);
+    }
+
+
 }

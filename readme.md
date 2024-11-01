@@ -324,6 +324,12 @@
     * Add other services like Cards and get all endpoints working
     * Create Jolt expressions for transformation of request / response
     * Create configurations for orchestrations
+    * add headers
+    * add validations 
+    * add conditions
+    * add retry
+    * add db step
+    * add error handling
     * Create configuration for compositions
     * Create UI for defining above
     * Create basci formulaes for data manipuations and their UI
