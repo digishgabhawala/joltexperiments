@@ -4,9 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,5 +66,10 @@ public class CustomerController {
     {
         logger.debug("Delete customer with id {}", id);
         customerRepository.deleteById(id);
+    }
+    @GetMapping("/reset")
+    public List<Customer> reset() {
+        customerRepository.truncate();
+        return getAllCustomers();
     }
 }

@@ -18,7 +18,7 @@ public class CombineResponsesStep implements StepInteface{
     public String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
         try {
             // Get the list of response keys to combine from the Step object
-            List<String> responseKeys = step.getCombineResponses();
+            List<String> responseKeys = step.getItemsList();
 
             // Initialize ObjectMapper for JSON handling
             ObjectMapper mapper = new ObjectMapper();

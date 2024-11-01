@@ -57,7 +57,8 @@ public class BffController {
         String result = "";
 
         for (Step step : steps) {
-            stepFactory.createStep(step).execute(headers, body, step, stepResults);
+            StepInteface si = stepFactory.createStep(step);
+            result = si.execute(headers, body, step, stepResults);
         }
         return result;
     }

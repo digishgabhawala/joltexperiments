@@ -43,4 +43,10 @@ public class AccountController {
     public void deleteAccount(@PathVariable Long id) {
         accountRepository.deleteById(id);
     }
+
+    @GetMapping("/reset")
+    public List<Account> reset() {
+        accountRepository.truncate();
+        return getAllAccounts();
+    }
 }

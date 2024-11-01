@@ -44,26 +44,29 @@ public class Step {
 
     @Lob
     @Column(length = 10000)
-    private String renameMappingsJson;  // Store JSON representation of the map
+    private String mappingsJson;  // Store JSON representation of the map
 
     private String combineStrategy;  // For combineResponses step
 
     @Lob
     @Column(length = 10000)
-    private String combineResponsesJson;  // List of responses for combine step
+    private String itemsListJson;  // List of responses for combine step
 
     // Constructors, Getters, Setters, and hashCode/equals for Embeddable class
 
     @Transient
-    private List<String> combineResponses;
+    private List<String> itemsList;
+
+    @Transient
+    private Map<String, String> mappings;
 
     public Step() {
     }
 
     public Step(String name, String type, String method, String serviceUrl, String apiDocsUrl,
                 String inputKey, String outputKey, String path, String transformSpec,
-                String responseKey, String requestSchema, String responseSchema, Map<String, String> renameMappings,
-                String combineStrategy, String body, List<String> combineResponses) {
+                String responseKey, String requestSchema, String responseSchema, Map<String, String> mappings,
+                String combineStrategy, String body, List<String> itemsList) {
         this.body = body;
         this.name = name;
         this.type = type;
@@ -77,9 +80,9 @@ public class Step {
         this.responseKey = responseKey;
         this.requestSchema = requestSchema;
         this.responseSchema = responseSchema;
-        this.setRenameMappings(renameMappings);
+        this.setMappings(mappings);
         this.combineStrategy = combineStrategy;
-        this.setCombineResponses(combineResponses);
+        this.setItemsList(itemsList);
     }
 
     // Getters and Setters
@@ -179,24 +182,24 @@ public class Step {
         this.path = path;
     }
 
-    public List<String> getCombineResponses() {
-        if (combineResponsesJson == null) {
+
+    public List<String> getItemsList() {
+        if (itemsListJson == null) {
             return new ArrayList<>();
         }
         try {
-            return objectMapper.readValue(combineResponsesJson, new TypeReference<List<String>>() {});
+            return objectMapper.readValue(itemsListJson, new TypeReference<List<String>>() {});
         } catch (JsonProcessingException e) {
             return new ArrayList<>(); // Return an empty list on error
         }
     }
 
-    // Setter for combineResponses
-    public void setCombineResponses(List<String> combineResponses) {
+    public void setItemsList(List<String> itemsList) {
         try {
-            this.combineResponses = combineResponses; // Store the list in the transient field
-            this.combineResponsesJson = objectMapper.writeValueAsString(combineResponses); // Serialize to JSON
+            this.itemsList = itemsList; // Store the list in the transient field
+            this.itemsListJson = objectMapper.writeValueAsString(itemsList); // Serialize to JSON
         } catch (JsonProcessingException e) {
-            this.combineResponsesJson = null; // Set to null if serialization fails
+            this.itemsListJson = null; // Set to null if serialization fails
         }
     }
 
@@ -211,34 +214,34 @@ public class Step {
                 && Objects.equals(outputKey, step.outputKey) && Objects.equals(path, step.path)
                 && Objects.equals(transformSpec, step.transformSpec) && Objects.equals(responseKey, step.responseKey)
                 && Objects.equals(requestSchema, step.requestSchema) && Objects.equals(responseSchema, step.responseSchema)
-                && Objects.equals(renameMappingsJson, step.renameMappingsJson) && Objects.equals(combineStrategy, step.combineStrategy)
-                && Objects.equals(body, step.body) && Objects.equals(combineResponsesJson, step.combineResponsesJson);
+                && Objects.equals(mappingsJson, step.mappingsJson) && Objects.equals(combineStrategy, step.combineStrategy)
+                && Objects.equals(body, step.body) && Objects.equals(itemsListJson, step.itemsListJson);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(name, type, method, serviceUrl, apiDocsUrl, inputKey, outputKey, path,
-                transformSpec, responseKey, requestSchema, responseSchema, renameMappingsJson, combineStrategy, body, combineResponsesJson);
+                transformSpec, responseKey, requestSchema, responseSchema, mappingsJson, combineStrategy, body, itemsListJson);
     }
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Map<String, String> getRenameMappings() {
-        if (renameMappingsJson == null) {
+    public Map<String, String> getMappings() {
+        if (mappingsJson == null) {
             return new HashMap<>();
         }
         try {
-            return objectMapper.readValue(renameMappingsJson, Map.class);
+            return objectMapper.readValue(mappingsJson, Map.class);
         } catch (JsonProcessingException e) {
             return new HashMap<>();
         }
     }
 
-    public void setRenameMappings(Map<String, String> renameMappings) {
+    public void setMappings(Map<String, String> mappings) {
         try {
-            this.renameMappingsJson = objectMapper.writeValueAsString(renameMappings);
+            this.mappingsJson = objectMapper.writeValueAsString(mappings);
         } catch (JsonProcessingException e) {
-            this.renameMappingsJson = null;
+            this.mappingsJson = null;
         }
     }
 

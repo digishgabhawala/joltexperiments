@@ -1,15 +1,15 @@
 [
   {
-    "description": "Retrieve list of all customers",
+    "description": "reset customers",
     "method": "GET",
-    "endpoint": "/bff/customers",
+    "endpoint": "/customers/reset",
     "validate": "Array.isArray(response)"
   },
   {
-    "description": "Retrieve details of a single customer by ID",
+    "description": "reset accounts",
     "method": "GET",
-    "endpoint": "/bff/customers/1",
-    "validate": "typeof response === 'object' && response.id === 1"
+    "endpoint": "/accounts/reset",
+    "validate": "Array.isArray(response)"
   },
   {
     "description": "Create a new customer with provided details",
@@ -21,6 +21,53 @@
       "email": "johndoe@example.com"
     },
     "validate": "typeof response === 'object' && response.id && response.firstName === 'John' && response.lastName === 'Doe' && response.email === 'johndoe@example.com'"
+  },
+  {
+    "description": "create account with body transformation",
+    "method": "POST",
+    "endpoint": "/bff/createAccount1",
+    "body": {
+      "accountNo": "54321",
+      "typeOfAcc": "checking",
+      "bal": 2000,
+      "custId": 1
+    },
+    "validate": "typeof response === 'object' && response.id && response.accountNumber === '54321' && response.accountType === 'checking' && response.balance === 2000 && response.customerId === 1"
+  },
+  {
+    "description": "Create a second customer with provided details",
+    "method": "POST",
+    "endpoint": "/bff/customers",
+    "body": {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "johndoe@example.com"
+    },
+    "validate": "typeof response === 'object' && response.id && response.firstName === 'John' && response.lastName === 'Doe' && response.email === 'johndoe@example.com'"
+  },
+  {
+    "description": "create second account",
+    "method": "POST",
+    "endpoint": "/bff/createAccount1",
+    "body": {
+      "accountNo": "54321",
+      "typeOfAcc": "checking",
+      "bal": 2000,
+      "custId": 2
+    },
+    "validate": "typeof response === 'object' && response.id && response.accountNumber === '54321' && response.accountType === 'checking' && response.balance === 2000 && response.customerId === 2"
+  },
+  {
+    "description": "Retrieve list of all customers",
+    "method": "GET",
+    "endpoint": "/bff/customers",
+    "validate": "Array.isArray(response)"
+  },
+  {
+    "description": "Retrieve details of a single customer by ID",
+    "method": "GET",
+    "endpoint": "/bff/customers/1",
+    "validate": "typeof response === 'object' && response.id === 1"
   },
   {
     "description": "Retrieve list of all accounts",
@@ -35,27 +82,13 @@
     "validate": "response.callCustomerApi && response.callAccountApi && response.callAccountApi.accountNumber && response.callAccountApi.accountType  && response.callAccountApi.balance && response.callAccountApi.customerId "
   },
   {
-    "description": "create account with body transformation",
-    "method": "POST",
-    "endpoint": "/bff/createAccount1",
-    "body": {
-      "accountNo": "54321",
-      "typeOfAcc": "checking",
-      "bal": 2000,
-      "custId": 3
-    },
-    "validate": "typeof response === 'object' && response.id && response.accountNumber === '54321' && response.accountType === 'checking' && response.balance === 2000 && response.customerId === 3"
-  },
-  {
     "description": "Create customer with body transformation and nested structure",
     "method": "POST",
     "endpoint": "/bff/customers1",
     "body": {
       "first_name": "Jane",
       "last_name": "Smith",
-      "email": {
-        "address": "jane.smith@example.com"
-      }
+      "email":  "jane.smith@example.com"
     },
     "validate": "typeof response === 'object' && response.id && response.firstName === 'Jane' && response.lastName === 'Smith' && response.email === 'jane.smith@example.com'"
   },
@@ -85,6 +118,23 @@
     "method": "GET",
     "endpoint": "/bff/customersAndAccounts/1",
     "validate": "typeof response === 'object' && response.callCustomerApi && response.callAccountApi && response.callCustomerApi.id === response.callAccountApi.customerId"
+  },
+  {
+    "description": "Retrieve both customer and account by passing path params",
+    "method": "GET",
+    "endpoint": "/bff/customersAndAccounts/1/1",
+    "validate": "typeof response === 'object' && response.callCustomerApi && response.callAccountApi && response.callCustomerApi.id === 1  && response.callAccountApi.id === 1"
+  },
+  {
+    "description": "Retrieve both customer and account by passing post request body",
+    "method": "POST",
+    "endpoint": "/bff/getCustomersAndAccounts",
+    "body": {
+      "accountNumber": "1",
+      "customerId": "2"
+    },
+    "validate": "typeof response === 'object' && response.callCustomerApi && response.callAccountApi && response.callCustomerApi.id === 2  && response.callAccountApi.id === 1"
   }
+
 
 ]

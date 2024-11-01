@@ -14,7 +14,7 @@ public class RenameVariablesStep implements StepInteface {
 
     @Override
     public String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
-        Map<String, String> renameMappings = step.getRenameMappings();
+        Map<String, String> renameMappings = step.getMappings();
         ObjectMapper mapper = new ObjectMapper();
 
         if (renameMappings != null) {
