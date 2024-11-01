@@ -330,6 +330,7 @@
     * add retry
     * add db step
     * add error handling
+    * pre and post schema validations
     * Create configuration for compositions
     * Create UI for defining above
     * Create basci formulaes for data manipuations and their UI

@@ -63,7 +63,7 @@ private final ObjectMapper mapper = new ObjectMapper();
         if (headersKey != null && stepResults.containsKey(headersKey)) {
 
             try {
-                JsonNode headersNode = parseToJsonNode(stepResults.get(headersKey));
+                JsonNode headersNode = JsonUtils.parseToJsonNode(stepResults.get(headersKey));
                 headersNode.fields().forEachRemaining(header -> finalHeaders.add(header.getKey(), header.getValue().asText()));
             } catch (Exception e) {
                 logger.error("Error parsing custom headers: {}", e.getMessage());
@@ -72,25 +72,7 @@ private final ObjectMapper mapper = new ObjectMapper();
         }
     }
 
-    private ObjectNode parseToJsonNode(Object rootObject) {
-        ObjectNode currentNode = mapper.createObjectNode();
 
-        if (rootObject instanceof String) {
-            String rootString = (String) rootObject;
-            try {
-                if (rootString.trim().startsWith("{") || rootString.trim().startsWith("[")) {
-                    currentNode = (ObjectNode) mapper.readTree(rootString);
-                } else {
-                    currentNode.put("value", rootString);
-                }
-            } catch (Exception e) {
-                logger.error("Error parsing JSON string '{}': {}", rootString, e.getMessage());
-            }
-        } else if (rootObject != null) {
-            currentNode = mapper.convertValue(rootObject, ObjectNode.class);
-        }
-        return currentNode;
-    }
 
     //todo: make headers configuraable
     private String executeRestTemplateRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {

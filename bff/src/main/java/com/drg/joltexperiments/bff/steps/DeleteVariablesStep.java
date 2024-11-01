@@ -32,7 +32,7 @@ public class DeleteVariablesStep implements StepInteface {
                 Object rootObject = stepResults.get(pathParts[0]);
 
                 // Parse root object to JSON node if it's a JSON-like string
-                ObjectNode currentNode = parseToJsonNode(rootObject);
+                ObjectNode currentNode = JsonUtils.parseToJsonNode(rootObject);
 
                 if (currentNode == null) {
                     logger.warn("Root object not found or is not a valid JSON object for path: {}", jsonPath);
@@ -71,23 +71,4 @@ public class DeleteVariablesStep implements StepInteface {
         }
     }
 
-    private ObjectNode parseToJsonNode(Object rootObject) {
-        ObjectNode currentNode = mapper.createObjectNode();
-
-        if (rootObject instanceof String) {
-            String rootString = (String) rootObject;
-            try {
-                if (rootString.trim().startsWith("{") || rootString.trim().startsWith("[")) {
-                    currentNode = (ObjectNode) mapper.readTree(rootString);
-                } else {
-                    currentNode.put("value", rootString);
-                }
-            } catch (Exception e) {
-                logger.error("Error parsing JSON string '{}': {}", rootString, e.getMessage());
-            }
-        } else if (rootObject != null) {
-            currentNode = mapper.convertValue(rootObject, ObjectNode.class);
-        }
-        return currentNode;
-    }
 }

@@ -31,7 +31,7 @@ public class AddVariablesStep implements StepInteface {
                 Object rootObject = stepResults.get(pathParts[0]);
 
                 // Check if the root object is a JSON-like string and parse it if necessary
-                ObjectNode currentNode = parseToJsonNode(rootObject);
+                ObjectNode currentNode = JsonUtils.parseToJsonNode(rootObject);
 
                 // Traverse and/or create nodes along the JSON path
                 ObjectNode parentNode = currentNode;
@@ -64,27 +64,5 @@ public class AddVariablesStep implements StepInteface {
         }
     }
 
-    // Helper method to parse the root object to a JSON node if it's a JSON-like string
-    private ObjectNode parseToJsonNode(Object rootObject) {
-        ObjectNode currentNode = mapper.createObjectNode();
 
-        if (rootObject instanceof String) {
-            String rootString = (String) rootObject;
-            try {
-                // Parse JSON-like strings
-                if (rootString.trim().startsWith("{") || rootString.trim().startsWith("[")) {
-                    currentNode = (ObjectNode) mapper.readTree(rootString);
-                } else {
-                    // Convert simple strings to JSON node format
-                    currentNode.put("value", rootString);
-                }
-            } catch (Exception e) {
-                logger.error("Error parsing JSON string '{}': {}", rootString, e.getMessage());
-            }
-        } else if (rootObject != null) {
-            // Convert non-string root objects to ObjectNode
-            currentNode = mapper.convertValue(rootObject, ObjectNode.class);
-        }
-        return currentNode;
-    }
 }
