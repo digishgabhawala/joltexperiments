@@ -325,5 +325,57 @@
 "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
 }
 ]
+},
+{
+"id": 69,
+"path": "customersWithHiddenId",
+"method": "POST",
+"serviceUrl": "http://localhost:9003/api/customers1",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\"},\"last_name\":{\"type\":\"string\"},\"email\":{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\"}}}},\"required\":[\"first_name\",\"last_name\",\"email\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}",
+"steps": [
+{
+"name": "buildCustomerBody",
+"type": "buildBody",
+"mappings": {
+"$.first_name": "firstName",
+"$.last_name": "lastName",
+"$.email.address": "email"
+}
+},
+{
+"name": "createCustomer",
+"type": "apiCall",
+"method": "POST",
+"body": "buildCustomerBody",
+"serviceUrl": "http://localhost:9003/api/customers",
+"path": "customers",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"firstName\",\"lastName\",\"email\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
+},
+{
+"name": "deleteIdFromResponse",
+"type": "deleteVariables",
+"itemsList": [
+"$.createCustomer.id"
+]
+},
+{
+"name": "addIdHiddenField",
+"type": "addVariables",
+"mappings": {
+"$.createCustomer.idHidden": "true"
+}
+},
+{
+"name": "combineResponses",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"createCustomer"
+]
+}
+]
 }
 ]
