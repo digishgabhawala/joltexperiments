@@ -2,7 +2,6 @@
 package com.drg.joltexperiments.bff;
 
 import com.drg.joltexperiments.bff.steps.*;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.*;
 
 @RestController
@@ -41,11 +39,20 @@ public class BffController {
             String path = extractPathFromRequest(request);
             ServiceConfigEntity serviceConfigEntity = getServiceConfigFromPath(path, method);
 
+            if (serviceConfigEntity.getRequestSchema() != null) {
+                JsonUtils.validateSchema(serviceConfigEntity.getRequestSchema(), body, "Request");
+            }
+
             Map<String, Object> stepResults = new HashMap<>();
             extractRequestData(serviceConfigEntity, request, body, stepResults);
 
             // Execute steps sequentially
-            return executeSteps(headers, body, request, method, serviceConfigEntity, stepResults);
+            String result = executeSteps(headers, body, request, method, serviceConfigEntity, stepResults);
+
+            if (serviceConfigEntity.getResponseSchema() != null) {
+                JsonUtils.validateSchema(serviceConfigEntity.getResponseSchema(), result, "Response");
+            }
+            return result;
         } catch (Exception e) {
             logger.error("Error processing {} request: {}", method, e.getMessage());
             throw new IllegalArgumentException("Request failed: " + e.getMessage());
@@ -63,8 +70,7 @@ public class BffController {
         return result;
     }
 
-
-    private String extractRequestData(ServiceConfigEntity serviceConfigEntity, ServerHttpRequest request, String body, Map<String, Object> stepResults) {
+    private void extractRequestData(ServiceConfigEntity serviceConfigEntity, ServerHttpRequest request, String body, Map<String, Object> stepResults) {
         String stepPath = serviceConfigEntity.getPath();
         if (stepPath != null && !stepPath.isEmpty()) {
             String requestPath = extractPathFromRequest(request);
@@ -107,9 +113,8 @@ public class BffController {
                 throw new IllegalArgumentException("Invalid JSON body");
             }
         }
-        return "";
+        return ;
     }
-
 
     private String extractPathFromRequest(ServerHttpRequest request) {
         return request.getPath().pathWithinApplication().value().substring("/bff/".length());
@@ -140,6 +145,4 @@ public class BffController {
         }
         return true;
     }
-
-
 }

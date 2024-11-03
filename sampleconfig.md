@@ -297,12 +297,47 @@
 ]
 },
 {
-"id": 65,
+"id": 72,
+"path": "searchCustomers",
+"method": "GET",
+"serviceUrl": "http://localhost:9003/api/searchCustomers?customerName={customerName}&email={email}",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"finalResponseKey": "searchCustomers",
+"steps": [
+{
+"name": "searchCustomersHeaders",
+"type": "addHeaders",
+"mappings": {
+"$.email": "email",
+"$.customerName": "customerName"
+}
+},
+{
+"name": "searchClientKey",
+"type": "addVariables",
+"mappings": {
+"$.searchCustomersHeaders.key": "customer-client"
+}
+},
+{
+"name": "searchCustomers",
+"type": "apiCall",
+"method": "GET",
+"headers": "searchCustomersHeaders",
+"serviceUrl": "http://localhost:9003/api/customers/search?name={customerName}",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"path": "customers/search",
+"responseSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"id\": {\n        \"type\": \"integer\",\n        \"format\": \"int64\"\n      },\n      \"firstName\": {\n        \"type\": \"string\"\n      },\n      \"lastName\": {\n        \"type\": \"string\"\n      },\n      \"email\": {\n        \"type\": \"string\",\n        \"format\": \"email\"\n      }\n    },\n    \"required\": [\"id\", \"firstName\", \"lastName\", \"email\"]\n  }\n}"
+}
+]
+},
+{
+"id": 73,
 "path": "customers1",
 "method": "POST",
 "serviceUrl": "http://localhost:9003/api/customers1",
 "apiDocsUrl": "http://localhost:9003/v3/api-docs",
-"requestSchema": "{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\"},\"last_name\":{\"type\":\"string\"},\"email\":{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\"}}}},\"required\":[\"first_name\",\"last_name\",\"email\"]}",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\"},\"last_name\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"first_name\",\"last_name\",\"email\"]}",
 "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}",
 "steps": [
 {
@@ -327,13 +362,13 @@
 ]
 },
 {
-"id": 69,
+"id": 76,
 "path": "customersWithHiddenId",
 "method": "POST",
 "serviceUrl": "http://localhost:9003/api/customers1",
 "apiDocsUrl": "http://localhost:9003/v3/api-docs",
 "requestSchema": "{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\"},\"last_name\":{\"type\":\"string\"},\"email\":{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\"}}}},\"required\":[\"first_name\",\"last_name\",\"email\"]}",
-"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"createCustomer\":{\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"},\"idHidden\":{\"type\":\"string\"}},\"required\":[\"firstName\",\"lastName\",\"email\"]}}}",
 "steps": [
 {
 "name": "buildCustomerBody",
@@ -375,41 +410,6 @@
 "itemsList": [
 "createCustomer"
 ]
-}
-]
-},
-{
-"id": 72,
-"path": "searchCustomers",
-"method": "GET",
-"serviceUrl": "http://localhost:9003/api/searchCustomers?customerName={customerName}&email={email}",
-"apiDocsUrl": "http://localhost:9003/v3/api-docs",
-"finalResponseKey": "searchCustomers",
-"steps": [
-{
-"name": "searchCustomersHeaders",
-"type": "addHeaders",
-"mappings": {
-"$.email": "email",
-"$.customerName": "customerName"
-}
-},
-{
-"name": "searchClientKey",
-"type": "addVariables",
-"mappings": {
-"$.searchCustomersHeaders.key": "customer-client"
-}
-},
-{
-"name": "searchCustomers",
-"type": "apiCall",
-"method": "GET",
-"headers": "searchCustomersHeaders",
-"serviceUrl": "http://localhost:9003/api/customers/search?name={customerName}",
-"apiDocsUrl": "http://localhost:9003/v3/api-docs",
-"path": "customers/search",
-"responseSchema": "{\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"id\": {\n        \"type\": \"integer\",\n        \"format\": \"int64\"\n      },\n      \"firstName\": {\n        \"type\": \"string\"\n      },\n      \"lastName\": {\n        \"type\": \"string\"\n      },\n      \"email\": {\n        \"type\": \"string\",\n        \"format\": \"email\"\n      }\n    },\n    \"required\": [\"id\", \"firstName\", \"lastName\", \"email\"]\n  }\n}"
 }
 ]
 }
