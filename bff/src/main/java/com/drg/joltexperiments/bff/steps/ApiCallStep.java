@@ -2,11 +2,6 @@ package com.drg.joltexperiments.bff.steps;
 
 import com.drg.joltexperiments.bff.Step;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.ValidationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -15,14 +10,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import java.util.Map;
-import java.util.Set;
 
 public class ApiCallStep implements StepInteface {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiCallStep.class);
-//    //todo: make headers configuraable
-private final ObjectMapper mapper = new ObjectMapper();
-
     public ApiCallStep() {
     }
 
@@ -33,13 +24,26 @@ private final ObjectMapper mapper = new ObjectMapper();
 
         String requestBody = (String) stepResults.getOrDefault(step.getBody(), body); // Use configured body if available
 
-        HttpHeaders finalHeaders = new HttpHeaders();
+        validateRequestSchema(step.getRequestSchema(), requestBody);
 
-        addCustomHeaders(finalHeaders, headers, stepResults, step.getHeaders());
+        HttpHeaders finalHeaders = buildHeaders(headers, stepResults, step.getHeaders());
 
-        String response = executeRestTemplateRequest(finalHeaders, requestBody, url, step.getMethod(), step.getResponseSchema());
+        String response = executeRestTemplateRequest(finalHeaders, requestBody, url, step.getMethod());
+        JsonUtils.validateSchema(step.getResponseSchema(), response, "Response");
         stepResults.put(step.getName(), response);
         return response;
+    }
+
+    private void validateRequestSchema(String requestSchema, String requestBody) {
+        if (requestSchema != null && !requestSchema.isEmpty()) {
+            try {
+                JsonUtils.validateSchema(requestSchema, requestBody, "Request");
+                logger.info("Request body is valid according to the schema.");
+            } catch (Exception e) {
+                logger.error("Request validation failed: {}", e.getMessage());
+                throw new IllegalArgumentException("Invalid request body: " + e.getMessage(), e);
+            }
+        }
     }
 
     private String buildUrlWithVariables(String urlTemplate, Map<String, Object> stepResults) {
@@ -49,7 +53,8 @@ private final ObjectMapper mapper = new ObjectMapper();
         return urlTemplate;
     }
 
-    private void addCustomHeaders(HttpHeaders finalHeaders, HttpHeaders originalHeaders, Map<String, Object> stepResults, String headersKey) {
+    private HttpHeaders buildHeaders( HttpHeaders originalHeaders, Map<String, Object> stepResults, String headersKey) {
+        HttpHeaders finalHeaders = new HttpHeaders();
         // Copy default headers
         originalHeaders.forEach((key, values) -> {
             if (!key.equalsIgnoreCase("Content-Length") &&
@@ -70,12 +75,10 @@ private final ObjectMapper mapper = new ObjectMapper();
             }
 
         }
+        return finalHeaders;
     }
 
-
-
-    //todo: make headers configuraable
-    private String executeRestTemplateRequest(HttpHeaders headers, String body, String url, String method, String responseSchema) {
+    private String executeRestTemplateRequest(HttpHeaders headers, String body, String url, String method) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
@@ -87,7 +90,7 @@ private final ObjectMapper mapper = new ObjectMapper();
                     restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
 
             // Validate response against the provided schema
-            validateSchema(responseSchema, response.getBody(), "Response");
+
             return response.getBody();
         } catch (Exception e) {
             logger.error("Error occurred during RestTemplate request: {}", e.getMessage());
@@ -95,29 +98,5 @@ private final ObjectMapper mapper = new ObjectMapper();
         }
     }
 
-    private void validateSchema(String schemaJson, String data, String validationType) {
-        if (schemaJson == null || schemaJson.isEmpty()) {
-            logger.warn("{} schema not found, skipping validation.", validationType);
-            return;
-        }
 
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode schemaNode = mapper.readTree(schemaJson);
-            JsonSchema schema = JsonSchemaFactory.getInstance().getSchema(schemaNode);
-            JsonNode dataNode = mapper.readTree(data);
-
-            Set<ValidationMessage> validationMessages = schema.validate(dataNode);
-            if (!validationMessages.isEmpty()) {
-                throw new IllegalArgumentException(validationType + " validation failed: " +
-                        String.join("\n", validationMessages.stream()
-                                .map(ValidationMessage::getMessage)
-                                .toList()));
-            }
-            logger.info("{} is valid according to the schema.", validationType);
-        } catch (Exception e) {
-            logger.error("{} validation error: {}", validationType, e.getMessage());
-            throw new IllegalArgumentException(validationType + " validation error: " + e.getMessage(), e);
-        }
-    }
 }

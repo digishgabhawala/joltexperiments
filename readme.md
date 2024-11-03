@@ -321,10 +321,6 @@
   * Try hitting http://localhost:9007/bff/customers directly and see that it internally gets customers
   * TODO:
     * Get all endpoints of customers working by defining service config
-    * Add other services like Cards and get all endpoints working
-    * Create Jolt expressions for transformation of request / response
-    * Create configurations for orchestrations
-    * add headers
     * add validations 
     * add conditions
     * add retry
