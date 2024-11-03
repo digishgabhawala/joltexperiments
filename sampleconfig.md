@@ -362,12 +362,12 @@
 ]
 },
 {
-"id": 76,
+"id": 77,
 "path": "customersWithHiddenId",
 "method": "POST",
 "serviceUrl": "http://localhost:9003/api/customers1",
 "apiDocsUrl": "http://localhost:9003/v3/api-docs",
-"requestSchema": "{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\"},\"last_name\":{\"type\":\"string\"},\"email\":{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\"}}}},\"required\":[\"first_name\",\"last_name\",\"email\"]}",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\",\"maxLength\":20,\"minLength\":1},\"last_name\":{\"type\":\"string\",\"maxLength\":20,\"minLength\":1},\"email\":{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\",\"format\":\"email\"}},\"required\":[\"address\"]}},\"required\":[\"first_name\",\"last_name\",\"email\"]}",
 "responseSchema": "{\"type\":\"object\",\"properties\":{\"createCustomer\":{\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"},\"idHidden\":{\"type\":\"string\"}},\"required\":[\"firstName\",\"lastName\",\"email\"]}}}",
 "steps": [
 {

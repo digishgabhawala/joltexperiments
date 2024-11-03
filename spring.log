@@ -2081,3 +2081,382 @@ Original Stack Trace:
 2024-11-03T16:56:32.094+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}, Customer{id=2, first (truncated)...]
 2024-11-03T16:56:32.095+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
 2024-11-03T16:56:32.096+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:06:24.221+05:30 ERROR 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request validation error: Request validation failed: $.email.address: does not match the abs.zyzcom pattern email
+2024-11-03T17:06:24.221+05:30 ERROR 43869 --- [bff] [reactor-http-epoll-2] c.drg.joltexperiments.bff.BffController  : Error processing POST request: Request validation error: Request validation failed: $.email.address: does not match the abs.zyzcom pattern email
+2024-11-03T17:06:24.223+05:30 ERROR 43869 --- [bff] [reactor-http-epoll-2] a.w.r.e.AbstractErrorWebExceptionHandler : [a2960a2a-58]  500 Server Error for HTTP POST "/bff/customersWithHiddenId"
+
+java.lang.IllegalArgumentException: Request failed: Request validation error: Request validation failed: $.email.address: does not match the abs.zyzcom pattern email
+	at com.drg.joltexperiments.bff.BffController.processRequest(BffController.java:58) ~[classes/:na]
+	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
+Error has been observed at the following site(s):
+	*__checkpoint ⇢ HTTP POST "/bff/customersWithHiddenId" [ExceptionHandlingWebHandler]
+Original Stack Trace:
+		at com.drg.joltexperiments.bff.BffController.processRequest(BffController.java:58) ~[classes/:na]
+		at com.drg.joltexperiments.bff.BffController.handlePostRequest(BffController.java:34) ~[classes/:na]
+		at jdk.internal.reflect.GeneratedMethodAccessor54.invoke(Unknown Source) ~[na:na]
+		at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+		at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+		at org.springframework.web.reactive.result.method.InvocableHandlerMethod.lambda$invoke$0(InvocableHandlerMethod.java:198) ~[spring-webflux-6.1.10.jar:6.1.10]
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.onNext(MonoFlatMap.java:132) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip$ZipCoordinator.signal(MonoZip.java:297) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip$ZipInner.onNext(MonoZip.java:478) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoPeekTerminal$MonoTerminalPeekSubscriber.onNext(MonoPeekTerminal.java:180) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxDefaultIfEmpty$DefaultIfEmptySubscriber.onNext(FluxDefaultIfEmpty.java:122) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxSwitchIfEmpty$SwitchIfEmptySubscriber.onNext(FluxSwitchIfEmpty.java:74) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onNext(FluxMapFuseable.java:129) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableConditionalSubscriber.onNext(FluxMapFuseable.java:299) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxFilterFuseable$FilterFuseableConditionalSubscriber.onNext(FluxFilterFuseable.java:337) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators$BaseFluxToMonoOperator.completePossiblyEmpty(Operators.java:2097) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoCollect$CollectSubscriber.onComplete(MonoCollect.java:145) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.netty.channel.FluxReceive.onInboundComplete(FluxReceive.java:415) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.channel.ChannelOperations.onInboundComplete(ChannelOperations.java:446) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.http.server.HttpServerOperations.onInboundNext(HttpServerOperations.java:818) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+		at reactor.netty.channel.ChannelOperationsHandler.channelRead(ChannelOperationsHandler.java:114) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at reactor.netty.http.server.HttpTrafficHandler.channelRead(HttpTrafficHandler.java:305) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:436) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:251) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at java.base/java.lang.Thread.run(Thread.java:840) ~[na:na]
+
+2024-11-03T17:06:45.422+05:30 ERROR 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request validation error: Request validation failed: $.email.address: does not match the abs.zyz@com pattern email
+2024-11-03T17:06:45.423+05:30 ERROR 43869 --- [bff] [reactor-http-epoll-2] c.drg.joltexperiments.bff.BffController  : Error processing POST request: Request validation error: Request validation failed: $.email.address: does not match the abs.zyz@com pattern email
+2024-11-03T17:06:45.424+05:30 ERROR 43869 --- [bff] [reactor-http-epoll-2] a.w.r.e.AbstractErrorWebExceptionHandler : [a2960a2a-59]  500 Server Error for HTTP POST "/bff/customersWithHiddenId"
+
+java.lang.IllegalArgumentException: Request failed: Request validation error: Request validation failed: $.email.address: does not match the abs.zyz@com pattern email
+	at com.drg.joltexperiments.bff.BffController.processRequest(BffController.java:58) ~[classes/:na]
+	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
+Error has been observed at the following site(s):
+	*__checkpoint ⇢ HTTP POST "/bff/customersWithHiddenId" [ExceptionHandlingWebHandler]
+Original Stack Trace:
+		at com.drg.joltexperiments.bff.BffController.processRequest(BffController.java:58) ~[classes/:na]
+		at com.drg.joltexperiments.bff.BffController.handlePostRequest(BffController.java:34) ~[classes/:na]
+		at jdk.internal.reflect.GeneratedMethodAccessor54.invoke(Unknown Source) ~[na:na]
+		at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[na:na]
+		at java.base/java.lang.reflect.Method.invoke(Method.java:568) ~[na:na]
+		at org.springframework.web.reactive.result.method.InvocableHandlerMethod.lambda$invoke$0(InvocableHandlerMethod.java:198) ~[spring-webflux-6.1.10.jar:6.1.10]
+		at reactor.core.publisher.MonoFlatMap$FlatMapMain.onNext(MonoFlatMap.java:132) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip$ZipCoordinator.signal(MonoZip.java:297) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoZip$ZipInner.onNext(MonoZip.java:478) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoPeekTerminal$MonoTerminalPeekSubscriber.onNext(MonoPeekTerminal.java:180) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxDefaultIfEmpty$DefaultIfEmptySubscriber.onNext(FluxDefaultIfEmpty.java:122) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxSwitchIfEmpty$SwitchIfEmptySubscriber.onNext(FluxSwitchIfEmpty.java:74) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber.onNext(FluxOnErrorResume.java:79) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onNext(FluxMapFuseable.java:129) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableConditionalSubscriber.onNext(FluxMapFuseable.java:299) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxFilterFuseable$FilterFuseableConditionalSubscriber.onNext(FluxFilterFuseable.java:337) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.Operators$BaseFluxToMonoOperator.completePossiblyEmpty(Operators.java:2097) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.MonoCollect$CollectSubscriber.onComplete(MonoCollect.java:145) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.7.jar:3.6.7]
+		at reactor.netty.channel.FluxReceive.onInboundComplete(FluxReceive.java:415) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.channel.ChannelOperations.onInboundComplete(ChannelOperations.java:446) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at reactor.netty.http.server.HttpServerOperations.onInboundNext(HttpServerOperations.java:818) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+		at reactor.netty.channel.ChannelOperationsHandler.channelRead(ChannelOperationsHandler.java:114) ~[reactor-netty-core-1.1.20.jar:1.1.20]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at reactor.netty.http.server.HttpTrafficHandler.channelRead(HttpTrafficHandler.java:305) ~[reactor-netty-http-1.1.20.jar:1.1.20]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:436) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318) ~[netty-codec-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:251) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918) ~[netty-transport-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe.epollInReady(AbstractEpollStreamChannel.java:799) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.EpollEventLoop.processReady(EpollEventLoop.java:501) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.channel.epoll.EpollEventLoop.run(EpollEventLoop.java:399) ~[netty-transport-classes-epoll-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.111.Final.jar:4.1.111.Final]
+		at java.base/java.lang.Thread.run(Thread.java:840) ~[na:na]
+
+2024-11-03T17:06:50.918+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:06:50.919+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers
+2024-11-03T17:06:50.920+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:06:50.920+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:06:50.925+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] o.s.web.servlet.DispatcherServlet        : POST "/api/customers", parameters={}
+2024-11-03T17:06:50.925+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#createCustomer(Customer)
+2024-11-03T17:06:50.926+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Customer{id=null, firstName='abs', lastName='xyz', email='abs.zyz@as.com'}]
+2024-11-03T17:06:50.927+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='abs', lastName='xyz', email='abs.zyz@as.com'}
+2024-11-03T17:06:50.932+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:06:50.932+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=7, firstName='abs', lastName='xyz', email='abs.zyz@as.com'}]
+2024-11-03T17:06:50.934+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:06:50.936+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:06:50.938+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.149+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/reset", parameters={}
+2024-11-03T17:07:36.150+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#reset()
+2024-11-03T17:07:36.156+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] c.d.j.customer.CustomerController        : Found 0 customers
+2024-11-03T17:07:36.157+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.157+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [[]]
+2024-11-03T17:07:36.158+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.199+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-3] o.s.web.servlet.DispatcherServlet        : GET "/api/accounts/reset", parameters={}
+2024-11-03T17:07:36.200+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#reset()
+2024-11-03T17:07:36.209+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.210+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [[]]
+2024-11-03T17:07:36.211+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.264+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.264+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers
+2024-11-03T17:07:36.265+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.265+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:36.270+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] o.s.web.servlet.DispatcherServlet        : POST "/api/customers", parameters={}
+2024-11-03T17:07:36.271+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#createCustomer(Customer)
+2024-11-03T17:07:36.272+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Customer{id=null, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:36.273+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:36.276+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.277+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:36.278+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.279+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.280+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.335+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.336+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9005/api/accounts
+2024-11-03T17:07:36.337+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.337+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:36.341+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-4] o.s.web.servlet.DispatcherServlet        : POST "/api/accounts", parameters={}
+2024-11-03T17:07:36.341+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#createAccount(Account)
+2024-11-03T17:07:36.343+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [com.drg.joltexperiments.Account.Account@21cb12ed]
+2024-11-03T17:07:36.346+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.347+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [com.drg.joltexperiments.Account.Account@21cb12ed]
+2024-11-03T17:07:36.348+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.349+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.394+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.395+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers
+2024-11-03T17:07:36.395+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.395+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:36.400+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] o.s.web.servlet.DispatcherServlet        : POST "/api/customers", parameters={}
+2024-11-03T17:07:36.400+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#createCustomer(Customer)
+2024-11-03T17:07:36.402+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Customer{id=null, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:36.402+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:36.404+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.405+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=2, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:36.406+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.407+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.407+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.449+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.450+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9005/api/accounts
+2024-11-03T17:07:36.450+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.451+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:36.456+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-5] o.s.web.servlet.DispatcherServlet        : POST "/api/accounts", parameters={}
+2024-11-03T17:07:36.456+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#createAccount(Account)
+2024-11-03T17:07:36.457+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [com.drg.joltexperiments.Account.Account@7dbc1148]
+2024-11-03T17:07:36.461+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.462+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [com.drg.joltexperiments.Account.Account@7dbc1148]
+2024-11-03T17:07:36.464+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.466+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.508+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers
+2024-11-03T17:07:36.511+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/customers", parameters={}
+2024-11-03T17:07:36.512+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#getAllCustomers()
+2024-11-03T17:07:36.516+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] c.d.j.customer.CustomerController        : Found 2 customers
+2024-11-03T17:07:36.516+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] c.d.j.customer.CustomerController        : Customer: Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:36.517+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] c.d.j.customer.CustomerController        : Customer: Customer{id=2, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:36.517+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.517+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] m.m.a.RequestResponseBodyMethodProcessor : Writing [[Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}, Customer{id=2, first (truncated)...]
+2024-11-03T17:07:36.518+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.520+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.522+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.566+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers/1
+2024-11-03T17:07:36.569+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/1", parameters={}
+2024-11-03T17:07:36.569+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#getCustomerById(Long)
+2024-11-03T17:07:36.569+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] c.d.j.customer.CustomerController        : Get customer with id 1
+2024-11-03T17:07:36.571+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] c.d.j.customer.CustomerController        : Found customer: Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:36.572+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.572+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:36.573+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.574+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.621+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9005/api/accounts
+2024-11-03T17:07:36.625+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/accounts", parameters={}
+2024-11-03T17:07:36.626+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#getAllAccounts()
+2024-11-03T17:07:36.629+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.629+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [[com.drg.joltexperiments.Account.Account@4a43d839, com.drg.joltexperiments.Account.Account@46ff6f7b]]
+2024-11-03T17:07:36.630+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.631+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.632+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.681+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9005/api/accounts/1
+2024-11-03T17:07:36.686+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-7] o.s.web.servlet.DispatcherServlet        : GET "/api/accounts/1", parameters={}
+2024-11-03T17:07:36.687+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#getAccountById(Long)
+2024-11-03T17:07:36.691+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.691+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [com.drg.joltexperiments.Account.Account@3b52d948]
+2024-11-03T17:07:36.693+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.694+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.695+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers/1
+2024-11-03T17:07:36.700+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/1", parameters={}
+2024-11-03T17:07:36.700+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#getCustomerById(Long)
+2024-11-03T17:07:36.701+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] c.d.j.customer.CustomerController        : Get customer with id 1
+2024-11-03T17:07:36.703+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] c.d.j.customer.CustomerController        : Found customer: Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:36.704+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.704+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:36.705+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.706+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.761+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.761+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers
+2024-11-03T17:07:36.762+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.762+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:36.766+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] o.s.web.servlet.DispatcherServlet        : POST "/api/customers", parameters={}
+2024-11-03T17:07:36.766+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#createCustomer(Customer)
+2024-11-03T17:07:36.768+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Customer{id=null, firstName='Jane', lastName='Smith', email='jane.smith@example.com'}]
+2024-11-03T17:07:36.768+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='Jane', lastName='Smith', email='jane.smith@example.com'}
+2024-11-03T17:07:36.771+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.771+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=3, firstName='Jane', lastName='Smith', email='jane.smith@example.com'}]
+2024-11-03T17:07:36.772+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-7] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.773+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.774+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.821+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.822+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers
+2024-11-03T17:07:36.822+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.822+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:36.826+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-8] o.s.web.servlet.DispatcherServlet        : POST "/api/customers", parameters={}
+2024-11-03T17:07:36.827+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#createCustomer(Customer)
+2024-11-03T17:07:36.828+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Customer{id=null, firstName='Alice', lastName='Wonder', email='alice@example.com'}]
+2024-11-03T17:07:36.828+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-8] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='Alice', lastName='Wonder', email='alice@example.com'}
+2024-11-03T17:07:36.830+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.831+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=4, firstName='Alice', lastName='Wonder', email='alice@example.com'}]
+2024-11-03T17:07:36.831+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.832+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.833+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9005/api/accounts
+2024-11-03T17:07:36.834+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:36.834+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:36.838+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-8] o.s.web.servlet.DispatcherServlet        : POST "/api/accounts", parameters={}
+2024-11-03T17:07:36.839+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-8] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#createAccount(Account)
+2024-11-03T17:07:36.841+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [com.drg.joltexperiments.Account.Account@6ec517]
+2024-11-03T17:07:36.843+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.844+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-8] m.m.a.RequestResponseBodyMethodProcessor : Writing [com.drg.joltexperiments.Account.Account@6ec517]
+2024-11-03T17:07:36.845+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-8] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.846+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.891+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9005/api/accounts/1
+2024-11-03T17:07:36.896+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/accounts/1", parameters={}
+2024-11-03T17:07:36.897+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#getAccountById(Long)
+2024-11-03T17:07:36.901+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.902+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Writing [com.drg.joltexperiments.Account.Account@43d6dd67]
+2024-11-03T17:07:36.904+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.906+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.907+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers/1
+2024-11-03T17:07:36.912+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-9] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/1", parameters={}
+2024-11-03T17:07:36.912+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#getCustomerById(Long)
+2024-11-03T17:07:36.913+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-9] c.d.j.customer.CustomerController        : Get customer with id 1
+2024-11-03T17:07:36.915+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-9] c.d.j.customer.CustomerController        : Found customer: Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:36.916+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.916+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-9] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:36.917+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.918+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.968+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers/1
+2024-11-03T17:07:36.971+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/1", parameters={}
+2024-11-03T17:07:36.972+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#getCustomerById(Long)
+2024-11-03T17:07:36.972+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] c.d.j.customer.CustomerController        : Get customer with id 1
+2024-11-03T17:07:36.975+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] c.d.j.customer.CustomerController        : Found customer: Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:36.975+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.975+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=1, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:36.976+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.977+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:36.977+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9005/api/accounts/1
+2024-11-03T17:07:36.980+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/accounts/1", parameters={}
+2024-11-03T17:07:36.981+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#getAccountById(Long)
+2024-11-03T17:07:36.984+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:36.985+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-10] m.m.a.RequestResponseBodyMethodProcessor : Writing [com.drg.joltexperiments.Account.Account@145bf797]
+2024-11-03T17:07:36.986+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:36.988+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.046+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:37.046+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers/2
+2024-11-03T17:07:37.050+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/2", parameters={}
+2024-11-03T17:07:37.051+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#getCustomerById(Long)
+2024-11-03T17:07:37.051+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] c.d.j.customer.CustomerController        : Get customer with id 2
+2024-11-03T17:07:37.053+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] c.d.j.customer.CustomerController        : Found customer: Customer{id=2, firstName='John', lastName='Doe', email='johndoe@example.com'}
+2024-11-03T17:07:37.054+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:37.054+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=2, firstName='John', lastName='Doe', email='johndoe@example.com'}]
+2024-11-03T17:07:37.055+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:37.056+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.056+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9005/api/accounts/1
+2024-11-03T17:07:37.059+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-2] o.s.web.servlet.DispatcherServlet        : GET "/api/accounts/1", parameters={}
+2024-11-03T17:07:37.060+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.Account.AccountController#getAccountById(Long)
+2024-11-03T17:07:37.063+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:37.064+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [com.drg.joltexperiments.Account.Account@628a1417]
+2024-11-03T17:07:37.065+05:30 DEBUG 42769 --- [Account] [http-nio-9005-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:37.067+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.114+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:37.115+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers
+2024-11-03T17:07:37.115+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:37.116+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:37.120+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] o.s.web.servlet.DispatcherServlet        : POST "/api/customers", parameters={}
+2024-11-03T17:07:37.120+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#createCustomer(Customer)
+2024-11-03T17:07:37.121+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Customer{id=null, firstName='abs', lastName='xyz', email='abs.zyz@gmail.com'}]
+2024-11-03T17:07:37.121+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='abs', lastName='xyz', email='abs.zyz@gmail.com'}
+2024-11-03T17:07:37.123+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:37.124+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=5, firstName='abs', lastName='xyz', email='abs.zyz@gmail.com'}]
+2024-11-03T17:07:37.124+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-2] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:37.125+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.126+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.170+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:37.170+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers
+2024-11-03T17:07:37.170+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Request is valid according to the schema.
+2024-11-03T17:07:37.170+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Request body is valid according to the schema.
+2024-11-03T17:07:37.174+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] o.s.web.servlet.DispatcherServlet        : POST "/api/customers", parameters={}
+2024-11-03T17:07:37.175+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#createCustomer(Customer)
+2024-11-03T17:07:37.176+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Read "application/json;charset=UTF-8" to [Customer{id=null, firstName='John', lastName='Doe', email='johndoe1@example.com'}]
+2024-11-03T17:07:37.176+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] c.d.j.customer.CustomerController        : Create customer: Customer{id=null, firstName='John', lastName='Doe', email='johndoe1@example.com'}
+2024-11-03T17:07:37.178+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:37.178+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] m.m.a.RequestResponseBodyMethodProcessor : Writing [Customer{id=6, firstName='John', lastName='Doe', email='johndoe1@example.com'}]
+2024-11-03T17:07:37.179+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-3] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:37.181+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.182+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.222+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers/search?name=John
+2024-11-03T17:07:37.225+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/search?name=John", parameters={masked}
+2024-11-03T17:07:37.225+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#searchCustomersByName(String, String, int, int, String)
+2024-11-03T17:07:37.226+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] c.d.j.customer.CustomerController        : Searching customers with name John on page 1 with size 10
+2024-11-03T17:07:37.234+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] c.d.j.customer.CustomerController        : Found 3 customers matching the name John and email null
+2024-11-03T17:07:37.234+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:37.235+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Customer{id=6, firstName='John', lastName='Doe', email='johndoe1@example.com'}, Customer{id=1, firs (truncated)...]
+2024-11-03T17:07:37.236+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:37.237+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.280+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers/search?name=John
+2024-11-03T17:07:37.283+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/search?name=John", parameters={masked}
+2024-11-03T17:07:37.284+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#searchCustomersByName(String, String, int, int, String)
+2024-11-03T17:07:37.285+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] c.d.j.customer.CustomerController        : Searching customers with name John on page 1 with size 10
+2024-11-03T17:07:37.293+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] c.d.j.customer.CustomerController        : Filtering results by email johndoe1@example.com
+2024-11-03T17:07:37.293+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] c.d.j.customer.CustomerController        : Found 1 customers matching the name John and email johndoe1@example.com
+2024-11-03T17:07:37.294+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:37.294+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Customer{id=6, firstName='John', lastName='Doe', email='johndoe1@example.com'}]]
+2024-11-03T17:07:37.295+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:37.296+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.
+2024-11-03T17:07:37.347+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.j.bff.steps.ApiCallStep              : Making API call to: http://localhost:9003/api/customers/search?name=John
+2024-11-03T17:07:37.351+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] o.s.web.servlet.DispatcherServlet        : GET "/api/customers/search?name=John", parameters={masked}
+2024-11-03T17:07:37.351+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.drg.joltexperiments.customer.CustomerController#searchCustomersByName(String, String, int, int, String)
+2024-11-03T17:07:37.352+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] c.d.j.customer.CustomerController        : Searching customers with name John on page 1 with size 10
+2024-11-03T17:07:37.359+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] c.d.j.customer.CustomerController        : Filtering results by email johndoe@example.com
+2024-11-03T17:07:37.359+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] c.d.j.customer.CustomerController        : Found 2 customers matching the name John and email johndoe@example.com
+2024-11-03T17:07:37.360+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2024-11-03T17:07:37.360+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Customer{id=2, firstName='John', lastName='Doe', email='johndoe@example.com'}, Customer{id=1, first (truncated)...]
+2024-11-03T17:07:37.361+05:30 DEBUG 42492 --- [Customer] [http-nio-9003-exec-6] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2024-11-03T17:07:37.362+05:30  INFO 43869 --- [bff] [reactor-http-epoll-2] c.d.joltexperiments.bff.steps.JsonUtils  : Response is valid according to the schema.

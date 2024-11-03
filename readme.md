@@ -321,12 +321,9 @@
   * Try hitting http://localhost:9007/bff/customers directly and see that it internally gets customers
   * TODO:
     * Get all endpoints of customers working by defining service config
-    * add validations 
     * add conditions
     * add retry
     * add db step
     * add error handling
-    * pre and post schema validations
-    * Create configuration for compositions
     * Create UI for defining above
     * Create basci formulaes for data manipuations and their UI
