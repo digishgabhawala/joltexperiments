@@ -1,5 +1,6 @@
 package com.drg.joltexperiments.bff.steps;
 
+import com.drg.joltexperiments.bff.ServiceConfigEntity;
 import com.drg.joltexperiments.bff.Step;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +16,7 @@ public class AddVariablesStep implements StepInteface {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
+    public String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults, final ServiceConfigEntity config) {
         Map<String, String> mappings = step.getMappings();
 
         if (mappings != null) {

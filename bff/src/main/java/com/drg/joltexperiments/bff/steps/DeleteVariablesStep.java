@@ -1,5 +1,6 @@
 package com.drg.joltexperiments.bff.steps;
 
+import com.drg.joltexperiments.bff.ServiceConfigEntity;
 import com.drg.joltexperiments.bff.Step;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +17,7 @@ public class DeleteVariablesStep implements StepInteface {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults) {
+    public String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults, final ServiceConfigEntity config) {
         List<String> itemsList = step.getItemsList();
 
         if (itemsList != null) {

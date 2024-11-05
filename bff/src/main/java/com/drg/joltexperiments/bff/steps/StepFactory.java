@@ -23,6 +23,10 @@ public class StepFactory {
                 return new DeleteVariablesStep();
             case "addheaders":
                 return new AddHeaderStep();
+            case "composite":
+                return new CompositeStep();
+            case "condition":
+                return new ConditionStep();
             default:
                 throw new IllegalArgumentException("Unknown step type: " + step.getType());
         }

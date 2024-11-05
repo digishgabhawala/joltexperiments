@@ -176,6 +176,69 @@
     "method": "GET",
     "endpoint": "/bff/searchCustomers?customerName=John&email=johndoe@example.com",
     "validate": "Array.isArray(response) && response.length === 2"
+  },
+  {
+    "description": "Create a new account based on search results of customer. With existing customer",
+    "method": "POST",
+    "endpoint": "/bff/searchAndCreateAccount",
+    "body": {
+      "customer": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": {
+          "address": "johndoe@example.com"
+        }
+      },
+      "account": {
+        "accountNo": "1234567890",
+        "typeOfAcc": "savings",
+        "bal": 1000.50
+      }
+    },
+    "validate": "typeof response === 'object' && response.createAccount.id && response.createAccount.accountNumber === '1234567890' && response.createAccount.accountType === 'savings' && response.createAccount.balance === 1000.50 "
+
+  },
+  {
+    "description": "Create a new account based on search results of customer. With existing customer",
+    "method": "POST",
+    "endpoint": "/bff/searchAndCreateAccount",
+    "body": {
+      "customer": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": {
+          "address": "johndoe1@example.com"
+        }
+      },
+      "account": {
+        "accountNo": "1234567890",
+        "typeOfAcc": "savings",
+        "bal": 1000.50
+      }
+    },
+    "validate": "typeof response === 'object' && response.createAccount.id && response.createAccount.accountNumber === '1234567890' && response.createAccount.accountType === 'savings' && response.createAccount.balance === 1000.50 "
+
+  },
+  {
+    "description": "Create a new account based on search results of customer. With new customer",
+    "method": "POST",
+    "endpoint": "/bff/searchAndCreateAccount",
+    "body": {
+      "customer": {
+        "first_name": "John2",
+        "last_name": "Doe",
+        "email": {
+          "address": "johndoe1@example.com"
+        }
+      },
+      "account": {
+        "accountNo": "1234567890",
+        "typeOfAcc": "savings",
+        "bal": 1000.50
+      }
+    },
+    "validate": "typeof response === 'object' && response.createAccount.id && response.createAccount.customerId &&response.createAccount.accountNumber === '1234567890' && response.createAccount.accountType === 'savings' && response.createAccount.balance === 1000.50 "
+
   }
 
 

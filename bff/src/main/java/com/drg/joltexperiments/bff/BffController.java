@@ -45,7 +45,7 @@ public class BffController {
 
             Map<String, Object> stepResults = new HashMap<>();
             extractRequestData(serviceConfigEntity, request, body, stepResults);
-
+            initializeNextSteps(serviceConfigEntity);
             // Execute steps sequentially
             String result = executeSteps(headers, body, request, method, serviceConfigEntity, stepResults);
 
@@ -59,13 +59,34 @@ public class BffController {
         }
     }
 
+    public void initializeNextSteps(ServiceConfigEntity serviceConfigEntity) {
+        List<Step> steps = serviceConfigEntity.getSteps(); // Assume this fetches all steps for configuration
+        for (int i = 0; i < steps.size(); i++) {
+            Step currentStep = steps.get(i);
+            if (currentStep.getNextStep() == null && i < steps.size() - 1) {
+                currentStep.setNextStep(steps.get(i + 1).getName());
+                logger.debug("setting up next step ["+currentStep.getName()+"]->["+currentStep.getNextStep()+"]");
+            }
+        }
+        steps.get(steps.size()-1).setNextStep(null);
+
+    }
+
     private String executeSteps(HttpHeaders headers, String body, ServerHttpRequest request, String method, ServiceConfigEntity serviceConfigEntity, Map<String, Object> stepResults) {
-        List<Step> steps = serviceConfigEntity.getSteps();
+        Step currentStep = serviceConfigEntity.getSteps().get(0); // Start with the first step
         String result = "";
 
-        for (Step step : steps) {
-            StepInteface si = stepFactory.createStep(step);
-            result = si.execute(headers, body, step, stepResults);
+        while (currentStep != null) {
+            StepInteface stepInstance = stepFactory.createStep(currentStep);
+            result = stepInstance.execute(headers, body, currentStep, stepResults,serviceConfigEntity);
+            if(currentStep.getNextStep() == null){
+                break;
+            }
+            String nextStepName = currentStep.getNextStep();
+            currentStep = serviceConfigEntity.getSteps().stream()
+                    .filter(step -> step.getName().equals(nextStepName))
+                    .findFirst()
+                    .orElse(null); // End loop if no matching step is found
         }
         return result;
     }

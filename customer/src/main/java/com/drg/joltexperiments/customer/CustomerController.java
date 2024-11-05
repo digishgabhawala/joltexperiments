@@ -122,7 +122,7 @@ public class CustomerController {
 
         if (paginatedCustomers.isEmpty()) {
             logger.warn("No customers found with name {} and email {}", name, email);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+            return ResponseEntity.status(HttpStatus.OK).body(Collections.emptyList());
         }
 
         logger.debug("Found {} customers matching the name {} and email {}", paginatedCustomers.size(), name, email);

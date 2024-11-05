@@ -1,5 +1,6 @@
 package com.drg.joltexperiments.bff;
 
+import com.drg.joltexperiments.bff.steps.Condition;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -69,13 +70,31 @@ public class Step {
     @Transient
     private Map<String, String> mappings;
 
+    @Transient
+    private Condition condition;
+
+    @Lob
+    @Column(length = 10000)
+    private String conditionJson;
+
+    @Column(length = 200)
+    private String nextStep;
+
+    public String getNextStep() {
+        return nextStep;
+    }
+
+    public void setNextStep(String nextStep) {
+        this.nextStep = nextStep;
+    }
+
     public Step() {
     }
 
     public Step(String name, String type, String method, String serviceUrl, String apiDocsUrl,
                 String inputKey, String outputKey, String path, String transformSpec,
                 String responseKey, String requestSchema, String responseSchema, Map<String, String> mappings,
-                String combineStrategy, String body, List<String> itemsList) {
+                String combineStrategy, String body, List<String> itemsList, Condition condition, String nextStep) {
         this.body = body;
         this.name = name;
         this.type = type;
@@ -92,6 +111,8 @@ public class Step {
         this.setMappings(mappings);
         this.combineStrategy = combineStrategy;
         this.setItemsList(itemsList);
+        this.setCondition(condition);
+        this.nextStep = nextStep;
     }
 
     // Getters and Setters
@@ -224,13 +245,14 @@ public class Step {
                 && Objects.equals(transformSpec, step.transformSpec) && Objects.equals(responseKey, step.responseKey)
                 && Objects.equals(requestSchema, step.requestSchema) && Objects.equals(responseSchema, step.responseSchema)
                 && Objects.equals(mappingsJson, step.mappingsJson) && Objects.equals(combineStrategy, step.combineStrategy)
-                && Objects.equals(body, step.body) && Objects.equals(itemsListJson, step.itemsListJson);
+                && Objects.equals(body, step.body) && Objects.equals(itemsListJson, step.itemsListJson)
+                && Objects.equals(nextStep,step.nextStep);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(name, type, method, serviceUrl, apiDocsUrl, inputKey, outputKey, path,
-                transformSpec, responseKey, requestSchema, responseSchema, mappingsJson, combineStrategy, body, itemsListJson);
+                transformSpec, responseKey, requestSchema, responseSchema, mappingsJson, combineStrategy, body, itemsListJson,nextStep);
     }
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -269,4 +291,26 @@ public class Step {
     public void setBody(String body) {
         this.body = body;
     }
+
+    public Condition getCondition() {
+        if(conditionJson == null){
+            return null;
+        }
+        try{
+            return objectMapper.readValue(conditionJson, Condition.class);
+        }catch (JsonProcessingException e){
+            return new Condition();
+        }
+    }
+
+
+    public void setCondition(Condition condition) {
+        try {
+            this.conditionJson = objectMapper.writeValueAsString(condition);
+        } catch (JsonProcessingException e) {
+            this.conditionJson = null;
+        }
+    }
+
+
 }

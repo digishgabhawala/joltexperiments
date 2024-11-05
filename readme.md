@@ -326,4 +326,11 @@
     * add db step
     * add error handling
     * Create UI for defining above
-    * Create basci formulaes for data manipuations and their UI
+    * Create basic formulaes for data manipuations and their UI
+    * Support other satus except http 200 as well
+    * support HTTP Put and delete
+    * add more test cases for composotion
+    * add more test cases for searching with indexes 
+    * add more test cases for searching with indexes at first, second, last place in search part
+    * add more test cases for different jsonpath operations
+    * add more test cases for complex conditions
