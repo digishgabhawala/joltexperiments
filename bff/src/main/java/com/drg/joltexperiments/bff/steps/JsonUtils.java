@@ -9,11 +9,12 @@ import com.networknt.schema.ValidationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPathException;
 
 public class JsonUtils {
     private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
@@ -69,68 +70,117 @@ public class JsonUtils {
     }
 
     //todo: add testcases to get array operation as first item, second item, last item and different operations
-
-    public static Optional<Object> extractJsonPathValue(String sourcePath, Map<String, Object> stepResults, ObjectMapper mapper) {
+    public static Optional<Object> extractJsonPathValue(String sourcePath, Map<String, Object> stepResults) {
+        if (stepResults.containsKey(sourcePath)){
+            return Optional.ofNullable(stepResults.get(sourcePath));
+        }else {
+            return extractJsonPathValueUsinJsonPath(sourcePath,stepResults);
+        }
+    }
+    public static Optional<Object> extractJsonPathValueUsinJsonPath(String sourcePath, Map<String, Object> stepResults) {
         try {
-            if (sourcePath.startsWith("$.") && sourcePath.contains(".")) {
-                String[] pathParts = sourcePath.substring(2).split("\\.");
+            // Ensure JSONPath starts with "$." if it doesn't already
+            String jsonPath = sourcePath.startsWith("$.") ? sourcePath : "$." + sourcePath;
 
-                // Handle potential array index in the root part
-                JsonNode currentNode = getRootNodeWithOptionalIndex(pathParts[0], stepResults, mapper);
-                if (currentNode == null) {
-                    return Optional.empty();
-                }
+            String[] pathComponents = jsonPath.replaceFirst("^\\$\\.", "").split("\\.");
+            String rootKey = pathComponents[0].replaceAll("\\[.*?\\]", "");
 
-                for (int i = 1; i < pathParts.length && currentNode != null; i++) {
-                    String part = pathParts[i];
+            // Extract the root key from jsonPath
 
-                    // Handle special operations without traversing further
-                    if ("length".equals(part)) {
-                        return currentNode.isArray() ? Optional.of(currentNode.size()) : Optional.empty();
-                    }
-                    if ("isEmpty".equals(part)) {
-                        return Optional.of(currentNode.isArray() ? currentNode.size() == 0 : currentNode.asText().isEmpty());
-                    }
-                    if ("isNotEmpty".equals(part)) {
-                        return Optional.of(currentNode.isArray() ? currentNode.size() > 0 : !currentNode.asText().isEmpty());
-                    }
-                    if ("sum".equals(part) || "avg".equals(part) || "min".equals(part) || "max".equals(part)) {
-                        return handleNumericAggregation(part, currentNode);
-                    }
-                    if ("toUpperCase".equals(part) && currentNode.isTextual()) {
-                        return Optional.of(currentNode.asText().toUpperCase());
-                    }
-                    if ("toLowerCase".equals(part) && currentNode.isTextual()) {
-                        return Optional.of(currentNode.asText().toLowerCase());
-                    }
-                    if ("first".equals(part) && currentNode.isArray()) {
-                        return Optional.ofNullable(currentNode.get(0));
-                    }
-                    if ("last".equals(part) && currentNode.isArray()) {
-                        return Optional.ofNullable(currentNode.get(currentNode.size() - 1));
-                    }
-
-                    // Handle array indexing and standard field traversal
-                    Matcher matcher = ARRAY_INDEX_PATTERN.matcher(part);
-                    if (matcher.matches()) {
-                        String arrayName = matcher.group(1);
-                        int index = Integer.parseInt(matcher.group(2));
-
-                        currentNode = currentNode.get(arrayName);
-                        if (currentNode != null && currentNode.isArray() && currentNode.size() > index) {
-                            currentNode = currentNode.get(index);
-                        } else {
-                            return Optional.empty();
-                        }
-                    } else {
-                        currentNode = currentNode.get(part);
-                    }
-                }
-
-                return Optional.ofNullable(currentNode);
-            } else if (stepResults.containsKey(sourcePath)) {
-                return Optional.ofNullable(stepResults.get(sourcePath));
+            // Get the root object from stepResults
+            Object rootObject = stepResults.get(rootKey);
+            if (rootObject == null) {
+                return Optional.empty();
             }
+
+            // If rootObject is already a primitive (or simple) value, return it directly
+            if (!(rootObject instanceof Map || rootObject instanceof List || rootObject.toString().startsWith("{") || rootObject.toString().startsWith("["))) {
+                return Optional.of(rootObject);
+            }
+
+            // Rebuild the JSONPath without the root key
+            String adjustedJsonPath = "$";
+            if (pathComponents.length > 1) {
+                adjustedJsonPath = "$." + String.join(".", Arrays.copyOfRange(pathComponents, 1, pathComponents.length));
+            }
+
+
+            // Convert rootObject to JsonNode if it's structured (object/array) for further processing
+            JsonNode rootNode = initializeJsonNode(rootObject, mapper);
+            if (rootNode == null) {
+                return Optional.empty();
+            }
+
+            // Use JSONPath to extract the value if it's an object or array
+            Object document = Configuration.defaultConfiguration().jsonProvider().parse(rootNode.toString());
+            Object value = JsonPath.read(document, adjustedJsonPath);
+
+            return Optional.ofNullable(value);
+        } catch (JsonPathException e) {
+            logger.error("Error extracting JSON path value for path '{}': {}", sourcePath, e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+    private static Optional<Object> extractJsonPathValueUsingNativeCode(String sourcePath, Map<String, Object> stepResults, ObjectMapper mapper) {
+        try {
+            String[] pathParts = sourcePath.substring(2).split("\\.");
+
+            // Handle potential array index in the root part
+            JsonNode currentNode = getRootNodeWithOptionalIndex(pathParts[0], stepResults, mapper);
+            if (currentNode == null) {
+                return Optional.empty();
+            }
+
+            for (int i = 1; i < pathParts.length && currentNode != null; i++) {
+                String part = pathParts[i];
+
+                // Handle special operations without traversing further
+                if ("length".equals(part)) {
+                    return currentNode.isArray() ? Optional.of(currentNode.size()) : Optional.empty();
+                }
+                if ("isEmpty".equals(part)) {
+                    return Optional.of(currentNode.isArray() ? currentNode.size() == 0 : currentNode.asText().isEmpty());
+                }
+                if ("isNotEmpty".equals(part)) {
+                    return Optional.of(currentNode.isArray() ? currentNode.size() > 0 : !currentNode.asText().isEmpty());
+                }
+                if ("sum".equals(part) || "avg".equals(part) || "min".equals(part) || "max".equals(part)) {
+                    return handleNumericAggregation(part, currentNode);
+                }
+                if ("toUpperCase".equals(part) && currentNode.isTextual()) {
+                    return Optional.of(currentNode.asText().toUpperCase());
+                }
+                if ("toLowerCase".equals(part) && currentNode.isTextual()) {
+                    return Optional.of(currentNode.asText().toLowerCase());
+                }
+                if ("first".equals(part) && currentNode.isArray()) {
+                    return Optional.ofNullable(currentNode.get(0));
+                }
+                if ("last".equals(part) && currentNode.isArray()) {
+                    return Optional.ofNullable(currentNode.get(currentNode.size() - 1));
+                }
+
+                // Handle array indexing and standard field traversal
+                Matcher matcher = ARRAY_INDEX_PATTERN.matcher(part);
+                if (matcher.matches()) {
+                    String arrayName = matcher.group(1);
+                    int index = Integer.parseInt(matcher.group(2));
+
+                    currentNode = currentNode.get(arrayName);
+                    if (currentNode != null && currentNode.isArray() && currentNode.size() > index) {
+                        currentNode = currentNode.get(index);
+                    } else {
+                        return Optional.empty();
+                    }
+                } else {
+                    currentNode = currentNode.get(part);
+                }
+            }
+
+            return Optional.ofNullable(currentNode);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

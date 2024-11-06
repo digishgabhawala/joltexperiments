@@ -18,7 +18,7 @@ public class BuildBodyStep implements StepInteface {
 
         if (renameMappings != null) {
             renameMappings.forEach((sourcePath, targetKey) -> {
-                JsonUtils.extractJsonPathValue(sourcePath, stepResults, mapper)
+                JsonUtils.extractJsonPathValue(sourcePath, stepResults)
                         .ifPresent(value -> bodyNode.putPOJO(targetKey, value));
             });
         }

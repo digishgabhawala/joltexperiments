@@ -3,8 +3,6 @@ package com.drg.joltexperiments.bff.steps;
 import com.drg.joltexperiments.bff.ServiceConfigEntity;
 import com.drg.joltexperiments.bff.Step;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -60,8 +58,6 @@ public class ApiCallStep implements StepInteface {
     private String buildUrlWithVariables(String urlTemplate, Map<String, Object> stepResults) {
 
         int startIdx;
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode bodyNode = mapper.createObjectNode();
 
         while ((startIdx = urlTemplate.indexOf("{")) != -1) {
             int endIdx = urlTemplate.indexOf("}", startIdx);
@@ -74,7 +70,7 @@ public class ApiCallStep implements StepInteface {
             String key = urlTemplate.substring(startIdx + 1, endIdx);
 
             // Use extractJsonPathValue to resolve JSONPath or direct key value
-            Optional<Object> replacementValue = JsonUtils.extractJsonPathValue(key, stepResults, mapper);
+            Optional<Object> replacementValue = JsonUtils.extractJsonPathValue(key, stepResults);
             String replacementString = replacementValue
                     .map(value -> value instanceof JsonNode ? ((JsonNode) value).asText() : value.toString())
                     .orElse("");

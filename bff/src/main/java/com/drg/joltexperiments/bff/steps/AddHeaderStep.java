@@ -18,7 +18,7 @@ public class AddHeaderStep implements StepInteface {
 
         if (mappings != null) {
             mappings.forEach((sourcePath, targetKey) -> {
-                JsonUtils.extractJsonPathValue(sourcePath, stepResults, mapper)
+                JsonUtils.extractJsonPathValue(sourcePath, stepResults)
                         .ifPresent(value -> bodyNode.putPOJO(targetKey, value));
             });
         }

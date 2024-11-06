@@ -35,10 +35,8 @@ public class ConditionStep implements StepInteface {
     }
 
     private boolean evaluateCondition(Condition condition, Map<String, Object> stepResults) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.createObjectNode();
 
-        Optional<Object> valueToCompareOpt = JsonUtils.extractJsonPathValue(condition.getKey(), stepResults, mapper);
+        Optional<Object> valueToCompareOpt = JsonUtils.extractJsonPathValue(condition.getKey(), stepResults);
         Condition.Operator operator = condition.getOperator();
         String expectedValue = condition.getValue();
 

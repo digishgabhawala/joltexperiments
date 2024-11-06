@@ -20,7 +20,7 @@ public class RenameVariablesStep implements StepInteface {
 
         if (renameMappings != null) {
             renameMappings.forEach((sourcePath, targetKey) -> {
-                Object data = JsonUtils.extractJsonPathValue(sourcePath, stepResults, mapper).get();
+                Object data = JsonUtils.extractJsonPathValue(sourcePath, stepResults).get();
                 logger.debug("data found = {} for key {}",data,targetKey);
                 stepResults.put(targetKey, data);
             });

@@ -412,5 +412,153 @@
 ]
 }
 ]
+},
+{
+"id": 100,
+"path": "searchAndCreateAccount",
+"method": "POST",
+"serviceUrl": "http://localhost:9003/api/searchAndCreateAccount",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"customer\":{\"type\":\"object\",\"properties\":{\"first_name\":{\"type\":\"string\"},\"last_name\":{\"type\":\"string\"},\"email\":{\"type\":\"object\",\"properties\":{\"address\":{\"type\":\"string\"}}}}},\"account\":{\"type\":\"object\",\"properties\":{\"accountNo\":{\"type\":\"string\"},\"typeOfAcc\":{\"type\":\"string\"},\"bal\":{\"type\":\"number\",\"format\":\"double\"}}}},\"required\":[\"customer\",\"account\"]}",
+"steps": [
+{
+"name": "buildCustomerSearchHeaders",
+"type": "addHeaders",
+"mappings": {
+"$.customer.first_name": "customerName",
+"$.customer.email.address": "email"
+},
+"nextStep": "searchClientKey"
+},
+{
+"name": "searchClientKey",
+"type": "addVariables",
+"mappings": {
+"$.buildCustomerSearchHeaders.key": "customer-client"
+},
+"nextStep": "searchCustomer"
+},
+{
+"name": "searchCustomer",
+"type": "apiCall",
+"method": "GET",
+"headers": "buildCustomerSearchHeaders",
+"serviceUrl": "http://localhost:9003/api/customers/search?name={$.customer.first_name}",
+"path": "customers/search",
+"responseSchema": "{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\",\"format\":\"email\"}}}}",
+"nextStep": "customerIdCondition"
+},
+{
+"name": "customerIdCondition",
+"type": "condition",
+"condition": {
+"key": "$.searchCustomer.length",
+"operator": "GREATER_THAN",
+"value": "0",
+"ifStep": "assignExistingCustomerId",
+"elseStep": "createNewCustomerComposite"
+}
+},
+{
+"name": "assignExistingCustomerId",
+"type": "renameVariables",
+"mappings": {
+"$.searchCustomer[0].id": "existingCustomerId"
+},
+"nextStep": "buildAccountBodyWithExistingCustomerId"
+},
+{
+"name": "createNewCustomerComposite",
+"type": "composite",
+"itemsList": [
+"buildCustomerBody",
+"createCustomer",
+"assignNewCustomerId"
+],
+"nextStep": "buildAccountBodyWithNewCustomerId"
+},
+{
+"name": "buildCustomerBody",
+"type": "buildBody",
+"mappings": {
+"$.customer.first_name": "firstName",
+"$.customer.last_name": "lastName",
+"$.customer.email.address": "email"
+},
+"nextStep": "createCustomer"
+},
+{
+"name": "createCustomer",
+"type": "apiCall",
+"method": "POST",
+"body": "buildCustomerBody",
+"serviceUrl": "http://localhost:9003/api/customers",
+"path": "customers",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"firstName\",\"lastName\",\"email\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}}}",
+"nextStep": "assignNewCustomerId"
+},
+{
+"name": "assignNewCustomerId",
+"type": "renameVariables",
+"mappings": {
+"$.createCustomer.id": "createdCustomerId"
+},
+"nextStep": "buildAccountBodyWithNewCustomerId"
+},
+{
+"name": "buildAccountBodyWithNewCustomerId",
+"type": "buildBody",
+"mappings": {
+"$.account.accountNo": "accountNumber",
+"$.account.typeOfAcc": "accountType",
+"$.account.bal": "balance",
+"createdCustomerId": "customerId"
+},
+"nextStep": "combineAccountBodies"
+},
+{
+"name": "buildAccountBodyWithExistingCustomerId",
+"type": "buildBody",
+"mappings": {
+"$.account.accountNo": "accountNumber",
+"$.account.typeOfAcc": "accountType",
+"$.account.bal": "balance",
+"existingCustomerId": "customerId"
+},
+"nextStep": "combineAccountBodies"
+},
+{
+"name": "combineAccountBodies",
+"type": "combineResponses",
+"combineStrategy": "selectFirstNonNull",
+"itemsList": [
+"buildAccountBodyWithExistingCustomerId",
+"buildAccountBodyWithNewCustomerId"
+],
+"nextStep": "createAccount"
+},
+{
+"name": "createAccount",
+"type": "apiCall",
+"method": "POST",
+"body": "combineAccountBodies",
+"serviceUrl": "http://localhost:9005/api/accounts",
+"path": "accounts",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}},\"required\":[\"accountNumber\",\"accountType\",\"balance\",\"customerId\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"accountNumber\":{\"type\":\"string\"},\"accountType\":{\"type\":\"string\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"},\"customerId\":{\"type\":\"integer\",\"format\":\"int64\"}}}",
+"nextStep": "combineResponses"
+},
+{
+"name": "combineResponses",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"assignExistingCustomerId",
+"assignNewCustomerId",
+"createAccount"
+]
+}
+]
 }
 ]
