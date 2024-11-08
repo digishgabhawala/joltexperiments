@@ -146,6 +146,11 @@ public class JsonUtils {
 
             Configuration configuration = Configuration.defaultConfiguration();
 
+            if(jsonPath.contains("(")){
+                Configuration config = Configuration.builder()
+                        .options(Option.ALWAYS_RETURN_LIST)
+                        .build();
+            }
             // Use JSONPath to extract the value
             Object document = configuration.jsonProvider().parse(rootNode.toString());
             Object value = JsonPath.read(document, jsonPath);

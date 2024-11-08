@@ -23,6 +23,30 @@
     "validate": "typeof response === 'object' && response.id && response.firstName === 'John' && response.lastName === 'Doe' && response.email === 'johndoe@example.com'"
   },
   {
+    "description": "Update customer with provided details",
+    "method": "PUT",
+    "endpoint": "/bff/customers",
+    "body": {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "johndoeupdated@example.com"
+    },
+    "validate": "typeof response === 'object' && response.id && response.firstName === 'John' && response.lastName === 'Doe' && response.email === 'johndoeupdated@example.com'"
+  },
+  {
+    "description": "Update customer back to earlier details",
+    "method": "PUT",
+    "endpoint": "/bff/customers",
+    "body": {
+      "id": 1,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "johndoe@example.com"
+    },
+    "validate": "typeof response === 'object' && response.id && response.firstName === 'John' && response.lastName === 'Doe' && response.email === 'johndoe@example.com'"
+  },
+  {
     "description": "create account with body transformation",
     "method": "POST",
     "endpoint": "/bff/createAccount1",
@@ -252,6 +276,7 @@
     },
     "validate": "typeof response === 'object' && response.filterAccountsByCustomerId && Array.isArray(response.filterAccountsByCustomerId) && response.filterAccountsByCustomerId.length === 3 && response.totalBalance &&  response.totalBalance === 5000.5"
   }
+
 
 
 

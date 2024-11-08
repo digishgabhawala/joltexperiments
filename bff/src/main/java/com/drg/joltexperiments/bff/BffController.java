@@ -34,6 +34,11 @@ public class BffController {
         return processRequest(headers, body, request, "POST");
     }
 
+    @PutMapping("/**")
+    public String handlePutRequest(@RequestHeader HttpHeaders headers, @RequestBody String body, ServerHttpRequest request) {
+        return processRequest(headers, body, request, "PUT");
+    }
+
     private String processRequest(HttpHeaders headers, String body, ServerHttpRequest request, String method) {
         try {
             String path = extractPathFromRequest(request);

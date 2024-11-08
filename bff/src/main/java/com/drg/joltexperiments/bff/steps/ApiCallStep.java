@@ -115,9 +115,20 @@ public class ApiCallStep implements StepInteface {
 
         try {
             // Execute the request with the selected HTTP method
-            ResponseEntity<String> response = "POST".equalsIgnoreCase(method) ?
-                    restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class) :
-                    restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+            ResponseEntity<String> response;
+            if(method == null) method = "GET";
+            switch (method.toUpperCase()) {
+                case "POST":
+                    response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+                    break;
+                case "PUT":
+                    response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
+                    break;
+                case "GET":
+                default:
+                    response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, String.class);
+                    break;
+            }
 
             // Validate response against the provided schema
 
