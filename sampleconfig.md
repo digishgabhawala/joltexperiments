@@ -560,5 +560,87 @@
 ]
 }
 ]
+},
+{
+"id": 113,
+"path": "financialSummary",
+"method": "POST",
+"serviceUrl": "http://localhost:9003/api/financialSummary",
+"apiDocsUrl": "http://localhost:9003/v3/api-docs",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"customer\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}}}},\"required\":[\"customer\"]}",
+"steps": [
+{
+"name": "buildCustomerSearchHeaders",
+"type": "addHeaders",
+"mappings": {
+"$.customer.name": "customerName",
+"$.customer.email": "email"
+},
+"nextStep": "searchClientKey"
+},
+{
+"name": "searchClientKey",
+"type": "addVariables",
+"mappings": {
+"$.buildCustomerSearchHeaders.key": "customer-client"
+},
+"nextStep": "searchCustomer"
+},
+{
+"name": "searchCustomer",
+"type": "apiCall",
+"method": "GET",
+"headers": "buildCustomerSearchHeaders",
+"serviceUrl": "http://localhost:9003/api/customers/search?name={$.customer.name}",
+"path": "customers/search",
+"responseSchema": "{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\",\"format\":\"email\"}}}}",
+"nextStep": "extractCustomerIds"
+},
+{
+"name": "extractCustomerIds",
+"type": "renameVariables",
+"mappings": {
+"$.searchCustomer[*].id": "customerIds"
+},
+"nextStep": "getAllAccountIds"
+},
+{
+"name": "getAllAccountIds",
+"type": "apiCall",
+"method": "GET",
+"serviceUrl": "http://localhost:9005/api/accounts",
+"path": "accounts",
+"responseSchema": "{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\"},\"customerId\":{\"type\":\"integer\"},\"balance\":{\"type\":\"number\",\"format\":\"double\"}}}}",
+"nextStep": "filterAccountsByCustomerId"
+},
+{
+"name": "filterAccountsByCustomerId",
+"type": "filterList",
+"inputKey": "getAllAccountIds",
+"condition": {
+"key": "$.customerId",
+"operator": "IN",
+"value": "$.customerIds"
+},
+"nextStep": "calculateBalanceSummary"
+},
+{
+"name": "calculateBalanceSummary",
+"type": "renameVariables",
+"mappings": {
+"$.sum($.filterAccountsByCustomerId[*].balance)": "totalBalance"
+},
+"nextStep": "combineResults"
+},
+{
+"name": "combineResults",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"filterAccountsByCustomerId",
+"totalBalance"
+]
+}
+]
 }
 ]

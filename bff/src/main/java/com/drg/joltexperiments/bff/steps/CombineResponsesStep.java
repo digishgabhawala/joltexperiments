@@ -50,9 +50,9 @@ public class CombineResponsesStep implements StepInteface {
                 Map<String, Object> combinedResult = new HashMap<>();
                 for (String key : responseKeys) {
                     if (stepResults.containsKey(key)) {
-                        String response = (String) stepResults.get(key);
-                        JsonNode responseJson = mapper.readTree(response);
-                        combinedResult.put(key, responseJson); // Use the key for the combined result
+                        Object value = stepResults.get(key);
+                        combinedResult.put(key, parseOrAddAsPrimitive(value, mapper));
+
                     } else {
                         logger.warn("Response key '{}' not found in stepResults", key);
                     }
@@ -63,5 +63,16 @@ public class CombineResponsesStep implements StepInteface {
             logger.error("Error combining responses: {}", e.getMessage());
             throw new RuntimeException("Failed to combine responses", e);
         }
+    }
+    private Object parseOrAddAsPrimitive(Object value, ObjectMapper mapper) {
+        if (value instanceof String) {
+            try {
+                return mapper.readTree((String) value); // Try to parse as JSON
+            } catch (Exception e) {
+                // If parsing fails, return as a plain string
+                return value;
+            }
+        }
+        return value; // Return as-is for non-String primitive types
     }
 }

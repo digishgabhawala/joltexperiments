@@ -178,7 +178,7 @@
     "validate": "Array.isArray(response) && response.length === 2"
   },
   {
-    "description": "Create a new account based on search results of customer. With existing customer",
+    "description": "Create a new account based on search results of customer. With 2 existing customers",
     "method": "POST",
     "endpoint": "/bff/searchAndCreateAccount",
     "body": {
@@ -199,7 +199,7 @@
 
   },
   {
-    "description": "Create a new account based on search results of customer. With existing customer",
+    "description": "Create a new account based on search results of customer. With single existing customer",
     "method": "POST",
     "endpoint": "/bff/searchAndCreateAccount",
     "body": {
@@ -239,6 +239,18 @@
     },
     "validate": "typeof response === 'object' && response.createAccount.id && response.createAccount.customerId &&response.createAccount.accountNumber === '1234567890' && response.createAccount.accountType === 'savings' && response.createAccount.balance === 1000.50 "
 
+  },
+  {
+    "description": "Get financial balance of customer, search customer based on name and email. get all accounts and filter for related accounts. get balances from all filtered accounts and sum it up.",
+    "method": "POST",
+    "endpoint": "/bff/financialSummary",
+    "body": {
+      "customer": {
+        "name": "John",
+        "email": "johndoe@example.com"
+      }
+    },
+    "validate": "typeof response === 'object' && response.filterAccountsByCustomerId && Array.isArray(response.filterAccountsByCustomerId) && response.filterAccountsByCustomerId.length === 3 && response.totalBalance &&  response.totalBalance === 5000.5"
   }
 
 

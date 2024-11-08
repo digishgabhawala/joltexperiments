@@ -1,8 +1,10 @@
 package com.drg.joltexperiments.bff.steps;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.jayway.jsonpath.Option;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
@@ -70,40 +72,71 @@ public class JsonUtils {
     }
 
     //todo: add testcases to get array operation as first item, second item, last item and different operations
+
+
     public static Optional<Object> extractJsonPathValue(String sourcePath, Map<String, Object> stepResults) {
         if (stepResults.containsKey(sourcePath)){
             return Optional.ofNullable(stepResults.get(sourcePath));
         }else {
-            return extractJsonPathValueUsinJsonPath(sourcePath,stepResults);
+            return extractJsonPathValueUsingJsonPath(sourcePath,stepResults);
         }
     }
-    public static Optional<Object> extractJsonPathValueUsinJsonPath(String sourcePath, Map<String, Object> stepResults) {
+
+    public static Optional<List<JsonNode>> extractJsonPathAsList(String jsonPath, Map<String, Object> context) {
+        Optional<Object> listOpt = JsonUtils.extractJsonPathValue(jsonPath, context);
+
+        if (listOpt.isPresent()) {
+            Object result = listOpt.get();
+            try {
+                if (result instanceof String) {
+                    // Parse the JSON string back into a list
+                    return Optional.of(mapper.readValue((String) result, new TypeReference<List<JsonNode>>() {}));
+                } else if (result instanceof List<?>) {
+                    List<JsonNode> jsonNodeList = new ArrayList<>();
+                    for (Object item : (List<?>) result) {
+                        jsonNodeList.add(mapper.valueToTree(item));
+                    }
+                    return Optional.of(jsonNodeList);
+                } else {
+                    logger.warn("Expected a list at JSON path '{}', but found type: {}", jsonPath, result.getClass().getSimpleName());
+                }
+            } catch (Exception e) {
+                logger.error("Failed to parse JSON path '{}' to List: {}", jsonPath, e.getMessage());
+            }
+        } else {
+            logger.warn("No value found at JSON path '{}'", jsonPath);
+        }
+        return Optional.empty();
+    }
+
+    public static Optional<Object> extractJsonPathValueUsingJsonPath(String sourcePath, Map<String, Object> stepResults ) {
         try {
             // Ensure JSONPath starts with "$." if it doesn't already
             String jsonPath = sourcePath.startsWith("$.") ? sourcePath : "$." + sourcePath;
+            String rootKey;
 
+            // Extract the root key, considering if it includes aggregation
             String[] pathComponents = jsonPath.replaceFirst("^\\$\\.", "").split("\\.");
-            String rootKey = pathComponents[0].replaceAll("\\[.*?\\]", "");
 
-            // Extract the root key from jsonPath
-
+            if (pathComponents[0].contains("(")) {
+                rootKey = pathComponents[1].replaceAll("\\[.*?\\]", "");  // Skip aggregation function part
+            } else {
+                rootKey = pathComponents[0].replaceAll("\\[.*?\\]", "");  // Handle array notation
+            }
             // Get the root object from stepResults
             Object rootObject = stepResults.get(rootKey);
             if (rootObject == null) {
                 return Optional.empty();
             }
 
-            // If rootObject is already a primitive (or simple) value, return it directly
-            if (!(rootObject instanceof Map || rootObject instanceof List || rootObject.toString().startsWith("{") || rootObject.toString().startsWith("["))) {
+            // If rootObject is a primitive (or simple) value, return it directly
+            if (!(rootObject instanceof Map || rootObject instanceof List || rootObject.toString().contains("{") || rootObject.toString().contains("["))) {
                 return Optional.of(rootObject);
             }
 
-            // Rebuild the JSONPath without the root key
-            String adjustedJsonPath = "$";
-            if (pathComponents.length > 1) {
-                adjustedJsonPath = "$." + String.join(".", Arrays.copyOfRange(pathComponents, 1, pathComponents.length));
-            }
-
+            Map<String, Object> wrappedRoot = new HashMap<>();
+            wrappedRoot.put(rootKey, initializeJsonNode(rootObject,mapper));
+            rootObject = wrappedRoot;
 
             // Convert rootObject to JsonNode if it's structured (object/array) for further processing
             JsonNode rootNode = initializeJsonNode(rootObject, mapper);
@@ -111,11 +144,19 @@ public class JsonUtils {
                 return Optional.empty();
             }
 
-            // Use JSONPath to extract the value if it's an object or array
-            Object document = Configuration.defaultConfiguration().jsonProvider().parse(rootNode.toString());
-            Object value = JsonPath.read(document, adjustedJsonPath);
+            Configuration configuration = Configuration.defaultConfiguration();
 
-            return Optional.ofNullable(value);
+            // Use JSONPath to extract the value
+            Object document = configuration.jsonProvider().parse(rootNode.toString());
+            Object value = JsonPath.read(document, jsonPath);
+
+            if (value instanceof Map || value instanceof List) {
+                // Convert complex types (objects, arrays) to JSON string
+                return Optional.of(mapper.writeValueAsString(value));
+            } else {
+                // Directly return simple types
+                return Optional.ofNullable(value);
+            }
         } catch (JsonPathException e) {
             logger.error("Error extracting JSON path value for path '{}': {}", sourcePath, e.getMessage());
         } catch (Exception e) {
@@ -123,6 +164,7 @@ public class JsonUtils {
         }
         return Optional.empty();
     }
+
     private static Optional<Object> extractJsonPathValueUsingNativeCode(String sourcePath, Map<String, Object> stepResults, ObjectMapper mapper) {
         try {
             String[] pathParts = sourcePath.substring(2).split("\\.");
