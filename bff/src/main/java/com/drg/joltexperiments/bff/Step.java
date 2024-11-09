@@ -1,6 +1,7 @@
 package com.drg.joltexperiments.bff;
 
 import com.drg.joltexperiments.bff.steps.Condition;
+import com.drg.joltexperiments.bff.steps.Operate;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -77,6 +78,13 @@ public class Step {
     @Column(length = 10000)
     private String conditionJson;
 
+    @Transient
+    private Operate operate;
+
+    @Lob
+    @Column(length = 10000)
+    private String operateJson;
+
     @Column(length = 200)
     private String nextStep;
 
@@ -94,7 +102,7 @@ public class Step {
     public Step(String name, String type, String method, String serviceUrl, String apiDocsUrl,
                 String inputKey, String outputKey, String path, String transformSpec,
                 String responseKey, String requestSchema, String responseSchema, Map<String, String> mappings,
-                String combineStrategy, String body, List<String> itemsList, Condition condition, String nextStep) {
+                String combineStrategy, String body, List<String> itemsList, Condition condition, String nextStep, Operate operate) {
         this.body = body;
         this.name = name;
         this.type = type;
@@ -113,6 +121,7 @@ public class Step {
         this.setItemsList(itemsList);
         this.setCondition(condition);
         this.nextStep = nextStep;
+
     }
 
     // Getters and Setters
@@ -312,5 +321,22 @@ public class Step {
         }
     }
 
+    public Operate getOperate() {
+        if(operateJson == null){
+            return null;
+        }
+        try{
+            return objectMapper.readValue(operateJson, Operate.class);
+        }catch (JsonProcessingException e){
+            return new Operate();
+        }
+    }
 
+    public void setOperate(Operate operate) {
+        try {
+            this.operateJson = objectMapper.writeValueAsString(operate);
+        } catch (JsonProcessingException e) {
+            this.operateJson = null;
+        }
+    }
 }

@@ -275,9 +275,17 @@
       }
     },
     "validate": "typeof response === 'object' && response.filterAccountsByCustomerId && Array.isArray(response.filterAccountsByCustomerId) && response.filterAccountsByCustomerId.length === 3 && response.totalBalance &&  response.totalBalance === 5000.5"
+  },
+  {
+    "description": "test operate step and see index is increasing by 1",
+    "method": "GET",
+    "endpoint": "/bff/seeIndexIncreasing",
+    "validate": "typeof response === 'object' && response.loopProcessingIndex === 1"
+  },
+  {
+    "description": "search customer with headers and email 2",
+    "method": "GET",
+    "endpoint": "/bff/seeIndexIncreasingby2",
+    "validate": "typeof response === 'object' && response.loopProcessingIndex === 3"
   }
-
-
-
-
 ]

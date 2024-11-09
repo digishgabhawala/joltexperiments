@@ -662,5 +662,79 @@
 "responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}"
 }
 ]
+},
+{
+"id": 123,
+"path": "seeIndexIncreasing",
+"method": "GET",
+"steps": [
+{
+"name": "addLoopProcessingIndex",
+"type": "addVariables",
+"mappings": {
+"loopProcessingIndex": "0",
+"finalResult": "{}",
+"variableOne": "1"
+},
+"nextStep": "updateIndex"
+},
+{
+"name": "updateIndex",
+"type": "operate",
+"operate": {
+"op1": "loopProcessingIndex",
+"operator": "add",
+"op2": "variableOne",
+"result": "loopProcessingIndex"
+},
+"nextStep": "returnProcessedData"
+},
+{
+"name": "returnProcessedData",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"finalResult",
+"loopProcessingIndex"
+]
+}
+]
+},
+{
+"id": 124,
+"path": "seeIndexIncreasingby2",
+"method": "GET",
+"steps": [
+{
+"name": "addLoopProcessingIndex",
+"type": "addVariables",
+"mappings": {
+"loopProcessingIndex": "1",
+"finalResult": "{}",
+"variableOne": "2"
+},
+"nextStep": "updateIndex"
+},
+{
+"name": "updateIndex",
+"type": "operate",
+"operate": {
+"op1": "loopProcessingIndex",
+"operator": "add",
+"op2": "variableOne",
+"result": "loopProcessingIndex"
+},
+"nextStep": "returnProcessedData"
+},
+{
+"name": "returnProcessedData",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"finalResult",
+"loopProcessingIndex"
+]
+}
+]
 }
 ]

@@ -29,6 +29,8 @@ public class StepFactory {
                 return new ConditionStep();
             case "filterlist":
                 return new FilterListStep();
+            case "operate":
+                return new OperateStep();
             default:
                 throw new IllegalArgumentException("Unknown step type: " + step.getType());
         }
