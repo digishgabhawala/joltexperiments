@@ -283,9 +283,23 @@
     "validate": "typeof response === 'object' && response.loopProcessingIndex === 1"
   },
   {
-    "description": "search customer with headers and email 2",
+    "description": "test operate step and see index is increasing by 2",
     "method": "GET",
     "endpoint": "/bff/seeIndexIncreasingby2",
     "validate": "typeof response === 'object' && response.loopProcessingIndex === 3"
+  },
+  {
+    "description": "increase a loop index and get element from that index",
+    "method": "GET",
+    "endpoint": "/bff/retrieveCustomerBasedonIndex",
+    "validate": "typeof response === 'object' && response.loopProcessingIndex === 1 && response.finalResult[0].id === 2"
+  },
+  {
+    "description": "get a customer, increase a loop index and get another customer from that index",
+    "method": "GET",
+    "endpoint": "/bff/retrieve2CustomersBasedonIndex",
+    "validate": "typeof response === 'object' && response.loopProcessingIndex === 1 && response.finalResult[0].id === 1 && response.finalResult[1].id === 2"
   }
+
+
 ]

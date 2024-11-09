@@ -2,16 +2,26 @@ package com.drg.joltexperiments.bff.steps;
 
 import com.drg.joltexperiments.bff.ServiceConfigEntity;
 import com.drg.joltexperiments.bff.Step;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.PathNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.ObjectName;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class OperateStep implements StepInteface {
 
     private static final Logger logger = LoggerFactory.getLogger(OperateStep.class);
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults, ServiceConfigEntity config) {
@@ -19,6 +29,11 @@ public class OperateStep implements StepInteface {
         if (operation == null) {
             logger.error("No operation found in step configuration.");
             return "No operation to execute.";
+        }
+        if(operation.getOperator().equalsIgnoreCase("JSONPATH_RESOLVE_INDEX")){
+            return resolveJsonPathIndex(operation,stepResults);
+        } else if (operation.getOperator().equalsIgnoreCase("ADDTOJSONLIST")) {
+            return addToJsonList(operation,stepResults);
         }
 
         Optional<Object> op1ValueOpt = JsonUtils.extractJsonPathValue(operation.getOp1(), stepResults);
@@ -35,7 +50,7 @@ public class OperateStep implements StepInteface {
 
         try {
             Object result = executeOperation(op1Value, operation.getOperator(), op2Value);
-            stepResults.put(operation.getResult(), result);
+            stepResults.put(operation.getResult(), result.toString());
             logger.debug("Operation executed. Result stored in '{}': {}", operation.getResult(), result);
             return "Operation executed successfully.";
         } catch (UnsupportedOperationException e) {
@@ -43,6 +58,40 @@ public class OperateStep implements StepInteface {
             return "Operation execution failed.";
         }
     }
+
+    public String addToJsonList(Operate operation, Map<String, Object> stepResults) {
+        Optional<List<JsonNode>> op1ValueOpt = JsonUtils.extractJsonPathAsList(operation.getOp1(), stepResults);
+        Optional<Object> op2ValueOpt = JsonUtils.extractJsonPathValue(operation.getOp2(), stepResults);
+        try {
+            JsonNode node = mapper.readTree((String) op2ValueOpt.get());
+            List<JsonNode> op1Value = op1ValueOpt.get();
+                    op1Value.add(node);
+            String result = mapper.writeValueAsString(op1Value);
+            stepResults.put(operation.getResult(),result);
+            return "";
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public String resolveJsonPathIndex(Operate operation, Map<String, Object> stepResults) {
+        Optional<Object> op2ValueOpt = JsonUtils.extractJsonPathValue(operation.getOp2(), stepResults);
+        if (op2ValueOpt.isEmpty()) {
+            logger.error("operands could not be resolved: op2={}",  operation.getOp2());
+            return "Invalid operands.";
+        }
+        Object op2Value = parseOperand((String) op2ValueOpt.get(), operation.getOp2Type());
+        String newOp1Value = operation.getOp1().replace(operation.getOp2(),op2Value.toString());
+        Optional<Object> op1ValueOpt = JsonUtils.extractJsonPathValue(newOp1Value, stepResults);
+        if (op1ValueOpt.isEmpty()) {
+            logger.error("operands could not be resolved: op1={}",  operation.getOp1());
+            return "Invalid operands.";
+        }
+        stepResults.put(operation.getResult(), op1ValueOpt.get());
+        return "";
+    }
+
 
     private Object parseOperand(String value, Operate.OperandType type) {
         switch (type) {

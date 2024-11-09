@@ -664,7 +664,165 @@
 ]
 },
 {
-"id": 123,
+"id": 127,
+"path": "retrieveCustomerBasedonIndex",
+"method": "GET",
+"steps": [
+{
+"name": "addLoopProcessingIndex",
+"type": "addVariables",
+"mappings": {
+"loopProcessingIndex": "0",
+"finalResult": "[]",
+"fetchCustomers": "[{\"id\": 1,\"firstName\": \"John\",\"lastName\": \"Doe\",\"email\": \"johndoe@example.com\"},{\"id\": 2,\"firstName\": \"John2\",\"lastName\": \"Doe\",\"email\": \"johndoe2@example.com\"}]",
+"variableOne": "1"
+},
+"nextStep": "updateIndex"
+},
+{
+"name": "updateIndex",
+"type": "operate",
+"operate": {
+"op1": "loopProcessingIndex",
+"op1Type": "INTEGER",
+"operator": "add",
+"op2": "variableOne",
+"op2Type": "INTEGER",
+"result": "loopProcessingIndex"
+},
+"nextStep": "fetchCurrentCustomer"
+},
+{
+"name": "fetchCurrentCustomer",
+"type": "operate",
+"operate": {
+"op1": "$.fetchCustomers[$.loopProcessingIndex]",
+"op1Type": "JSON",
+"operator": "JSONPATH_RESOLVE_INDEX",
+"op2": "$.loopProcessingIndex",
+"op2Type": "INTEGER",
+"result": "currentCustomer"
+},
+"nextStep": "addCustomerToFinalResult"
+},
+{
+"name": "addCustomerToFinalResult",
+"type": "operate",
+"operate": {
+"op1": "$.finalResult",
+"op1Type": "LIST",
+"operator": "ADDTOJSONLIST",
+"op2": "$.currentCustomer",
+"op2Type": "JSON",
+"result": "finalResult"
+},
+"nextStep": "returnProcessedData"
+},
+{
+"name": "returnProcessedData",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"finalResult",
+"loopProcessingIndex"
+]
+}
+]
+},
+{
+"id": 129,
+"path": "retrieve2CustomersBasedonIndex",
+"method": "GET",
+"steps": [
+{
+"name": "addLoopProcessingIndex",
+"type": "addVariables",
+"mappings": {
+"loopProcessingIndex": "0",
+"finalResult": "[]",
+"fetchCustomers": "[{\"id\": 1,\"firstName\": \"John\",\"lastName\": \"Doe\",\"email\": \"johndoe@example.com\"},{\"id\": 2,\"firstName\": \"John2\",\"lastName\": \"Doe\",\"email\": \"johndoe2@example.com\"}]",
+"variableOne": "1"
+},
+"nextStep": "fetchCurrentCustomer"
+},
+{
+"name": "fetchCurrentCustomer",
+"type": "operate",
+"operate": {
+"op1": "$.fetchCustomers[$.loopProcessingIndex]",
+"op1Type": "JSON",
+"operator": "JSONPATH_RESOLVE_INDEX",
+"op2": "$.loopProcessingIndex",
+"op2Type": "INTEGER",
+"result": "currentCustomer"
+},
+"nextStep": "addCustomerToFinalResult"
+},
+{
+"name": "addCustomerToFinalResult",
+"type": "operate",
+"operate": {
+"op1": "$.finalResult",
+"op1Type": "LIST",
+"operator": "ADDTOJSONLIST",
+"op2": "$.currentCustomer",
+"op2Type": "JSON",
+"result": "finalResult"
+},
+"nextStep": "increaseIndex"
+},
+{
+"name": "increaseIndex",
+"type": "operate",
+"operate": {
+"op1": "loopProcessingIndex",
+"op1Type": "INTEGER",
+"operator": "add",
+"op2": "variableOne",
+"op2Type": "INTEGER",
+"result": "loopProcessingIndex"
+},
+"nextStep": "fetchCurrentCustomer2"
+},
+{
+"name": "fetchCurrentCustomer2",
+"type": "operate",
+"operate": {
+"op1": "$.fetchCustomers[$.loopProcessingIndex]",
+"op1Type": "JSON",
+"operator": "JSONPATH_RESOLVE_INDEX",
+"op2": "$.loopProcessingIndex",
+"op2Type": "INTEGER",
+"result": "currentCustomer"
+},
+"nextStep": "addCustomerToFinalResult2"
+},
+{
+"name": "addCustomerToFinalResult2",
+"type": "operate",
+"operate": {
+"op1": "$.finalResult",
+"op1Type": "LIST",
+"operator": "ADDTOJSONLIST",
+"op2": "$.currentCustomer",
+"op2Type": "JSON",
+"result": "finalResult"
+},
+"nextStep": "returnProcessedData"
+},
+{
+"name": "returnProcessedData",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"finalResult",
+"loopProcessingIndex"
+]
+}
+]
+},
+{
+"id": 130,
 "path": "seeIndexIncreasing",
 "method": "GET",
 "steps": [
@@ -683,8 +841,10 @@
 "type": "operate",
 "operate": {
 "op1": "loopProcessingIndex",
+"op1Type": "INTEGER",
 "operator": "add",
 "op2": "variableOne",
+"op2Type": "INTEGER",
 "result": "loopProcessingIndex"
 },
 "nextStep": "returnProcessedData"
@@ -701,7 +861,7 @@
 ]
 },
 {
-"id": 124,
+"id": 131,
 "path": "seeIndexIncreasingby2",
 "method": "GET",
 "steps": [
@@ -720,8 +880,10 @@
 "type": "operate",
 "operate": {
 "op1": "loopProcessingIndex",
+"op1Type": "INTEGER",
 "operator": "add",
 "op2": "variableOne",
+"op2Type": "INTEGER",
 "result": "loopProcessingIndex"
 },
 "nextStep": "returnProcessedData"

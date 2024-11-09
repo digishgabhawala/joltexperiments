@@ -98,6 +98,8 @@ public class Operate {
     public enum OperandType {
         INTEGER,
         DOUBLE,
-        STRING
+        STRING,
+        LIST,
+        JSON
     }
 }
