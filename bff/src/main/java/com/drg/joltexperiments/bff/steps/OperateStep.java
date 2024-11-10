@@ -5,18 +5,15 @@ import com.drg.joltexperiments.bff.Step;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.PathNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.ObjectName;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class OperateStep implements StepInteface {
 
@@ -50,7 +47,7 @@ public class OperateStep implements StepInteface {
 
         try {
             Object result = executeOperation(op1Value, operation.getOperator(), op2Value);
-            stepResults.put(operation.getResult(), result.toString());
+            JsonUtils.updateValueInStepResults(operation.getResult(),result.toString(),stepResults);
             logger.debug("Operation executed. Result stored in '{}': {}", operation.getResult(), result);
             return "Operation executed successfully.";
         } catch (UnsupportedOperationException e) {
@@ -67,7 +64,7 @@ public class OperateStep implements StepInteface {
             List<JsonNode> op1Value = op1ValueOpt.get();
                     op1Value.add(node);
             String result = mapper.writeValueAsString(op1Value);
-            stepResults.put(operation.getResult(),result);
+            JsonUtils.updateValueInStepResults(operation.getResult(),result.toString(),stepResults);
             return "";
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -88,7 +85,7 @@ public class OperateStep implements StepInteface {
             logger.error("operands could not be resolved: op1={}",  operation.getOp1());
             return "Invalid operands.";
         }
-        stepResults.put(operation.getResult(), op1ValueOpt.get());
+        JsonUtils.updateValueInStepResults(operation.getResult(),op1ValueOpt.get().toString(),stepResults);
         return "";
     }
 

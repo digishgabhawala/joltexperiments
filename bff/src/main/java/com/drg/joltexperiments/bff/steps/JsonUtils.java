@@ -1,10 +1,11 @@
 package com.drg.joltexperiments.bff.steps;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.*;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.ValidationMessage;
@@ -14,9 +15,6 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPathException;
 
 public class JsonUtils {
     private static final Logger logger = LoggerFactory.getLogger(JsonUtils.class);
@@ -307,6 +305,64 @@ public class JsonUtils {
                 return count > 0 ? Optional.of(max) : Optional.empty();
             default:
                 return Optional.empty();
+        }
+    }
+
+
+    public static void updateValueInStepResults(String jsonPath, Object newValue, Map<String, Object> stepResults) {
+        if (!jsonPath.contains("$.")){
+            stepResults.put(jsonPath,newValue);
+        }else {
+            updateJsonPathInStepResults(jsonPath,newValue,stepResults);
+        }
+
+    }
+
+    private static void updateJsonPathInStepResults(String jsonPath, Object newValue, Map<String, Object> stepResults) {
+    try {
+
+        // Ensure JSONPath starts with "$." if it doesn't already
+        jsonPath = jsonPath.startsWith("$.") ? jsonPath : "$." + jsonPath;
+        String rootKey = jsonPath.replaceFirst("^\\$\\.", "").split("\\.")[0].replaceAll("\\[.*?\\]", "");
+
+        // Get the root object from stepResults
+        Object rootObject = stepResults.get(rootKey);
+        if (rootObject == null) {
+            logger.warn("Root key '{}' not found in stepResults, cannot update path '{}'", rootKey, jsonPath);
+            return;
+        }
+
+        Map<String, Object> wrappedRoot = new HashMap<>();
+        wrappedRoot.put(rootKey, initializeJsonNode(rootObject,mapper));
+        rootObject = wrappedRoot;
+
+        // Convert the rootObject to a JsonNode if needed
+        JsonNode rootNode = initializeJsonNode(rootObject,mapper);
+        if (rootNode == null || !(rootNode instanceof ObjectNode)) {
+            logger.warn("Root object for key '{}' is not an ObjectNode, cannot update path '{}'", rootKey, jsonPath);
+            return;
+        }
+
+        // Parse the JSONPath and apply the update
+        Configuration configuration = Configuration.defaultConfiguration();
+        Object document = configuration.jsonProvider().parse(rootNode.toString());
+
+        try {
+            JsonPath path = JsonPath.compile(jsonPath);
+            path.set(document, newValue,configuration);
+            logger.info("Updated JSON path '{}' with value '{}'", jsonPath, newValue);
+
+            // Update stepResults with the modified JSON
+
+            String wnrappedData = mapper.writeValueAsString(JsonPath.read(document, rootKey));
+            stepResults.put(rootKey, wnrappedData);
+        } catch (PathNotFoundException e) {
+            logger.warn("Path '{}' not found in JSON structure, cannot update", jsonPath);
+        } catch (JsonProcessingException e) {
+            logger.warn("Path '{}' not found in JSON structure, cannot update", jsonPath);
+        }
+    } catch (JsonPathException e) {
+            logger.error("Error updating JSON path '{}': {}", jsonPath, e.getMessage());
         }
     }
 }

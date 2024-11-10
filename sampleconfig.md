@@ -898,5 +898,137 @@
 ]
 }
 ]
+},
+{
+"path": "updateCustomerName",
+"method": "GET",
+"steps": [
+{
+"name": "addLoopProcessingIndex",
+"type": "addVariables",
+"mappings": {
+"loopProcessingIndex": "0",
+"finalResult": "[]",
+"fetchCustomers": "[{\"id\": 1,\"firstName\": \"John\",\"lastName\": \"Doe\",\"email\": \"johndoe@example.com\"},{\"id\": 2,\"firstName\": \"John2\",\"lastName\": \"Doe\",\"email\": \"johndoe2@example.com\"}]",
+"variableOne": "1",
+"nameSuffix":"_new"
+},
+"nextStep": "updateIndex"
+},
+{
+"name": "fetchCurrentCustomer",
+"type": "operate",
+"operate": {
+"op1": "$.fetchCustomers[$.loopProcessingIndex]",
+"op1Type": "JSON",
+"operator": "JSONPATH_RESOLVE_INDEX",
+"op2": "$.loopProcessingIndex",
+"op2Type": "INTEGER",
+"result": "currentCustomer"
+},
+"nextStep": "updateCustomerName"
+},
+{
+"name": "updateCustomerName",
+"type": "operate",
+"operate": {
+"op1": "$.currentCustomer.firstName",
+"op1Type": "STRING",
+"operator": "add",
+"op2": "nameSuffix",
+"op2Type": "STRING",
+"result": "$.currentCustomer.firstName"
+},
+"nextStep": "addCustomerToFinalResult"
+},
+{
+"name": "addCustomerToFinalResult",
+"type": "operate",
+"operate": {
+"op1": "$.finalResult",
+"op1Type": "LIST",
+"operator": "ADDTOJSONLIST",
+"op2": "$.currentCustomer",
+"op2Type": "JSON",
+"result": "finalResult"
+},
+"nextStep": "returnProcessedData"
+},
+{
+"name": "returnProcessedData",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"finalResult",
+"loopProcessingIndex"
+]
+}
+]
+},
+{
+"path": "updateCustomerName",
+"method": "GET",
+"steps": [
+{
+"name": "addLoopProcessingIndex",
+"type": "addVariables",
+"mappings": {
+"loopProcessingIndex": "0",
+"finalResult": "[]",
+"fetchCustomers": "[{\"id\": 1,\"firstName\": \"John\",\"lastName\": \"Doe\",\"email\": \"johndoe@example.com\"},{\"id\": 2,\"firstName\": \"John2\",\"lastName\": \"Doe\",\"email\": \"johndoe2@example.com\"}]",
+"variableOne": "1",
+"nameSuffix":"_new"
+},
+"nextStep": "fetchCurrentCustomer"
+},
+{
+"name": "fetchCurrentCustomer",
+"type": "operate",
+"operate": {
+"op1": "$.fetchCustomers[$.loopProcessingIndex]",
+"op1Type": "JSON",
+"operator": "JSONPATH_RESOLVE_INDEX",
+"op2": "$.loopProcessingIndex",
+"op2Type": "INTEGER",
+"result": "currentCustomer"
+},
+"nextStep": "updateCustomerName"
+},
+{
+"name": "updateCustomerName",
+"type": "operate",
+"operate": {
+"op1": "$.currentCustomer.firstName",
+"op1Type": "STRING",
+"operator": "add",
+"op2": "nameSuffix",
+"op2Type": "STRING",
+"result": "$.currentCustomer.firstName"
+},
+"nextStep": "addCustomerToFinalResult"
+},
+{
+"name": "addCustomerToFinalResult",
+"type": "operate",
+"operate": {
+"op1": "$.finalResult",
+"op1Type": "LIST",
+"operator": "ADDTOJSONLIST",
+"op2": "$.currentCustomer",
+"op2Type": "JSON",
+"result": "finalResult"
+},
+"nextStep": "returnProcessedData"
+},
+{
+"name": "returnProcessedData",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"finalResult",
+"loopProcessingIndex"
+]
+}
+]
 }
 ]

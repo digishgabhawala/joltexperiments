@@ -299,7 +299,14 @@
     "method": "GET",
     "endpoint": "/bff/retrieve2CustomersBasedonIndex",
     "validate": "typeof response === 'object' && response.loopProcessingIndex === 1 && response.finalResult[0].id === 1 && response.finalResult[1].id === 2"
+  },
+  {
+    "description": "initialize variables, get a customer from list, update attribute inside customer, return",
+    "method": "GET",
+    "endpoint": "/bff/updateCustomerName",
+    "validate": "typeof response === 'object' && response.finalResult[0].firstName === 'John_new'"
   }
+
 
 
 ]
