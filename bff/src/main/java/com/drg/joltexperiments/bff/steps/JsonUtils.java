@@ -116,10 +116,17 @@ public class JsonUtils {
             // Extract the root key, considering if it includes aggregation
             String[] pathComponents = jsonPath.replaceFirst("^\\$\\.", "").split("\\.");
 
+            String removeContentWithinBrackets = "\\[.*?\\]";//"[\\[\\]()]";
+            String removeBrackets = "[\\[\\]()]";
             if (pathComponents[0].contains("(")) {
-                rootKey = pathComponents[1].replaceAll("\\[.*?\\]", "");  // Skip aggregation function part
+                int actualPathIndex = 1;
+                actualPathIndex = (jsonPath.contains("..")) ?  2 : 1;
+                rootKey = pathComponents[actualPathIndex].replaceAll(removeContentWithinBrackets, "").replaceAll(removeBrackets,"");  // Skip aggregation function part
+
+//                rootKey = pathComponents[1].replaceAll("\\[.*?\\]", "");  // Skip aggregation function part
             } else {
-                rootKey = pathComponents[0].replaceAll("\\[.*?\\]", "");  // Handle array notation
+                rootKey = pathComponents[0].replaceAll(removeContentWithinBrackets, "");  // Handle array notation
+//                rootKey = pathComponents[0].replaceAll("\\[.*?\\]", "");  // Handle array notation
             }
             // Get the root object from stepResults
             Object rootObject = stepResults.get(rootKey);

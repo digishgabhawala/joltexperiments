@@ -36,7 +36,7 @@ public class ConditionStep implements StepInteface {
 
         Optional<Object> valueToCompareOpt = JsonUtils.extractJsonPathValue(condition.getKey(), stepResults);
         Condition.Operator operator = condition.getOperator();
-        String expectedValue = condition.getValue();
+        Optional<Object> expectedValue = JsonUtils.extractJsonPathValue(condition.getValue(),stepResults);
 
         // If the value is not found and the operator is NOT_EXISTS, return true
         if (valueToCompareOpt.isEmpty()) {
@@ -44,9 +44,15 @@ public class ConditionStep implements StepInteface {
             return operator == Condition.Operator.NOT_EXISTS;
         }
 
+        if (expectedValue.isEmpty()) {
+            logger.debug("Condition value '{}' not found in step results. Will attempt with direct value as is", condition.getValue());
+            expectedValue = Optional.ofNullable(condition.getValue());
+            return operator == Condition.Operator.NOT_EXISTS;
+        }
+
         // Get the value and evaluate the condition
         Object valueToCompare = valueToCompareOpt.get();
-        boolean result = evaluateSingleCondition(valueToCompare, operator, expectedValue);
+        boolean result = evaluateSingleCondition(valueToCompare, operator, expectedValue.get().toString());
         logger.debug("Evaluating condition '{}' with operator '{}' and value '{}': Result = {}",
                 condition.getKey(), operator, expectedValue, result);
         return result;

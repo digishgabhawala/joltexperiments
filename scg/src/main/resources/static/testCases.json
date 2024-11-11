@@ -305,6 +305,12 @@
     "method": "GET",
     "endpoint": "/bff/updateCustomerName",
     "validate": "typeof response === 'object' && response.finalResult[0].firstName === 'John_new'"
+  },
+  {
+    "description": "test for loop and update name of all customers",
+    "method": "GET",
+    "endpoint": "/bff/updateAllCustomers",
+    "validate": "typeof response === 'object' && Array.isArray(response.finalResult) && response.finalResult.length === 9 && response.finalResult[0].firstName === 'John_new'"
   }
 
 

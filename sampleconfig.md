@@ -822,45 +822,6 @@
 ]
 },
 {
-"id": 130,
-"path": "seeIndexIncreasing",
-"method": "GET",
-"steps": [
-{
-"name": "addLoopProcessingIndex",
-"type": "addVariables",
-"mappings": {
-"loopProcessingIndex": "0",
-"finalResult": "{}",
-"variableOne": "1"
-},
-"nextStep": "updateIndex"
-},
-{
-"name": "updateIndex",
-"type": "operate",
-"operate": {
-"op1": "loopProcessingIndex",
-"op1Type": "INTEGER",
-"operator": "add",
-"op2": "variableOne",
-"op2Type": "INTEGER",
-"result": "loopProcessingIndex"
-},
-"nextStep": "returnProcessedData"
-},
-{
-"name": "returnProcessedData",
-"type": "combineResponses",
-"combineStrategy": "merge",
-"itemsList": [
-"finalResult",
-"loopProcessingIndex"
-]
-}
-]
-},
-{
 "id": 131,
 "path": "seeIndexIncreasingby2",
 "method": "GET",
@@ -900,7 +861,8 @@
 ]
 },
 {
-"path": "updateCustomerName",
+"id": 133,
+"path": "seeIndexIncreasing",
 "method": "GET",
 "steps": [
 {
@@ -908,49 +870,21 @@
 "type": "addVariables",
 "mappings": {
 "loopProcessingIndex": "0",
-"finalResult": "[]",
-"fetchCustomers": "[{\"id\": 1,\"firstName\": \"John\",\"lastName\": \"Doe\",\"email\": \"johndoe@example.com\"},{\"id\": 2,\"firstName\": \"John2\",\"lastName\": \"Doe\",\"email\": \"johndoe2@example.com\"}]",
-"variableOne": "1",
-"nameSuffix":"_new"
+"finalResult": "{}",
+"variableOne": "1"
 },
 "nextStep": "updateIndex"
 },
 {
-"name": "fetchCurrentCustomer",
+"name": "updateIndex",
 "type": "operate",
 "operate": {
-"op1": "$.fetchCustomers[$.loopProcessingIndex]",
-"op1Type": "JSON",
-"operator": "JSONPATH_RESOLVE_INDEX",
-"op2": "$.loopProcessingIndex",
-"op2Type": "INTEGER",
-"result": "currentCustomer"
-},
-"nextStep": "updateCustomerName"
-},
-{
-"name": "updateCustomerName",
-"type": "operate",
-"operate": {
-"op1": "$.currentCustomer.firstName",
-"op1Type": "STRING",
+"op1": "loopProcessingIndex",
+"op1Type": "INTEGER",
 "operator": "add",
-"op2": "nameSuffix",
-"op2Type": "STRING",
-"result": "$.currentCustomer.firstName"
-},
-"nextStep": "addCustomerToFinalResult"
-},
-{
-"name": "addCustomerToFinalResult",
-"type": "operate",
-"operate": {
-"op1": "$.finalResult",
-"op1Type": "LIST",
-"operator": "ADDTOJSONLIST",
-"op2": "$.currentCustomer",
-"op2Type": "JSON",
-"result": "finalResult"
+"op2": "variableOne",
+"op2Type": "INTEGER",
+"result": "loopProcessingIndex"
 },
 "nextStep": "returnProcessedData"
 },
@@ -966,6 +900,7 @@
 ]
 },
 {
+"id": 134,
 "path": "updateCustomerName",
 "method": "GET",
 "steps": [
@@ -977,7 +912,7 @@
 "finalResult": "[]",
 "fetchCustomers": "[{\"id\": 1,\"firstName\": \"John\",\"lastName\": \"Doe\",\"email\": \"johndoe@example.com\"},{\"id\": 2,\"firstName\": \"John2\",\"lastName\": \"Doe\",\"email\": \"johndoe2@example.com\"}]",
 "variableOne": "1",
-"nameSuffix":"_new"
+"nameSuffix": "_new"
 },
 "nextStep": "fetchCurrentCustomer"
 },
@@ -1027,6 +962,204 @@
 "itemsList": [
 "finalResult",
 "loopProcessingIndex"
+]
+}
+]
+},
+{
+"id": 145,
+"path": "updateCustomerName1",
+"method": "GET",
+"steps": [
+{
+"name": "addLoopProcessingIndex",
+"type": "addVariables",
+"mappings": {
+"loopProcessingIndex": "0",
+"finalResult": "[]",
+"fetchCustomers": "[{\"id\": 1,\"firstName\": \"John\",\"lastName\": \"Doe\",\"email\": \"johndoe@example.com\"},{\"id\": 2,\"firstName\": \"John2\",\"lastName\": \"Doe\",\"email\": \"johndoe2@example.com\"}]",
+"variableOne": "1",
+"nameSuffix": "_new"
+},
+"nextStep": "fetchCurrentCustomer"
+},
+{
+"name": "fetchCurrentCustomer",
+"type": "operate",
+"operate": {
+"op1": "$.fetchCustomers[$.loopProcessingIndex]",
+"op1Type": "JSON",
+"operator": "JSONPATH_RESOLVE_INDEX",
+"op2": "$.loopProcessingIndex",
+"op2Type": "INTEGER",
+"result": "currentCustomer"
+},
+"nextStep": "updateCustomerName"
+},
+{
+"name": "updateCustomerName",
+"type": "operate",
+"operate": {
+"op1": "$.currentCustomer.firstName",
+"op1Type": "STRING",
+"operator": "add",
+"op2": "nameSuffix",
+"op2Type": "STRING",
+"result": "$.currentCustomer.firstName"
+},
+"nextStep": "addCustomerToFinalResult"
+},
+{
+"name": "addCustomerToFinalResult",
+"type": "operate",
+"operate": {
+"op1": "$.finalResult",
+"op1Type": "LIST",
+"operator": "ADDTOJSONLIST",
+"op2": "$.currentCustomer",
+"op2Type": "JSON",
+"result": "finalResult"
+},
+"nextStep": "returnProcessedData"
+},
+{
+"name": "returnProcessedData",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"finalResult",
+"loopProcessingIndex"
+]
+}
+]
+},
+{
+"id": 146,
+"path": "updateAllCustomers",
+"method": "GET",
+"serviceUrl": "http://localhost:9003/api/updateAllCustomers",
+"steps": [
+{
+"name": "initializeVariables",
+"type": "addVariables",
+"mappings": {
+"loopProcessingIndex": "0",
+"finalResult": "[]",
+"variableOne": "1",
+"nameSuffix": "_new"
+},
+"nextStep": "fetchCustomers"
+},
+{
+"name": "fetchCustomers",
+"type": "apiCall",
+"method": "GET",
+"serviceUrl": "http://localhost:9003/api/customers",
+"nextStep": "loopProcessing"
+},
+{
+"name": "loopProcessing",
+"type": "composite",
+"itemsList": [
+"fetchCurrentCustomer",
+"updateIndex",
+"updateCustomerName",
+"buildCustomerBody",
+"updateCustomer",
+"addCustomerToFinalResult"
+],
+"nextStep": "checkIfMoreCustomers"
+},
+{
+"name": "fetchCurrentCustomer",
+"type": "operate",
+"operate": {
+"op1": "$.fetchCustomers[$.loopProcessingIndex]",
+"op1Type": "JSON",
+"operator": "JSONPATH_RESOLVE_INDEX",
+"op2": "$.loopProcessingIndex",
+"op2Type": "INTEGER",
+"result": "currentCustomer"
+},
+"nextStep": "updateIndex"
+},
+{
+"name": "updateIndex",
+"type": "operate",
+"operate": {
+"op1": "$.loopProcessingIndex",
+"op1Type": "INTEGER",
+"operator": "add",
+"op2": "variableOne",
+"op2Type": "INTEGER",
+"result": "loopProcessingIndex"
+},
+"nextStep": "updateCustomerName"
+},
+{
+"name": "updateCustomerName",
+"type": "operate",
+"operate": {
+"op1": "$.currentCustomer.firstName",
+"op1Type": "STRING",
+"operator": "add",
+"op2": "$.nameSuffix",
+"op2Type": "STRING",
+"result": "$.currentCustomer.firstName"
+},
+"nextStep": "buildCustomerBody"
+},
+{
+"name": "buildCustomerBody",
+"type": "buildBody",
+"mappings": {
+"$.currentCustomer.id": "id",
+"$.currentCustomer.firstName": "firstName",
+"$.currentCustomer.lastName": "lastName",
+"$.currentCustomer.email": "email"
+},
+"nextStep": "updateCustomer"
+},
+{
+"name": "updateCustomer",
+"type": "apiCall",
+"method": "PUT",
+"body": "buildCustomerBody",
+"serviceUrl": "http://localhost:9003/api/customers/{$.currentCustomer.id}",
+"requestSchema": "{\"type\":\"object\",\"properties\":{\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"firstName\",\"lastName\",\"email\"]}",
+"responseSchema": "{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"format\":\"int64\"},\"firstName\":{\"type\":\"string\"},\"lastName\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"}},\"required\":[\"id\",\"firstName\",\"lastName\",\"email\"]}",
+"nextStep": "addCustomerToFinalResult"
+},
+{
+"name": "addCustomerToFinalResult",
+"type": "operate",
+"operate": {
+"op1": "$.finalResult",
+"op1Type": "LIST",
+"operator": "ADDTOJSONLIST",
+"op2": "$.currentCustomer",
+"op2Type": "JSON",
+"result": "finalResult"
+},
+"nextStep": "checkIfMoreCustomers"
+},
+{
+"name": "checkIfMoreCustomers",
+"type": "condition",
+"condition": {
+"key": "$.length($..fetchCustomers)",
+"operator": "GREATER_THAN",
+"value": "$.loopProcessingIndex",
+"ifStep": "loopProcessing",
+"elseStep": "returnProcessedData"
+}
+},
+{
+"name": "returnProcessedData",
+"type": "combineResponses",
+"combineStrategy": "merge",
+"itemsList": [
+"finalResult"
 ]
 }
 ]
