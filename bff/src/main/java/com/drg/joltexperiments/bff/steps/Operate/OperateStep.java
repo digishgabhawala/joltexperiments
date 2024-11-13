@@ -1,20 +1,24 @@
-package com.drg.joltexperiments.bff.steps;
+package com.drg.joltexperiments.bff.steps.Operate;
 
 import com.drg.joltexperiments.bff.ServiceConfigEntity;
 import com.drg.joltexperiments.bff.Step;
+import com.drg.joltexperiments.bff.steps.JsonUtils;
+import com.drg.joltexperiments.bff.steps.StepInteface;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.jayway.jsonpath.JsonPath;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Component
+@Scope("prototype")
 public class OperateStep implements StepInteface {
 
     private static final Logger logger = LoggerFactory.getLogger(OperateStep.class);

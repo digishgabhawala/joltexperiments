@@ -7,17 +7,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.stereotype.Component;
+
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Service
 public class CompositeStep implements StepInteface {
 
-    private StepFactory stepFactory = new StepFactory();
+    private final StepFactory stepFactory;
 
+    @Autowired
+    public CompositeStep(StepFactory stepFactory) {
+        this.stepFactory = stepFactory;
+    }
     @Override
     public String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults, final ServiceConfigEntity config) {
         List<String> subStepNames = step.getItemsList();

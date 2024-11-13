@@ -1,4 +1,4 @@
-package com.drg.joltexperiments.bff.steps;
+package com.drg.joltexperiments.bff.steps.condition;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;

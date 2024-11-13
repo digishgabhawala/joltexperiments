@@ -2,20 +2,24 @@ package com.drg.joltexperiments.bff.steps;
 
 import com.drg.joltexperiments.bff.ServiceConfigEntity;
 import com.drg.joltexperiments.bff.Step;
+import com.drg.joltexperiments.bff.steps.condition.Condition;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.jayway.jsonpath.JsonPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Component
+@Scope("prototype")
 public class FilterListStep implements StepInteface {
 
     private static final Logger logger = LoggerFactory.getLogger(FilterListStep.class);

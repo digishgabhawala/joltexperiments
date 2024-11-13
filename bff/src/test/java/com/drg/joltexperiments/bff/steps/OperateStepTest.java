@@ -1,13 +1,12 @@
 package com.drg.joltexperiments.bff.steps;
 
 import com.drg.joltexperiments.bff.Step;
+import com.drg.joltexperiments.bff.steps.Operate.Operate;
+import com.drg.joltexperiments.bff.steps.Operate.OperateStep;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class OperateStepTest {
 

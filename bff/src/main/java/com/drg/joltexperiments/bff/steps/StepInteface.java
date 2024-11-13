@@ -12,6 +12,6 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface StepInteface {
-    static final Logger logger = LoggerFactory.getLogger(ApiCallStep.class);
+    static final Logger logger = LoggerFactory.getLogger(StepInteface.class);
     String execute(HttpHeaders headers, String body, Step step, Map<String, Object> stepResults, final ServiceConfigEntity config);
 }

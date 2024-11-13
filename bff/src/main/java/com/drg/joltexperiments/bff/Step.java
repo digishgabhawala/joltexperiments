@@ -1,7 +1,7 @@
 package com.drg.joltexperiments.bff;
 
-import com.drg.joltexperiments.bff.steps.Condition;
-import com.drg.joltexperiments.bff.steps.Operate;
+import com.drg.joltexperiments.bff.steps.condition.Condition;
+import com.drg.joltexperiments.bff.steps.Operate.Operate;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

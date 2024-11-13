@@ -1,14 +1,20 @@
-package com.drg.joltexperiments.bff.steps;
+package com.drg.joltexperiments.bff.steps.condition;
 
 import com.drg.joltexperiments.bff.ServiceConfigEntity;
 import com.drg.joltexperiments.bff.Step;
+import com.drg.joltexperiments.bff.steps.JsonUtils;
+import com.drg.joltexperiments.bff.steps.StepInteface;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Optional;
 
+@Component
+@Scope("prototype")
 public class ConditionStep implements StepInteface {
 
     private static final Logger logger = LoggerFactory.getLogger(ConditionStep.class);

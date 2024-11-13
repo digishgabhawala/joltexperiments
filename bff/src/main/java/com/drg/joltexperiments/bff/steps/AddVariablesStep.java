@@ -7,10 +7,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
+@Scope("prototype")
 public class AddVariablesStep implements StepInteface {
     private static final Logger logger = LoggerFactory.getLogger(AddVariablesStep.class);
     private final ObjectMapper mapper = new ObjectMapper();
